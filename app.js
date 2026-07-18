@@ -18,6 +18,42 @@ function getChatLogsKey() { return `${CHAT_LOGS_KEY}_${currentProjectId}`; }
 function getReportDataKey() { return `${REPORT_DATA_KEY}_${currentProjectId}`; }
 
 // =========================================================================
+// 【新設】外部へデータをリアルタイム同期する非同期関数
+// =========================================================================
+async function syncToCloudRealtime() {
+  const syncUrl = document.getElementById('syncUrl')?.value.trim();
+  if (!syncUrl) return; 
+
+  const payload = {
+    projectId: currentProjectId,
+    projectName: document.getElementById('headerTitle')?.textContent || '',
+    timestamp: new Date().toISOString(),
+    report: {
+      current: document.getElementById('pane-current').innerHTML,
+      knowledge: document.getElementById('pane-knowledge').innerHTML,
+      memory: document.getElementById('pane-memory').innerHTML,
+      history: document.getElementById('pane-history').innerHTML
+    },
+    chatLogs: chatLogs
+  };
+
+  try {
+    fetch(syncUrl, {
+      method: 'POST',
+      mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(res => {
+      if (!res.ok) console.warn("同期失敗。ステータス:", res.status);
+    }).catch(e => {
+      console.error("ネットワーク同期エラー:", e);
+    });
+  } catch (err) {
+    // サイレントに処理
+  }
+}
+
+// =========================================================================
 // 2. プロジェクト生成・管理
 // =========================================================================
 function getLocalProjectsList() {
@@ -37,7 +73,6 @@ function createNewProject() {
     const logs = JSON.parse(localStorage.getItem(logKey) || '[]');
     const hasUserMessage = logs.some(log => log.sender === 'user');
 
-    // 空のプロジェクトが既にあればそれを再利用して無駄な生成を防ぐ
     if (!hasUserMessage) {
       currentProjectId = latestProj.id;
       setActiveProjectUI(latestProj.id, latestProj.name);
@@ -72,9 +107,9 @@ function createNewProject() {
   localStorage.removeItem(getChatLogsKey());
 
   const initialReport = {
-    current: '<h4>概要</h4><p>新しいプロジェクトが開始されました。目標やタスク、開発要件について自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
-    knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや技術仕様がここに蓄積されます）</li></ul>',
-    memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や、特定の対話において覚えておいてほしい背景情報をAIがここに記憶します。</p>',
+    current: '<h4>概要</h4><p>新しいプロジェクトが開始されました。開発要件や覚え書き、タスクについて自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
+    knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄積されます）</li></ul>',
+    memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や、覚えておいてほしい背景情報をAIが記憶します。</p>',
     history: '<h4>履歴</h4><ul><li>プロジェクト作成</li></ul>'
   };
   localStorage.setItem(getReportDataKey(), JSON.stringify(initialReport));
@@ -84,7 +119,6 @@ function createNewProject() {
   applyReportData(initialReport);
   setDefaultInitialAIMessage();
 
-  // 初期時はセレクトボックスの表示をCurrentにリセット
   const reportTabSelect = document.getElementById('reportTabSelect');
   if (reportTabSelect) reportTabSelect.value = 'current';
   switchTab('current');
@@ -105,7 +139,7 @@ function renderProjectsList() {
   listEl.innerHTML = '';
 
   if (projects.length === 0) {
-    listEl.innerHTML = '<li class="sheet-item" style="text-align:center; color:#00f3ff; text-shadow: 0 0 6px rgba(0,243,255,0.6); font-family:monospace; pointer-events:none;">セッション履歴がありません</li>';
+    listEl.innerHTML = '<li class="sheet-item" style="text-align:center; color:var(--accent-cyan); pointer-events:none;">セッション履歴がありません</li>';
     return;
   }
 
@@ -135,7 +169,7 @@ function renderProjectsList() {
 }
 
 function deleteProject(id, name) {
-  if (!confirm(`プロジェクト「${name}」を削除しますか？\nこの操作は取り消せません。`)) return;
+  if (!confirm(`プロジェクト「${name}」を削除しますか？`)) return;
 
   let projects = getLocalProjectsList();
   projects = projects.filter(p => p.id !== id);
@@ -170,6 +204,7 @@ function deleteProject(id, name) {
     }
   }
   renderProjectsList();
+  syncToCloudRealtime();
 }
 
 function setActiveProjectUI(id, name) {
@@ -229,9 +264,6 @@ function toggleReportHeight() {
 }
 
 function switchTab(tabName) {
-  // 元のボタン用装飾ロジックはセレクトボックス化に伴い安全にスキップ
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  
   document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
   const targetPane = document.getElementById(`pane-${tabName}`);
   if (targetPane) targetPane.classList.add('active');
@@ -257,7 +289,6 @@ function selectProject(id, name) {
     setDefaultInitialAIMessage();
   }
 
-  // プロジェクト移動時はセレクトボックスの選択をCurrentに引き戻す
   const reportTabSelect = document.getElementById('reportTabSelect');
   if (reportTabSelect) reportTabSelect.value = 'current';
   switchTab('current');
@@ -349,7 +380,7 @@ async function sendMessage() {
 function setDefaultInitialAIMessage() {
   if (!chatHistory) return;
   chatHistory.innerHTML = '';
-  appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\n設定画面（⚙️）からいつでもデータ全体をJSONファイルにエクスポートできます。バックアップやスマホ・PC間のデータ移動に便利です。\n\n大前提のプロフィールやルールを記憶できる「個人メモリ」と合わせて、自由に対話を開始してください！');
+  appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\nWebhook/GAS等のURLを設定すると、外部クラウドへリアルタイム自動バックアップが走ります。共通の「個人メモリ」と組み合わせてご利用ください。');
 }
 
 // =========================================================================
@@ -394,10 +425,10 @@ ${memoryHTML}
 ${historyHTML}
 
 【出力・表現に関する指示】
-- ユーザーに返すチャットの返答は、極限まで視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
+- ユーザーに返すチャットの返答は、極限まで視視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
+- 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
 
-特殊出力フォーマット（メッセージの末尾に連結）：
+特殊出力フォーマット：
 <update_current>Currentの最新全HTML</update_current>
 <update_knowledge>Knowledgeの最新全HTML</update_knowledge>
 <update_memory>Memoryの最新全HTML</update_memory>
@@ -410,7 +441,7 @@ ${historyHTML}
     // --- Claude 呼び出し ---
     if (selectedAi === 'claude') {
       const apiKey = document.getElementById('apiKeyClaude').value.trim();
-      if (!apiKey) throw new Error("ClaudeのAPIキーが未設定です。⚙️マークから設定してください。");
+      if (!apiKey) throw new Error("Claude APIキーが未設定です。");
 
       const messages = [];
       chatLogs.forEach(log => {
@@ -420,10 +451,7 @@ ${historyHTML}
           const commaIdx = log.image.indexOf(',');
           const mediaType = log.image.substring(5, log.image.indexOf(';'));
           const base64Data = log.image.substring(commaIdx + 1);
-          contentPayload.push({
-            type: "image",
-            source: { type: "base64", media_type: mediaType, data: base64Data }
-          });
+          contentPayload.push({ type: "image", source: { type: "base64", media_type: mediaType, data: base64Data } });
         }
         messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: contentPayload });
       });
@@ -440,15 +468,11 @@ ${historyHTML}
     // --- DeepSeek 呼び出し ---
     } else if (selectedAi === 'deepseek') {
       const apiKey = document.getElementById('apiKeyDeepSeek').value.trim();
-      if (!apiKey) throw new Error("DeepSeekのAPIキーが未設定です。⚙️マークから設定してください。");
+      if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
 
       const messages = [{ role: "system", content: systemInstructionText }];
       chatLogs.forEach(log => {
-        if (!log.image) {
-          messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || "" });
-        } else {
-          messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: (log.text ? log.text + " (画像添付あり)" : "画像が送信されました") });
-        }
+        messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || (log.image ? "画像が送信されました" : "") });
       });
 
       const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
@@ -463,7 +487,7 @@ ${historyHTML}
     // --- Gemini 呼び出し ---
     } else if (selectedAi === 'gemini') {
       const apiKey = document.getElementById('apiKeyGemini').value.trim();
-      if (!apiKey) throw new Error("GeminiのAPIキーが未設定です。⚙️マークから設定してください。");
+      if (!apiKey) throw new Error("Gemini APIキーが未設定です。");
 
       const contents = chatLogs.map(log => {
         const parts = [];
@@ -474,14 +498,13 @@ ${historyHTML}
           const base64Data = log.image.substring(commaIndex + 1);
           parts.push({ inlineData: { mimeType: mimeType, data: base64Data } });
         }
-        if (parts.length === 0) parts.push({ text: "" });
-        return { role: log.sender === 'user' ? 'user' : 'model', parts: parts };
+        return { role: log.sender === 'user' ? 'user' : 'model', parts: parts.length > 0 ? parts : [{text:""}] };
       });
 
       if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
         let textPart = contents[contents.length - 1].parts.find(p => p.text !== undefined);
         if (!textPart) { textPart = { text: "" }; contents[contents.length - 1].parts.unshift(textPart); }
-        textPart.text = `${systemInstructionText}\n\n----------------------------------------\nユーザー指示: ${textPart.text || "（画像受信）"}`;
+        textPart.text = `${systemInstructionText}\n\n----------------------------------------\nユーザー指示: ${textPart.text || "（画像）"}`;
       }
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
@@ -496,7 +519,7 @@ ${historyHTML}
     // --- OpenAI 呼び出し ---
     } else if (selectedAi === 'openai') {
       const apiKey = document.getElementById('apiKeyOpenAI').value.trim();
-      if (!apiKey) throw new Error("OpenAIのAPIキーが未設定です。⚙️マークから設定してください。");
+      if (!apiKey) throw new Error("OpenAI APIキーが未設定です。");
 
       const messages = [{ role: "system", content: systemInstructionText }];
       chatLogs.forEach(log => {
@@ -516,7 +539,6 @@ ${historyHTML}
       aiResponseText = resData.choices[0].message.content;
     }
 
-    // レポート更新タグの解析・抽出
     let reportUpdated = false;
     const currentMatch = aiResponseText.match(/<update_current>([\s\S]*?)<\/update_current>/);
     const knowledgeMatch = aiResponseText.match(/<update_knowledge>([\s\S]*?)<\/update_knowledge>/);
@@ -563,11 +585,7 @@ ${historyHTML}
       if (titleMatch) {
         let projects = getLocalProjectsList();
         const proj = projects.find(p => p.id === callingProjectId);
-        if (proj) {
-          proj.name = titleMatch[1].trim();
-          saveLocalProjectsList(projects);
-          renderProjectsList();
-        }
+        if (proj) { proj.name = titleMatch[1].trim(); saveLocalProjectsList(projects); renderProjectsList(); }
       }
       const logKey = `${CHAT_LOGS_KEY}_${callingProjectId}`;
       let origLogs = JSON.parse(localStorage.getItem(logKey) || '[]');
@@ -579,8 +597,6 @@ ${historyHTML}
     if (callingProjectId === currentProjectId) {
       progressMsg.classList.remove('analyzing');
       progressMsg.style.border = "1px solid #ff0055";
-      progressMsg.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.4)";
-      progressMsg.style.backgroundColor = "rgba(255, 0, 85, 0.08)";
       progressMsg.style.color = "#ff66a3";
       progressMsg.textContent = `❌ エラー: ${err.message}`;
     }
@@ -588,7 +604,7 @@ ${historyHTML}
 }
 
 // =========================================================================
-// 6. データ永続化・設定保存・JSONインポート／エクスポート
+// 6. データ永続化・設定保存・インポート／エクスポート
 // =========================================================================
 function applyAndCloseSettings() {
   saveSettings();
@@ -604,7 +620,10 @@ function saveSettings() {
   const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
   const personalMemory = document.getElementById('personalMemory')?.value.trim() || '';
   
-  const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory };
+  const appTheme = document.querySelector('input[name="appTheme"]:checked')?.value || 'dark';
+  const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
+  
+  const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
   
   if (repSize) {
@@ -612,17 +631,18 @@ function saveSettings() {
     if (reportSection) reportSection.style.setProperty('--default-height', `${repSize}%`);
   }
 
-  // クイックチェンジャー（インラインセレクトボックス）の同期
+  if (appTheme === 'light') document.body.classList.add('theme-light');
+  else document.body.classList.remove('theme-light');
+
   if (window.updateAiQuickUI) window.updateAiQuickUI();
+  syncToCloudRealtime();
 }
 
 function saveChatLogs() {
   const MAX_MESSAGES = 80; 
-  if (chatLogs.length > MAX_MESSAGES) {
-    chatLogs = chatLogs.slice(-MAX_MESSAGES);
-  }
-  
+  if (chatLogs.length > MAX_MESSAGES) chatLogs = chatLogs.slice(-MAX_MESSAGES);
   localStorage.setItem(getChatLogsKey(), JSON.stringify(chatLogs));
+  syncToCloudRealtime();
 }
 
 function saveReportData() {
@@ -633,71 +653,44 @@ function saveReportData() {
     history: document.getElementById('pane-history').innerHTML
   };
   localStorage.setItem(getReportDataKey(), JSON.stringify(reportData));
+  syncToCloudRealtime();
 }
 
 function exportAllData() {
   const backup = {};
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith('life_report_')) {
-      backup[key] = localStorage.getItem(key);
-    }
+    if (key && key.startsWith('life_report_')) backup[key] = localStorage.getItem(key);
   }
-  
   const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const now = new Date();
-  const dateStr = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}`;
-  
   const a = document.createElement('a');
   a.href = url;
-  a.download = `lifereport_backup_${dateStr}.json`;
+  a.download = `lifereport_backup_${Date.now()}.json`;
   a.click();
-  URL.revokeObjectURL(url);
 }
 
 function importAllData(input) {
   const file = input.files[0];
   if (!file) return;
-  
-  if (!confirm("データをインポートしますか？\n現在アプリ内にある全てのデータ（履歴やメモリ）は上書きされます。")) {
-    input.value = '';
-    return;
-  }
+  if (!confirm("既存の全データが上書きされます。よろしいですか？")) return;
 
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const data = JSON.parse(e.target.result);
-      const keys = Object.keys(data);
-      
-      if (keys.length === 0 || !keys.some(k => k.startsWith('life_report_'))) {
-        alert("有効な LifeReport バックアップデータではありません。");
-        return;
-      }
-
       for (let i = localStorage.length - 1; i >= 0; i--) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('life_report_')) {
-          localStorage.removeItem(key);
-        }
+        if (key && key.startsWith('life_report_')) localStorage.removeItem(key);
       }
-
       for (const key in data) {
-        if (key.startsWith('life_report_')) {
-          localStorage.setItem(key, data[key]);
-        }
+        if (key.startsWith('life_report_')) localStorage.setItem(key, data[key]);
       }
-
-      alert("データの復元が完了しました！最新の状態を反映するためにアプリを再起動します。");
+      alert("復元完了。再起動します。");
       window.location.reload();
-
-    } catch (err) {
-      alert("ファイルのインポートに失敗しました: " + err.message);
-    }
+    } catch (err) { alert("失敗: " + err.message); }
   };
   reader.readAsText(file);
-  input.value = '';
 }
 
 function applyLoadedSettings(settings) {
@@ -713,25 +706,15 @@ function applyLoadedSettings(settings) {
   if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
   if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
   
-  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
-  let savedMemory = settings.personalMemory || '';
-  
-  if (savedMemory.trim() === defaultText.trim() || savedMemory.includes("【全体共通の前提ルールやプロフィール】")) {
-    savedMemory = '';
+  if (settings.appTheme) {
+    const themeRadio = document.querySelector(`input[name="appTheme"][value="${settings.appTheme}"]`);
+    if (themeRadio) themeRadio.checked = true;
+    if (settings.appTheme === 'light') document.body.classList.add('theme-light');
   }
-  
-  document.getElementById('personalMemory').value = savedMemory;
-  setPersonalMemoryPlaceholder();
+  if (settings.syncUrl) document.getElementById('syncUrl').value = settings.syncUrl;
 
+  document.getElementById('personalMemory').value = settings.personalMemory || '';
   if (window.updateAiQuickUI) window.updateAiQuickUI();
-}
-
-function setPersonalMemoryPlaceholder() {
-  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n<td>・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
-  const personalMemoryEl = document.getElementById('personalMemory');
-  if (personalMemoryEl) {
-    personalMemoryEl.placeholder = defaultText;
-  }
 }
 
 function applyReportData(data) {
@@ -743,46 +726,27 @@ function applyReportData(data) {
 }
 
 // =========================================================================
-// 7. アプリ初期ロードイベント & スワイプ制御 & ドロップダウンイベント紐付け
+// 7. 初期ロード ＆ イベント紐付け
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-  
-  // --- 💡 [新機能] HTMLのセレクトボックス（ドロップダウン）と各種処理を接続 ---
   const reportTabSelect = document.getElementById('reportTabSelect');
-  if (reportTabSelect) {
-    reportTabSelect.addEventListener('change', (e) => {
-      switchTab(e.target.value);
-    });
-  }
+  if (reportTabSelect) reportTabSelect.addEventListener('change', (e) => switchTab(e.target.value));
 
   const aiModelSelect = document.getElementById('aiModelSelect');
   if (aiModelSelect) {
     aiModelSelect.addEventListener('change', (e) => {
-      const selectedModelId = e.target.value;
-      const targetRadio = document.querySelector(`input[name="chatAi"][value="${selectedModelId}"]`);
-      if (targetRadio) {
-        targetRadio.checked = true;
-        saveSettings(); // 設定領域とストレージへ同期保存
-      }
+      const targetRadio = document.querySelector(`input[name="chatAi"][value="${e.target.value}"]`);
+      if (targetRadio) { targetRadio.checked = true; saveSettings(); }
     });
   }
 
-  // 設定画面（⚙️）側でAIモデルが変更された時にドロップダウン側の選択状態も追従させる同期用関数
   window.updateAiQuickUI = function() {
     const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-    const currentAi = activeAiRadio ? activeAiRadio.value : 'gemini';
-    if (aiModelSelect) {
-      aiModelSelect.value = currentAi;
-    }
+    if (aiModelSelect && activeAiRadio) aiModelSelect.value = activeAiRadio.value;
   };
 
-  // アプリ初回読み込み設定
   const savedUI = localStorage.getItem(STORAGE_KEY);
-  if (savedUI) {
-    applyLoadedSettings(JSON.parse(savedUI));
-  } else {
-    setPersonalMemoryPlaceholder(); 
-  }
+  if (savedUI) applyLoadedSettings(JSON.parse(savedUI));
 
   const projects = getLocalProjectsList();
   if (projects.length > 0) {
@@ -801,30 +765,9 @@ document.addEventListener('DOMContentLoaded', () => {
         chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
         chatHistory.scrollTop = chatHistory.scrollHeight;
       }
-    } else {
-      chatLogs = [];
-      setDefaultInitialAIMessage();
-    }
+    } else { setDefaultInitialAIMessage(); }
     renderProjectsList();
-  } else {
-    createNewProject();
-  }
+  } else { createNewProject(); }
 
-  // スワイプ処理
-  const frame = document.querySelector('.phone-frame');
-  if (frame) {
-    let touchStartX = 0; let touchStartY = 0;
-    frame.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
-    frame.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].clientX; const touchEndY = e.changedTouches[0].clientY;
-      const diffX = touchEndX - touchStartX; const diffY = touchEndY - touchStartY;
-      const sheet = document.getElementById('bottomSheet');
-      if (sheet && !sheet.classList.contains('open')) {
-        if (touchStartX < 50 && diffX > 80 && Math.abs(diffY) < 60) toggleBottomSheet();
-      }
-    }, { passive: true });
-  }
-  
-  // 初回表示時のセレクトボックス位置同期
   window.updateAiQuickUI();
 });
