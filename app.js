@@ -203,6 +203,7 @@ function toggleBottomSheet() {
   }
 }
 
+// 三点リーダー回避のため開閉ロジックのスペルミス修正
 function openSettings() { 
   const modal = document.getElementById('settingsModal');
   if (modal) modal.classList.add('open'); 
@@ -388,7 +389,7 @@ ${historyHTML}
 
 【出力・表現に関する指示】
 - ユーザーに返すチャットの返答は、極限まで視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- 对話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
+- 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
 
 特殊出力フォーマット（メッセージの末尾に連結）：
 <update_current>Currentの最新全HTML</update_current>
@@ -611,6 +612,12 @@ function saveSettings() {
 }
 
 function saveChatLogs() {
+  // ★ 直近40ラリー（ユーザーとAIの対話で計80メッセージ）に制限するロジック
+  const MAX_MESSAGES = 80; 
+  if (chatLogs.length > MAX_MESSAGES) {
+    chatLogs = chatLogs.slice(-MAX_MESSAGES);
+  }
+  
   localStorage.setItem(getChatLogsKey(), JSON.stringify(chatLogs));
 }
 
