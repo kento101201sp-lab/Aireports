@@ -21,7 +21,8 @@ function getReportDataKey() { return `${REPORT_DATA_KEY}_${currentProjectId}`; }
 // 外部へデータをリアルタイム同期する非同期関数
 // =========================================================================
 async function syncToCloudRealtime() {
-  const syncUrl = document.getElementById('syncUrl')?.value ? document.getElementById('syncUrl').value.trim() : '';
+  const syncUrlEl = document.getElementById('syncUrl');
+  const syncUrl = syncUrlEl && syncUrlEl.value ? syncUrlEl.value.trim() : '';
   if (!syncUrl) return; 
 
   const payload = {
@@ -57,7 +58,11 @@ async function syncToCloudRealtime() {
 // 2. プロジェクト生成・管理
 // =========================================================================
 function getLocalProjectsList() {
-  return JSON.parse(localStorage.getItem(PROJECTS_LIST_KEY) || '[]');
+  try {
+    return JSON.parse(localStorage.getItem(PROJECTS_LIST_KEY) || '[]');
+  } catch(e) {
+    return [];
+  }
 }
 
 function saveLocalProjectsList(list) {
@@ -70,7 +75,10 @@ function createNewProject() {
   if (projects.length > 0) {
     const latestProj = projects[0];
     const logKey = `${CHAT_LOGS_KEY}_${latestProj.id}`;
-    const logs = JSON.parse(localStorage.getItem(logKey) || '[]');
+    let logs = [];
+    try {
+      logs = JSON.parse(localStorage.getItem(logKey) || '[]');
+    } catch(e) {}
     const hasUserMessage = logs.some(log => log.sender === 'user');
 
     if (!hasUserMessage) {
@@ -78,7 +86,9 @@ function createNewProject() {
       setActiveProjectUI(latestProj.id, latestProj.name);
 
       const savedReports = localStorage.getItem(getReportDataKey());
-      if (savedReports) applyReportData(JSON.parse(savedReports));
+      if (savedReports) {
+        try { applyReportData(JSON.parse(savedReports)); } catch(e) {}
+      }
 
       chatLogs = logs;
       if (chatHistory) {
@@ -185,10 +195,14 @@ function deleteProject(id, name) {
       setActiveProjectUI(nextProj.id, nextProj.name);
 
       const savedReports = localStorage.getItem(getReportDataKey());
-      if (savedReports) applyReportData(JSON.parse(savedReports));
+      if (savedReports) {
+        try { applyReportData(JSON.parse(savedReports)); } catch(e) {}
+      }
 
       const savedLogs = localStorage.getItem(getChatLogsKey());
-      chatLogs = savedLogs ? JSON.parse(savedLogs) : [];
+      try {
+        chatLogs = savedLogs ? JSON.parse(savedLogs) : [];
+      } catch(e) { chatLogs = []; }
       
       if (chatHistory) {
         chatHistory.innerHTML = '';
@@ -251,8 +265,11 @@ function closeSettings() {
   if (modal) modal.classList.remove('open'); 
 }
 
-document.getElementById('settingsModal')?.addEventListener('click', (e) => {
-  if (e.target === e.currentTarget) closeSettings();
+// オーバーレイクリックで閉じる処理を安全にバインド
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('settingsModal')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeSettings();
+  });
 });
 
 function toggleReportHeight() {
@@ -274,11 +291,15 @@ function selectProject(id, name) {
   setActiveProjectUI(id, name);
 
   const savedReports = localStorage.getItem(getReportDataKey());
-  if (savedReports) applyReportData(JSON.parse(savedReports));
+  if (savedReports) {
+    try { applyReportData(JSON.parse(savedReports)); } catch(e) {}
+  }
 
   const savedLogs = localStorage.getItem(getChatLogsKey());
   if (savedLogs) {
-    chatLogs = JSON.parse(savedLogs);
+    try {
+      chatLogs = JSON.parse(savedLogs);
+    } catch(e) { chatLogs = []; }
     if (chatHistory) {
       chatHistory.innerHTML = '';
       chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
@@ -299,19 +320,6 @@ function selectProject(id, name) {
 // =========================================================================
 // 4. チャット表示・処理コア
 // =========================================================================
-if (chatInput) {
-  chatInput.addEventListener('input', () => {
-    chatInput.style.height = '40px';
-    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
-  });
-  chatInput.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
-}
-
 function appendMessageToUI(sender, text, base64Image = null) {
   if (!chatHistory) return;
   const msg = document.createElement('div');
@@ -320,7 +328,7 @@ function appendMessageToUI(sender, text, base64Image = null) {
   if (base64Image) {
     msg.innerHTML = `<img src="${base64Image}" style="max-width: 100%; max-height: 180px; border-radius: 8px; display: block; margin-bottom: 4px;">${text ? text : '📸 画像を送信しました'}`;
   } else {
-    let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    let formattedText = (text || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     msg.innerHTML = formattedText;
   }
   chatHistory.appendChild(msg);
@@ -331,7 +339,7 @@ function appendMessageToUI(sender, text, base64Image = null) {
 }
 
 function handleFileSelect(input) {
-  const file = input.files[0];
+  const file = input.files?.[0];
   if (!file) return;
   if (!file.type.startsWith('image/')) {
     alert("画像ファイルのみサポートしています。");
@@ -361,18 +369,19 @@ function clearAttachment() {
 }
 
 async function sendMessage() {
-  if (!chatInput) return;
-  const text = chatInput.value.trim();
+  const inputEl = document.getElementById('chatInput');
+  if (!inputEl) return;
+  const text = inputEl.value.trim();
   if (!text && !attachedFileData) return;
 
   appendMessageToUI('user', text, attachedFileData);
   chatLogs.push({ sender: 'user', text: text, image: attachedFileData });
   saveChatLogs();
 
-  chatInput.value = '';
-  chatInput.style.height = '40px';
+  inputEl.value = '';
+  inputEl.style.height = '40px';
   clearAttachment();
-  chatInput.blur();
+  inputEl.blur();
 
   await callRealAiApi();
 }
@@ -407,9 +416,6 @@ async function callRealAiApi() {
   const personalMemoryText = document.getElementById('personalMemory')?.value.trim() || '未設定';
 
   const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴走するLifeReportのコアシステムです。
-
-【個人メモリ（全プロジェクト共通の前提・プロフィール）】:
-${personalMemoryText}
 
 現在の画面上部のレポートと、このプロジェクト固有の個別メモリ（長期記憶）の状態（HTML）は以下の通りです：
 【Current（概要/決定事項）】:
@@ -567,11 +573,12 @@ ${historyHTML}
 
       chatLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
       saveChatLogs();
-      chatHistory.scrollTop = chatHistory.scrollHeight;
+      if (chatHistory) chatHistory.scrollTop = chatHistory.scrollHeight;
     } else {
       if (reportUpdated) {
         const repKey = `${REPORT_DATA_KEY}_${callingProjectId}`;
-        const savedRep = JSON.parse(localStorage.getItem(repKey) || '{}');
+        let savedRep = {};
+        try { savedRep = JSON.parse(localStorage.getItem(repKey) || '{}'); } catch(e){}
         if (currentMatch) savedRep.current = currentMatch[1].trim();
         if (knowledgeMatch) savedRep.knowledge = knowledgeMatch[1].trim();
         if (memoryMatch) savedRep.memory = memoryMatch[1].trim();
@@ -584,7 +591,8 @@ ${historyHTML}
         if (proj) { proj.name = titleMatch[1].trim(); saveLocalProjectsList(projects); renderProjectsList(); }
       }
       const logKey = `${CHAT_LOGS_KEY}_${callingProjectId}`;
-      let origLogs = JSON.parse(localStorage.getItem(logKey) || '[]');
+      let origLogs = [];
+      try { origLogs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e){}
       origLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
       localStorage.setItem(logKey, JSON.stringify(origLogs));
     }
@@ -600,7 +608,7 @@ ${historyHTML}
 }
 
 // =========================================================================
-// 6. データ永続化・設定保存・インポート／エクスポート（★バグ修正箇所）
+// 6. データ永続化・設定保存・インポート／エクスポート
 // =========================================================================
 function applyAndCloseSettings() {
   saveSettings();
@@ -608,17 +616,20 @@ function applyAndCloseSettings() {
 }
 
 function saveSettings() {
-  const chatAi = document.querySelector('input[name="chatAi"]:checked')?.value || 'gemini';
-  const repSize = document.querySelector('input[name="repSize"]:checked')?.value || '25';
+  const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
+  const chatAi = activeAiRadio ? activeAiRadio.value : 'gemini';
   
-  // ★安全な取得方法に変更
+  const activeRepSize = document.querySelector('input[name="repSize"]:checked');
+  const repSize = activeRepSize ? activeRepSize.value : '25';
+  
   const apiKeyGemini = document.getElementById('apiKeyGemini')?.value ? document.getElementById('apiKeyGemini').value.trim() : '';
   const apiKeyClaude = document.getElementById('apiKeyClaude')?.value ? document.getElementById('apiKeyClaude').value.trim() : '';
   const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value ? document.getElementById('apiKeyDeepSeek').value.trim() : '';
   const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value ? document.getElementById('apiKeyOpenAI').value.trim() : '';
   const personalMemory = document.getElementById('personalMemory')?.value ? document.getElementById('personalMemory').value.trim() : '';
   
-  const appTheme = document.querySelector('input[name="appTheme"]:checked')?.value || 'dark';
+  const activeTheme = document.querySelector('input[name="appTheme"]:checked');
+  const appTheme = activeTheme ? activeTheme.value : 'dark';
   const syncUrl = document.getElementById('syncUrl')?.value ? document.getElementById('syncUrl').value.trim() : '';
   
   const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
@@ -629,14 +640,13 @@ function saveSettings() {
     if (reportSection) reportSection.style.setProperty('--default-height', `${repSize}%`);
   }
 
-  // テーマ切り替え処理
   if (appTheme === 'light') {
     document.body.classList.add('theme-light');
   } else {
     document.body.classList.remove('theme-light');
   }
 
-  if (window.updateAiQuickUI) window.updateAiQuickUI();
+  if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
   syncToCloudRealtime();
 }
 
@@ -673,7 +683,7 @@ function exportAllData() {
 }
 
 function importAllData(input) {
-  const file = input.files[0];
+  const file = input.files?.[0];
   if (!file) return;
   if (!confirm("既存の全データが上書きされます。よろしいですか？")) return;
 
@@ -717,7 +727,7 @@ function applyLoadedSettings(settings) {
   if (settings.syncUrl && document.getElementById('syncUrl')) document.getElementById('syncUrl').value = settings.syncUrl;
   if (settings.personalMemory && document.getElementById('personalMemory')) document.getElementById('personalMemory').value = settings.personalMemory;
 
-  if (window.updateAiQuickUI) window.updateAiQuickUI();
+  if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
 }
 
 function applyReportData(data) {
@@ -743,15 +753,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // クイックUI同期関数をセーフ構造に
+  // クイックUI同期関数
   window.updateAiQuickUI = function() {
     const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
     const selectEl = document.getElementById('aiModelSelect');
     if (selectEl && activeAiRadio) selectEl.value = activeAiRadio.value;
   };
 
+  // テキストエリア自動伸長とショートカットキー
+  const inputEl = document.getElementById('chatInput');
+  if (inputEl) {
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = '40px';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    });
+    inputEl.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+
   const savedUI = localStorage.getItem(STORAGE_KEY);
-  if (savedUI) applyLoadedSettings(JSON.parse(savedUI));
+  if (savedUI) {
+    try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){}
+  }
 
   const projects = getLocalProjectsList();
   if (projects.length > 0) {
@@ -760,11 +787,15 @@ document.addEventListener('DOMContentLoaded', () => {
     setActiveProjectUI(latest.id, latest.name);
 
     const savedReports = localStorage.getItem(getReportDataKey());
-    if (savedReports) applyReportData(JSON.parse(savedReports));
+    if (savedReports) {
+      try { applyReportData(JSON.parse(savedReports)); } catch(e){}
+    }
 
     const savedLogs = localStorage.getItem(getChatLogsKey());
     if (savedLogs) {
-      chatLogs = JSON.parse(savedLogs);
+      try {
+        chatLogs = JSON.parse(savedLogs);
+      } catch(e) { chatLogs = []; }
       if (chatHistory) {
         chatHistory.innerHTML = '';
         chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
@@ -774,5 +805,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProjectsList();
   } else { createNewProject(); }
 
-  window.updateAiQuickUI();
+  if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
 });
