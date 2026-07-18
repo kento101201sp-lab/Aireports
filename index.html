@@ -27,7 +27,8 @@
         
         <div class="sheet-section-title">アクション</div>
         <ul class="sheet-list" style="margin-bottom: 12px;">
-          <li class="sheet-item" onclick="triggerNewProject()" style="color: #6366f1; font-weight: 700; background-color: rgba(99, 102, 241, 0.08);">➕ 新規プロジェクトを作成</li>
+          <!-- 【未来的演出】文字色と背景をシアンのネオン発光に変更 -->
+          <li class="sheet-item" onclick="triggerNewProject()" style="color: #00f3ff; font-weight: 700; background-color: rgba(0, 243, 255, 0.08); text-shadow: 0 0 6px rgba(0,243,255,0.4);">➕ 新規プロジェクトを作成</li>
         </ul>
 
         <div class="sheet-section-title">過去のセッション履歴</div>
@@ -73,11 +74,12 @@
           <div class="setting-group">
             <div class="setting-label">データ管理 (JSON一括バックアップ) 💾</div>
             <div style="display: flex; gap: 8px; margin-top: 8px;">
-              <button class="action-btn" onclick="exportAllData()" style="flex: 1; background-color: #2563eb;">データを書き出す</button>
-              <button class="action-btn" onclick="document.getElementById('importFileInput').click()" style="flex: 1; background-color: #059669;">データを読み込む</button>
+              <!-- 【未来的演出】元の青と緑を、ダークコンソール風＆ネオンシアンに変更 -->
+              <button class="action-btn" onclick="exportAllData()" style="flex: 1; background-color: #121829; color: #00f3ff; border: 1px solid #1e294b;">データを書き出す</button>
+              <button class="action-btn" onclick="document.getElementById('importFileInput').click()" style="flex: 1; background-color: #00f3ff; color: #05070f;">データを読み込む</button>
             </div>
             <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importAllData(this)">
-            <p style="font-size: 10px; color: #71717a; margin-top: 6px; line-height: 1.4;">※全履歴・全メモリ・設定を1ファイルにまとめて書き出します。他端末へのデータ移行もファイルを読み込ませるだけです。</p>
+            <p style="font-size: 10px; color: #5f7594; margin-top: 6px; line-height: 1.4; font-family: monospace;">※全履歴・全メモリ・設定を1ファイルにまとめて書き出します。他端末へのデータ移行もファイルを読み込ませるだけです。</p>
           </div>
           
           <div class="setting-group">
@@ -90,7 +92,8 @@
           </div>
 
           <div class="setting-group" style="border:none; margin-bottom:0; padding-bottom:0;">
-            <button class="action-btn" onclick="applyAndCloseSettings()" style="width: 100%; height: 44px; font-size: 14px; background-color: #4f46e5;">設定を保存して確定</button>
+            <!-- 【未来的演出】元の紫（#4f46e5）をサイバーパープル（#bd00ff）の発光仕様に変更 -->
+            <button class="action-btn" onclick="applyAndCloseSettings()" style="width: 100%; height: 44px; font-size: 14px; background-color: #bd00ff; box-shadow: 0 0 12px rgba(189, 0, 255, 0.5); font-weight: 700;">設定を保存して確定</button>
           </div>
         </div>
       </div>
