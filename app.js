@@ -190,29 +190,6 @@ function updateProjectName(id, newName) {
   }
 }
 
-function selectProject(id, name) {
-  currentProjectId = id;
-  setActiveProjectUI(id, name);
-
-  const savedReports = localStorage.getItem(getReportDataKey());
-  if (savedReports) applyReportData(JSON.parse(savedReports));
-
-  const savedLogs = localStorage.getItem(getChatLogsKey());
-  if (savedLogs) {
-    chatLogs = JSON.parse(savedLogs);
-    if (chatHistory) {
-      chatHistory.innerHTML = '';
-      chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-    }
-  } else {
-    chatLogs = [];
-    setDefaultInitialAIMessage();
-  }
-
-  toggleBottomSheet();
-}
-
 // =========================================================================
 // 3. UI操作・インタラクション制御
 // =========================================================================
@@ -255,6 +232,29 @@ function switchTab(tabName) {
   document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
   const targetPane = document.getElementById(`pane-${tabName}`);
   if (targetPane) targetPane.classList.add('active');
+}
+
+function selectProject(id, name) {
+  currentProjectId = id;
+  setActiveProjectUI(id, name);
+
+  const savedReports = localStorage.getItem(getReportDataKey());
+  if (savedReports) applyReportData(JSON.parse(savedReports));
+
+  const savedLogs = localStorage.getItem(getChatLogsKey());
+  if (savedLogs) {
+    chatLogs = JSON.parse(savedLogs);
+    if (chatHistory) {
+      chatHistory.innerHTML = '';
+      chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+  } else {
+    chatLogs = [];
+    setDefaultInitialAIMessage();
+  }
+
+  toggleBottomSheet();
 }
 
 // =========================================================================
@@ -387,7 +387,7 @@ ${historyHTML}
 
 【出力・表現に関する指示】
 - ユーザーに返すチャットの返答は、極限まで視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
+- 对話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
 
 特殊出力フォーマット（メッセージの末尾に連結）：
 <update_current>Currentの最新全HTML</update_current>
@@ -700,13 +700,22 @@ function applyLoadedSettings(settings) {
   if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
   if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
   
-  // 保存されたデータがあれば反映、なければ空にしてプレースホルダーに任せる
-  document.getElementById('personalMemory').value = settings.personalMemory || '';
+  // クリーンアップ処理用テキストの定義
+  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
+  let savedMemory = settings.personalMemory || '';
+  
+  // 過去のキャッシュ（localStorage）に例文テキストが文字データとして直接入ってしまっている場合、
+  // 実際の入力値（value）としては強制的に空文字にリセットして弾く
+  if (savedMemory.trim() === defaultText.trim() || savedMemory.includes("【全体共通の前提ルールやプロフィール】")) {
+    savedMemory = '';
+  }
+  
+  document.getElementById('personalMemory').value = savedMemory;
   setPersonalMemoryPlaceholder();
 }
 
 function setPersonalMemoryPlaceholder() {
-  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇流書きを多めにして、要点をわかりやすく";
+  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
   const personalMemoryEl = document.getElementById('personalMemory');
   if (personalMemoryEl) {
     personalMemoryEl.placeholder = defaultText;
