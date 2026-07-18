@@ -260,16 +260,12 @@ function openSettings() {
   if (modal) modal.classList.add('open'); 
 }
 
-// グローバルスコープに展開
-window.toggleBottomSheet = toggleBottomSheet;
-window.openSettings = openSettings;
-
 function closeSettings() { 
   const modal = document.getElementById('settingsModal');
   if (modal) modal.classList.remove('open'); 
 }
-window.closeSettings = closeSettings;
 
+// オーバーレイクリックで閉じる処理を安全にバインド
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('settingsModal')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeSettings();
@@ -283,7 +279,6 @@ function toggleReportHeight() {
   reportSection.classList.toggle('expanded');
   expandBar.textContent = reportSection.classList.contains('expanded') ? '▲ レポート領域を縮小 ▲' : '▼ レポート領域を展開 ▼';
 }
-window.toggleReportHeight = toggleReportHeight;
 
 function switchTab(tabName) {
   document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
@@ -338,7 +333,9 @@ function appendMessageToUI(sender, text, base64Image = null) {
   }
   chatHistory.appendChild(msg);
   
-  chatHistory.scrollTop = chatHistory.scrollHeight;
+  if (sender === 'user') {
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
 }
 
 function handleFileSelect(input) {
@@ -363,7 +360,6 @@ function handleFileSelect(input) {
   reader.readAsDataURL(file);
   input.value = '';
 }
-window.handleFileSelect = handleFileSelect;
 
 function clearAttachment() {
   attachedFileData = null;
@@ -371,7 +367,6 @@ function clearAttachment() {
   const container = document.getElementById('previewContainer');
   if (container) container.classList.remove('active');
 }
-window.clearAttachment = clearAttachment;
 
 async function sendMessage() {
   const inputEl = document.getElementById('chatInput');
@@ -390,7 +385,6 @@ async function sendMessage() {
 
   await callRealAiApi();
 }
-window.sendMessage = sendMessage;
 
 function setDefaultInitialAIMessage() {
   if (!chatHistory) return;
@@ -422,7 +416,6 @@ async function callRealAiApi() {
   const personalMemoryText = document.getElementById('personalMemory')?.value.trim() || '未設定';
 
   const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴走するLifeReportのコアシステムです。
-ユーザーは医療機関に勤務する社内SEです。指示は的確かつ明瞭に行い、不必要な前置きは廃してください。
 
 現在の画面上部のレポートと、このプロジェクト固有の個別メモリ（長期記憶）の状態（HTML）は以下の通りです：
 【Current（概要/決定事項）】:
@@ -437,11 +430,8 @@ ${memoryHTML}
 【History（進捗履歴）】:
 ${historyHTML}
 
-【共通の個人プロファイル・背景ナレッジ】:
-${personalMemoryText}
-
 【出力・表現に関する指示】
-- ユーザーに返すチャットの返答は、極限まで視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
+- ユーザーに返すチャットの返答は、極限まで視視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
 - 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
 
 特殊出力フォーマット：
@@ -624,7 +614,6 @@ function applyAndCloseSettings() {
   saveSettings();
   closeSettings();
 }
-window.applyAndCloseSettings = applyAndCloseSettings;
 
 function saveSettings() {
   const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
@@ -692,7 +681,6 @@ function exportAllData() {
   a.download = `lifereport_backup_${Date.now()}.json`;
   a.click();
 }
-window.exportAllData = exportAllData;
 
 function importAllData(input) {
   const file = input.files?.[0];
@@ -716,14 +704,10 @@ function importAllData(input) {
   };
   reader.readAsText(file);
 }
-window.importAllData = importAllData;
 
 function applyLoadedSettings(settings) {
   if (!settings) return;
-  if (settings.chatAi) { 
-    const radio = document.querySelector(`input[name="chatAi"][value="${settings.chatAi}"]`); 
-    if (radio) radio.checked = true; 
-  }
+  if (settings.chatAi) { const radio = document.querySelector(`input[name="chatAi"][value="${settings.chatAi}"]`); if (radio) radio.checked = true; }
   if (settings.repSize) { 
     const radio = document.querySelector(`input[name="repSize"][value="${settings.repSize}"]`); if (radio) radio.checked = true; 
     const reportSection = document.getElementById('reportSection');
@@ -823,6 +807,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
 });
-
-// 追加の公開関数バインド
-window.triggerNewProject = triggerNewProject;
