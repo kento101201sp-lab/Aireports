@@ -6,8 +6,44 @@
   <title>LifeReport - AI Copilot</title>
   <style>
     /* =========================================================================
-       1. 基本スタイル & テーマ定義 (Cyber Dark)
+       1. 基本スタイル & テーマ定義 (CSS変数による2択制御)
        ========================================================================= */
+    :root {
+      /* デフォルト：Cyber Dark */
+      --bg-body: #03080c;
+      --bg-frame: #060d13;
+      --bg-deck: #091824;
+      --bg-pane: #050b10;
+      --bg-input: #040d14;
+      --text-main: #e2e8f0;
+      --accent-cyan: #00f3ff;
+      --accent-purple: #b624ff;
+      --border-color: #1a3a4a;
+      --msg-user-bg: #005266;
+      --msg-user-text: #e6f9ff;
+      --msg-ai-bg: #111c24;
+      --msg-ai-border: #1f3545;
+      --select-bg: #0a141d;
+    }
+
+    /* 選択肢2：Cyber Light */
+    body.theme-light {
+      --bg-body: #ebf1f5;
+      --bg-frame: #ffffff;
+      --bg-deck: #e2e8f0;
+      --bg-pane: #f8fafc;
+      --bg-input: #edf2f7;
+      --text-main: #1a202c;
+      --accent-cyan: #0066cc;
+      --accent-purple: #6b46c1;
+      --border-color: #cbd5e1;
+      --msg-user-bg: #bee3f8;
+      --msg-user-text: #1a202c;
+      --msg-ai-bg: #f7fafc;
+      --msg-ai-border: #e2e8f0;
+      --select-bg: #edf2f7;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -15,13 +51,14 @@
       font-family: 'Helvetica Neue', Arial, sans-serif;
     }
     body {
-      background-color: #03080c;
-      color: #e2e8f0;
+      background-color: var(--bg-body);
+      color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       overflow: hidden;
+      transition: background-color 0.3s;
     }
 
     /* スマホ画面風のメインフレーム */
@@ -29,37 +66,38 @@
       width: 100%;
       max-width: 480px;
       height: 100vh;
-      background: #060d13;
-      border-left: 1px solid #102a3a;
-      border-right: 1px solid #102a3a;
+      background: var(--bg-frame);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     /* =========================================================================
        2. ヘッダー
        ========================================================================= */
     .header {
-      background: linear-gradient(180deg, #091824 0%, #060d13 100%);
+      background: var(--bg-deck);
       padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #1a3a4a;
+      border-bottom: 1px solid var(--border-color);
     }
     .header-left {
       display: flex;
       flex-direction: column;
       gap: 2px;
-      cursor: pointer; /* タップで履歴を開けるように */
+      cursor: pointer;
     }
     .header-title {
       font-size: 16px;
       font-weight: bold;
-      color: #00f3ff;
-      text-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+      color: var(--accent-cyan);
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.2);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -67,7 +105,8 @@
     }
     .header-status {
       font-size: 11px;
-      color: #a0aec0;
+      color: var(--text-main);
+      opacity: 0.6;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -75,7 +114,7 @@
     .settings-btn {
       background: none;
       border: none;
-      color: #00f3ff;
+      color: var(--accent-cyan);
       font-size: 22px;
       cursor: pointer;
       opacity: 0.8;
@@ -87,14 +126,14 @@
     }
 
     /* =========================================================================
-       3. 【新設】ドロップダウン・コントロールエリア
+       3. ドロップダウン・コントロールエリア
        ========================================================================= */
     .control-container {
       display: flex;
       gap: 8px;
       padding: 8px 12px;
-      background: #04090d;
-      border-bottom: 1px solid #122530;
+      background: var(--bg-pane);
+      border-bottom: 1px solid var(--border-color);
     }
     .cyber-select-wrapper {
       flex: 1;
@@ -104,7 +143,8 @@
       width: 100%;
       appearance: none;
       -webkit-appearance: none;
-      background: #0a141d;
+      background: var(--select-bg);
+      color: var(--text-main);
       font-size: 13px;
       font-weight: bold;
       padding: 8px 32px 8px 12px;
@@ -112,25 +152,20 @@
       outline: none;
       cursor: pointer;
       font-family: monospace;
+      transition: all 0.3s;
     }
-    /* レポート切り替え用（ネオンブルー） */
+    /* レポート切り替え用（シアン系） */
     #reportTabSelect {
-      color: #00f3ff;
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      box-shadow: inset 0 0 6px rgba(0, 243, 255, 0.1);
+      border: 1px solid var(--accent-cyan);
     }
     #reportTabSelect:focus {
-      border-color: #00f3ff;
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
     }
-    /* AIモデル切り替え用（パープル） */
+    /* AIモデル切り替え用（パープル系） */
     #aiModelSelect {
-      color: #b624ff;
-      border: 1px solid rgba(182, 36, 255, 0.3);
-      box-shadow: inset 0 0 6px rgba(182, 36, 255, 0.1);
+      border: 1px solid var(--accent-purple);
     }
     #aiModelSelect:focus {
-      border-color: #b624ff;
       box-shadow: 0 0 10px rgba(182, 36, 255, 0.3);
     }
     /* カスタム矢印 */
@@ -143,46 +178,43 @@
       transform: translateY(-50%);
       pointer-events: none;
     }
-    .report-select-wrapper::after { color: #00f3ff; }
-    .ai-select-wrapper::after { color: #b624ff; }
+    .report-select-wrapper::after { color: var(--accent-cyan); }
+    .ai-select-wrapper::after { color: var(--accent-purple); }
 
     /* =========================================================================
        4. レポートコンテンツ表示領域
        ========================================================================= */
     .report-section {
-      --default-height: 25%; /* JSから可変 */
+      --default-height: 25%;
       height: var(--default-height);
-      background: #050b10;
+      background: var(--bg-pane);
       display: flex;
       flex-direction: column;
       transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
     }
     .report-section.expanded {
-      height: 70% !important; /* 展開時 */
+      height: 70% !important;
     }
     .report-content {
       flex: 1;
       overflow-y: auto;
       padding: 12px 16px;
     }
-    /* 各種ペインの隠蔽・表示 */
     .report-pane {
       display: none;
       font-size: 13px;
       line-height: 1.6;
-      color: #cbd5e1;
     }
     .report-pane.active {
       display: block;
     }
-    /* レポート内HTMLのタイポグラフィ */
     .report-pane h4 {
-      color: #00f3ff;
+      color: var(--accent-cyan);
       font-size: 14px;
       margin-top: 10px;
       margin-bottom: 6px;
-      border-left: 3px solid #00f3ff;
+      border-left: 3px solid var(--accent-cyan);
       padding-left: 6px;
     }
     .report-pane h4:first-child { margin-top: 0; }
@@ -190,21 +222,21 @@
     .report-pane ul { margin-left: 16px; margin-bottom: 10px; }
     .report-pane li { margin-bottom: 4px; }
 
-    /* 高度展開用トリガーバー */
     .expand-bar {
-      background: #091824;
-      color: #4a7a96;
+      background: var(--bg-deck);
+      color: var(--text-main);
+      opacity: 0.6;
       font-size: 10px;
       font-weight: bold;
       text-align: center;
-      padding: 4px 0;
+      padding: 6px 0;
       cursor: pointer;
-      border-top: 1px solid #122a3a;
-      border-bottom: 1px solid #122a3a;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
       user-select: none;
       letter-spacing: 1px;
     }
-    .expand-bar:hover { color: #00f3ff; background: #0c2030; }
+    .expand-bar:hover { opacity: 1; color: var(--accent-cyan); }
 
     /* =========================================================================
        5. チャットログ・対話タイムライン
@@ -216,7 +248,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      background: #060d13;
+      background: var(--bg-frame);
     }
     .msg {
       max-width: 85%;
@@ -229,31 +261,30 @@
     }
     .msg.user {
       align-self: flex-end;
-      background: #005266;
-      color: #e6f9ff;
+      background: var(--msg-user-bg);
+      color: var(--msg-user-text);
       border-bottom-right-radius: 2px;
-      border: 1px solid rgba(0, 243, 255, 0.2);
+      border: 1px solid var(--border-color);
     }
     .msg.ai {
       align-self: flex-start;
-      background: #111c24;
-      color: #cbd5e1;
+      background: var(--msg-ai-bg);
+      color: var(--text-main);
       border-bottom-left-radius: 2px;
-      border: 1px solid #1f3545;
+      border: 1px solid var(--msg-ai-border);
     }
     
-    /* ローディングスピナー */
     .msg.analyzing {
       display: flex;
       align-items: center;
       gap: 10px;
-      color: #8ab4f8;
+      color: var(--accent-cyan);
     }
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(138, 180, 248, 0.2);
-      border-top-color: #8ab4f8;
+      border: 2px solid var(--border-color);
+      border-top-color: var(--accent-cyan);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -263,23 +294,22 @@
        6. 送信フォーム・インプットデッキ
        ========================================================================= */
     .input-deck {
-      background: #091824;
+      background: var(--bg-deck);
       padding: 10px 12px;
-      border-top: 1px solid #1a3a4a;
+      border-top: 1px solid var(--border-color);
     }
     
-    /* メディアプレビュー */
     .preview-container {
       display: none;
-      background: #0c2333;
+      background: var(--bg-pane);
       padding: 6px 10px;
       border-radius: 6px;
       margin-bottom: 8px;
       font-size: 12px;
-      color: #00f3ff;
+      color: var(--accent-cyan);
       align-items: center;
       justify-content: space-between;
-      border: 1px dashed rgba(0, 243, 255, 0.4);
+      border: 1px dashed var(--accent-cyan);
     }
     .preview-container.active { display: flex; }
     .clear-preview { cursor: pointer; color: #ff4a4a; font-weight: bold; }
@@ -290,9 +320,9 @@
       gap: 8px;
     }
     .deck-btn {
-      background: #112536;
-      border: 1px solid #20445e;
-      color: #8ab4f8;
+      background: var(--bg-pane);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -301,16 +331,15 @@
       align-items: center;
       cursor: pointer;
       font-size: 18px;
-      transition: background 0.2s;
     }
-    .deck-btn:hover { background: #1c3d59; color: #00f3ff; }
+    .deck-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); }
     
     .chat-textarea {
       flex: 1;
-      background: #050b10;
-      border: 1px solid #1a3a4a;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
       border-radius: 20px;
-      color: #f2f5f8;
+      color: var(--text-main);
       padding: 10px 16px;
       font-size: 14px;
       resize: none;
@@ -319,10 +348,10 @@
       outline: none;
       line-height: 1.4;
     }
-    .chat-textarea:focus { border-color: #00f3ff; }
+    .chat-textarea:focus { border-color: var(--accent-cyan); }
 
     .send-btn {
-      background: #00f3ff;
+      background: var(--accent-cyan);
       color: #03080c;
       border: none;
       padding: 0 18px;
@@ -331,9 +360,8 @@
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
     }
-    .send-btn:hover { background: #66f7ff; }
+    .send-btn:hover { opacity: 0.9; }
 
     /* =========================================================================
        7. ボトムシート（履歴・セッション一覧）
@@ -341,7 +369,7 @@
     .sheet-overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.5);
       opacity: 0; pointer-events: none;
       transition: opacity 0.3s;
       z-index: 90;
@@ -351,8 +379,8 @@
     .bottom-sheet {
       position: absolute;
       left: 0; right: 0; bottom: 0;
-      background: #07121a;
-      border-top: 2px solid #00f3ff;
+      background: var(--bg-pane);
+      border-top: 2px solid var(--accent-cyan);
       border-top-left-radius: 16px;
       border-top-right-radius: 16px;
       max-height: 75%;
@@ -361,20 +389,19 @@
       z-index: 100;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 -4px 20px rgba(0, 243, 255, 0.2);
     }
     .bottom-sheet.open { transform: translateY(0); }
 
     .sheet-header {
       padding: 14px 16px;
-      border-bottom: 1px solid #162e3d;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .sheet-title { color: #00f3ff; font-weight: bold; font-size: 15px; }
+    .sheet-title { color: var(--accent-cyan); font-weight: bold; font-size: 15px; }
     .new-proj-btn {
-      background: linear-gradient(90deg, #b624ff 0%, #00f3ff 100%);
+      background: var(--accent-purple);
       color: #fff; border: none; padding: 6px 12px; border-radius: 6px;
       font-size: 12px; font-weight: bold; cursor: pointer;
     }
@@ -386,14 +413,14 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      border-bottom: 1px solid #0a1924;
+      border-bottom: 1px solid var(--border-color);
     }
-    .sheet-item:hover { background: #0c202e; }
-    .sheet-item.active { background: rgba(0, 243, 255, 0.08); }
-    .sheet-item.active .sheet-item-name { color: #00f3ff; font-weight: bold; }
-    .sheet-item-name { font-size: 13px; color: #cbd5e1; flex: 1; }
-    .project-del-btn { color: #718096; padding: 4px; font-size: 14px; }
-    .project-del-btn:hover { color: #ff4a4a; }
+    .sheet-item:hover { background: var(--bg-deck); }
+    .sheet-item.active { background: rgba(0, 243, 255, 0.05); }
+    .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: bold; }
+    .sheet-item-name { font-size: 13px; color: var(--text-main); flex: 1; }
+    .project-del-btn { color: var(--text-main); opacity: 0.4; padding: 4px; font-size: 14px; }
+    .project-del-btn:hover { color: #ff4a4a; opacity: 1; }
 
     /* =========================================================================
        8. モーダルダイアログ (環境設定)
@@ -401,7 +428,7 @@
     .modal-mask {
       position: fixed;
       top:0; left:0; width:100vw; height:100vh;
-      background: rgba(2, 5, 8, 0.85);
+      background: rgba(0, 0, 0, 0.6);
       backdrop-filter: blur(4px);
       display: flex; justify-content: center; align-items: center;
       opacity: 0; pointer-events: none;
@@ -411,40 +438,39 @@
     .modal-mask.open { opacity: 1; pointer-events: auto; }
     
     .modal-window {
-      background: #091824;
+      background: var(--bg-pane);
       width: 90%; max-width: 400px;
-      border: 1px solid #1a445e; border-radius: 12px;
-      box-shadow: 0 0 25px rgba(0,243,255,0.15);
+      border: 1px solid var(--border-color); border-radius: 12px;
       display: flex; flex-direction: column; max-height: 85vh;
     }
-    .modal-head { padding: 14px 16px; border-bottom: 1px solid #16374d; color: #00f3ff; font-weight: bold; }
+    .modal-head { padding: 14px 16px; border-bottom: 1px solid var(--border-color); color: var(--accent-cyan); font-weight: bold; }
     .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
     
     .setting-group { display: flex; flex-direction: column; gap: 6px; }
-    .setting-label { font-size: 12px; color: #8ab4f8; font-weight: bold; }
+    .setting-label { font-size: 12px; color: var(--accent-cyan); font-weight: bold; }
     
     .cyber-input {
-      background: #040d14; border: 1px solid #16374d; border-radius: 6px;
-      color: #fff; padding: 8px 12px; font-size: 13px; outline: none; width: 100%;
+      background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px;
+      color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%;
     }
-    .cyber-input:focus { border-color: #00f3ff; }
+    .cyber-input:focus { border-color: var(--accent-cyan); }
     
     .radio-pack { display: flex; gap: 10px; }
     .radio-label {
-      flex: 1; background: #040d14; border: 1px solid #16374d; border-radius: 6px;
-      padding: 8px; text-align: center; font-size: 12px; cursor: pointer; color: #a0aec0;
+      flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px;
+      padding: 8px; text-align: center; font-size: 12px; cursor: pointer; color: var(--text-main); opacity: 0.7;
     }
     .radio-pack input[type="radio"] { display: none; }
     .radio-pack input[type="radio"]:checked + .radio-label {
-      background: rgba(0, 243, 255, 0.1); border-color: #00f3ff; color: #00f3ff; font-weight: bold;
+      background: rgba(0, 243, 255, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); font-weight: bold; opacity: 1;
     }
     
     .modal-foot {
-      padding: 12px 16px; border-top: 1px solid #16374d;
+      padding: 12px 16px; border-top: 1px solid var(--border-color);
       display: flex; justify-content: flex-end; gap: 10px;
     }
-    .btn-secondary { background: #162e3d; border: none; color: #a0aec0; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .btn-primary { background: #00f3ff; border: none; color: #03080c; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .btn-primary { background: var(--accent-cyan); border: none; color: #03080c; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -459,9 +485,8 @@
       <button class="settings-btn" type="button" onclick="openSettings()">⚙️</button>
     </header>
 
-    <!-- 【新設】ツインドロップダウンデッキ -->
+    <!-- ツインドロップダウンデッキ -->
     <div class="control-container">
-      <!-- 表示タブ切り替え用 -->
       <div class="cyber-select-wrapper report-select-wrapper">
         <select id="reportTabSelect" class="cyber-select">
           <option value="current">Current</option>
@@ -470,7 +495,6 @@
           <option value="history">History</option>
         </select>
       </div>
-      <!-- AIコアモデル切り替え用 -->
       <div class="cyber-select-wrapper ai-select-wrapper">
         <select id="aiModelSelect" class="cyber-select">
           <option value="gemini">🤖 Gemini</option>
@@ -489,7 +513,6 @@
         <div class="report-pane" id="pane-memory"></div>
         <div class="report-pane" id="pane-history"></div>
       </div>
-      <!-- レポート領域をグイッと引き伸ばす展開バー -->
       <div class="expand-bar" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
     </section>
 
@@ -503,19 +526,16 @@
         <span class="clear-preview" onclick="clearAttachment()">✕</span>
       </div>
       <div class="form-row">
-        <!-- ファイル添付（隠しinputをラップ） -->
         <label class="deck-btn">
           📎
           <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
         </label>
-        <!-- 入力エリア -->
         <textarea class="chat-textarea" id="chatInput" placeholder="メッセージを入力... (Ctrl+Enterで送信)"></textarea>
-        <!-- 送信ボタン -->
         <button class="send-btn" type="button" onclick="sendMessage()">送信</button>
       </div>
     </footer>
 
-    <!-- ボトムシート（履歴リスト）とオーバーレイ -->
+    <!-- ボトムシート（履歴リスト） -->
     <div class="sheet-overlay" id="sheetOverlay" onclick="toggleBottomSheet()"></div>
     <div class="bottom-sheet" id="bottomSheet">
       <div class="sheet-header">
@@ -528,24 +548,28 @@
     </div>
   </div>
 
-  <!-- 環境設定モーダル（マスク） -->
+  <!-- 環境設定モーダル -->
   <div class="modal-mask" id="settingsModal">
     <div class="modal-window">
       <div class="modal-head">🔧 システム環境設定</div>
       <div class="modal-body">
         
-        <!-- 基底AIモデル設定 (裏同期用) -->
+        <!-- 基底AIモデル設定 (裏同期用ダミー) -->
         <div class="setting-group" style="display: none;">
-          <span class="setting-label">デフォルトAIモデル</span>
+          <input type="radio" name="chatAi" id="aiGemini" value="gemini" checked>
+          <input type="radio" name="chatAi" id="aiClaude" value="claude">
+          <input type="radio" name="chatAi" id="aiDeepSeek" value="deepseek">
+          <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
+        </div>
+
+        <!-- カラーテーマ選択 -->
+        <div class="setting-group">
+          <span class="setting-label">カラーテーマ</span>
           <div class="radio-pack">
-            <input type="radio" name="chatAi" id="aiGemini" value="gemini" checked>
-            <label for="aiGemini" class="radio-label">Gemini</label>
-            <input type="radio" name="chatAi" id="aiClaude" value="claude">
-            <label for="aiClaude" class="radio-label">Claude</label>
-            <input type="radio" name="chatAi" id="aiDeepSeek" value="deepseek">
-            <label for="aiDeepSeek" class="radio-label">DeepSeek</label>
-            <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
-            <label for="aiOpenAI" class="radio-label">OpenAI</label>
+            <input type="radio" name="appTheme" id="themeDark" value="dark" checked>
+            <label for="themeDark" class="radio-label">Cyber Dark 🌃</label>
+            <input type="radio" name="appTheme" id="themeLight" value="light">
+            <label for="themeLight" class="radio-label">Cyber Light ☀️</label>
           </div>
         </div>
 
@@ -560,6 +584,13 @@
             <input type="radio" name="repSize" id="sizeMax" value="40">
             <label for="sizeMax" class="radio-label">High (40%)</label>
           </div>
+        </div>
+
+        <!-- リアルタイムクラウド同期設定 -->
+        <div class="setting-group">
+          <span class="setting-label">リアルタイム同期用 URL (GAS / Webhookなど)</span>
+          <input type="url" id="syncUrl" class="cyber-input" placeholder="https://script.google.com/... などを入力">
+          <small style="opacity: 0.6; font-size: 11px;">※更新の都度、JSONデータがPOST送信されます。</small>
         </div>
 
         <!-- 各種独立クラウドAPIキーエントリー -->
@@ -583,14 +614,14 @@
         <!-- 1層目: 共通個人メモリ -->
         <div class="setting-group">
           <span class="setting-label">個人メモリ 🧠 (全プロジェクト共通の前提・プロファイル)</span>
-          <textarea id="personalMemory" class="cyber-input" style="height: 100px; resize: vertical; line-height: 1.4;"></textarea>
+          <textarea id="personalMemory" class="cyber-input" style="height: 80px; resize: vertical; line-height: 1.4;"></textarea>
         </div>
 
         <!-- インポート／エクスポートコンソール -->
-        <div class="setting-group" style="margin-top: 10px; border-top: 1px solid #16374d; padding-top: 14px; gap: 8px;">
+        <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
           <span class="setting-label">データバックアップマネジメント</span>
-          <button type="button" class="btn-secondary" style="background:#1a2733; color:#00f3ff;" onclick="exportAllData()">📤 ローカルへJSONエクスポート</button>
-          <label class="btn-secondary" style="background:#241d33; color:#b624ff; text-align:center; display:block; cursor:pointer;">
+          <button type="button" class="btn-secondary" style="color:var(--accent-cyan);" onclick="exportAllData()">📤 ローカルへJSONエクスポート</button>
+          <label class="btn-secondary" style="color:var(--accent-purple); text-align:center; display:block; cursor:pointer;">
             📥 バックアップJSONをインポート
             <input type="file" accept=".json" style="display:none;" onchange="importAllData(this)">
           </label>
@@ -604,7 +635,6 @@
     </div>
   </div>
 
-  <!-- ロジックスクリプト接続 -->
   <script src="app.js"></script>
 </body>
 </html>
