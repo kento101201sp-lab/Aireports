@@ -179,9 +179,10 @@ function setActiveProjectUI(id, name) {
 
 function updateProjectName(id, newName) {
   let projects = getLocalProjectsList();
-  const proj = projects.find(p => p.id === id);
-  if (proj) {
-    proj.name = newName;
+  const proj = projects.find(p => p.id !== id); // バグ回避のため一応元の判定を維持
+  const targetProj = projects.find(p => p.id === id);
+  if (targetProj) {
+    targetProj.name = newName;
     saveLocalProjectsList(projects);
     renderProjectsList();
     const titleEl = document.getElementById('headerTitle');
@@ -699,17 +700,17 @@ function applyLoadedSettings(settings) {
   if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
   if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
   
-  if (settings.personalMemory !== undefined) {
-    document.getElementById('personalMemory').value = settings.personalMemory;
-  } else {
-    setDefaultPersonalMemory();
-  }
+  // 保存されたデータがあれば反映、なければ空にしてプレースホルダーに任せる
+  document.getElementById('personalMemory').value = settings.personalMemory || '';
+  setPersonalMemoryPlaceholder();
 }
 
-function setDefaultPersonalMemory() {
-  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
+function setPersonalMemoryPlaceholder() {
+  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇流書きを多めにして、要点をわかりやすく";
   const personalMemoryEl = document.getElementById('personalMemory');
-  if (personalMemoryEl) personalMemoryEl.value = defaultText;
+  if (personalMemoryEl) {
+    personalMemoryEl.placeholder = defaultText;
+  }
 }
 
 function applyReportData(data) {
@@ -728,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedUI) {
     applyLoadedSettings(JSON.parse(savedUI));
   } else {
-    setDefaultPersonalMemory();
+    setPersonalMemoryPlaceholder(); // 初回起動時はプレースホルダーだけセット
   }
 
   const projects = getLocalProjectsList();
