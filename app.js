@@ -84,6 +84,11 @@ function createNewProject() {
   applyReportData(initialReport);
   setDefaultInitialAIMessage();
 
+  // 初期時はセレクトボックスの表示をCurrentにリセット
+  const reportTabSelect = document.getElementById('reportTabSelect');
+  if (reportTabSelect) reportTabSelect.value = 'current';
+  switchTab('current');
+
   saveChatLogs();
   saveReportData();
 }
@@ -224,10 +229,9 @@ function toggleReportHeight() {
 }
 
 function switchTab(tabName) {
+  // 元のボタン用装飾ロジックはセレクトボックス化に伴い安全にスキップ
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-  if (window.event && window.event.target) {
-    window.event.target.classList.add('active');
-  }
+  
   document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
   const targetPane = document.getElementById(`pane-${tabName}`);
   if (targetPane) targetPane.classList.add('active');
@@ -252,6 +256,11 @@ function selectProject(id, name) {
     chatLogs = [];
     setDefaultInitialAIMessage();
   }
+
+  // プロジェクト移動時はセレクトボックスの選択をCurrentに引き戻す
+  const reportTabSelect = document.getElementById('reportTabSelect');
+  if (reportTabSelect) reportTabSelect.value = 'current';
+  switchTab('current');
 
   toggleBottomSheet();
 }
@@ -386,7 +395,7 @@ ${historyHTML}
 
 【出力・表現に関する指示】
 - ユーザーに返すチャットの返答は、極限まで視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- 对話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
+- 対話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造（見出し <h4>, リスト <ul><li>, 段落 <p>）を含めて出力してください。修正のないタブのタグは省略可能です。
 
 特殊出力フォーマット（メッセージの末尾に連結）：
 <update_current>Currentの最新全HTML</update_current>
@@ -517,7 +526,6 @@ ${historyHTML}
 
     if (currentMatch || knowledgeMatch || memoryMatch || historyMatch) reportUpdated = true;
 
-    // チャット面を汚さないために特殊タグを除去
     let cleanResponseText = aiResponseText
       .replace(/<update_current>[\s\S]*?<\/update_current>/g, '')
       .replace(/<update_knowledge>[\s\S]*?<\/update_knowledge>/g, '')
@@ -526,7 +534,6 @@ ${historyHTML}
       .replace(/<update_title>[\s\S]*?<\/update_title>/g, '')
       .trim();
 
-    // ユーザーが生成待ちの間にプロジェクトを切り替えていなければ画面に直接反映
     if (callingProjectId === currentProjectId) {
       if (currentMatch) document.getElementById('pane-current').innerHTML = currentMatch[1].trim();
       if (knowledgeMatch) document.getElementById('pane-knowledge').innerHTML = knowledgeMatch[1].trim();
@@ -544,7 +551,6 @@ ${historyHTML}
       saveChatLogs();
       chatHistory.scrollTop = chatHistory.scrollHeight;
     } else {
-      // 非アクティブプロジェクトへのバックグラウンド書き込み処理
       if (reportUpdated) {
         const repKey = `${REPORT_DATA_KEY}_${callingProjectId}`;
         const savedRep = JSON.parse(localStorage.getItem(repKey) || '{}');
@@ -606,7 +612,7 @@ function saveSettings() {
     if (reportSection) reportSection.style.setProperty('--default-height', `${repSize}%`);
   }
 
-  // クイックチェンジャーUIを同期
+  // クイックチェンジャー（インラインセレクトボックス）の同期
   if (window.updateAiQuickUI) window.updateAiQuickUI();
 }
 
@@ -717,7 +723,6 @@ function applyLoadedSettings(settings) {
   document.getElementById('personalMemory').value = savedMemory;
   setPersonalMemoryPlaceholder();
 
-  // クイックチェンジャーUIを同期
   if (window.updateAiQuickUI) window.updateAiQuickUI();
 }
 
@@ -738,83 +743,40 @@ function applyReportData(data) {
 }
 
 // =========================================================================
-// 7. アプリ初期ロードイベント & スワイプ制御 & 【NEW】UIダイナミックハック
+// 7. アプリ初期ロードイベント & スワイプ制御 & ドロップダウンイベント紐付け
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
-  // --- 💡 [新機能] タブ開閉 ＆ AIモデルのインラインクイックチェンジャー用CSSを注入 ---
-  const dynamicStyle = document.createElement('style');
-  dynamicStyle.textContent = `
-    /* サブタブボタンを隠す＆アニメーション用 */
-    .lr-tab-hidden {
-      display: none !important;
-    }
-    
-    /* AIクイックコンテナの配置 */
-    .ai-quick-container {
-      display: inline-flex;
-      align-items: center;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-    
-    .ai-trigger-btn {
-      background: rgba(0, 243, 255, 0.05);
-      color: #00f3ff;
-      border: 1px solid rgba(0, 243, 255, 0.4);
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 11px;
-      font-weight: bold;
-      font-family: monospace;
-      cursor: pointer;
-      box-shadow: 0 0 8px rgba(0, 243, 255, 0.1);
-      transition: all 0.2s;
-    }
-    
-    .ai-trigger-btn:hover {
-      background: rgba(0, 243, 255, 0.15);
-      box-shadow: 0 0 12px rgba(0, 243, 255, 0.3);
-    }
-    
-    .ai-quick-options {
-      display: flex;
-      gap: 4px;
-      max-width: 0;
-      opacity: 0;
-      overflow: hidden;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      margin-left: 0;
-    }
-    
-    .ai-quick-options.open {
-      max-width: 400px;
-      opacity: 1;
-      margin-left: 6px;
-    }
-    
-    .ai-opt-btn {
-      background: #09131a;
-      color: #8ab4f8;
-      border: 1px solid #1a3a4a;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
-    
-    .ai-opt-btn.active {
-      background: rgba(182, 36, 255, 0.2);
-      color: #b624ff;
-      border-color: #b624ff;
-      text-shadow: 0 0 4px rgba(182,36,255,0.5);
-      box-shadow: 0 0 8px rgba(182, 36, 255, 0.3);
-    }
-  `;
-  document.head.appendChild(dynamicStyle);
+  
+  // --- 💡 [新機能] HTMLのセレクトボックス（ドロップダウン）と各種処理を接続 ---
+  const reportTabSelect = document.getElementById('reportTabSelect');
+  if (reportTabSelect) {
+    reportTabSelect.addEventListener('change', (e) => {
+      switchTab(e.target.value);
+    });
+  }
 
-  // 最初期のデータ読み込み
+  const aiModelSelect = document.getElementById('aiModelSelect');
+  if (aiModelSelect) {
+    aiModelSelect.addEventListener('change', (e) => {
+      const selectedModelId = e.target.value;
+      const targetRadio = document.querySelector(`input[name="chatAi"][value="${selectedModelId}"]`);
+      if (targetRadio) {
+        targetRadio.checked = true;
+        saveSettings(); // 設定領域とストレージへ同期保存
+      }
+    });
+  }
+
+  // 設定画面（⚙️）側でAIモデルが変更された時にドロップダウン側の選択状態も追従させる同期用関数
+  window.updateAiQuickUI = function() {
+    const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
+    const currentAi = activeAiRadio ? activeAiRadio.value : 'gemini';
+    if (aiModelSelect) {
+      aiModelSelect.value = currentAi;
+    }
+  };
+
+  // アプリ初回読み込み設定
   const savedUI = localStorage.getItem(STORAGE_KEY);
   if (savedUI) {
     applyLoadedSettings(JSON.parse(savedUI));
@@ -822,112 +784,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setPersonalMemoryPlaceholder(); 
   }
 
-  // --- 💡 [新機能] タブトグル展開 ＆ AIクイックチェンジャー生成ロジック ---
-  setTimeout(() => {
-    // 全てのタブ切り替え用ボタン要素を検知
-    const allTabButtons = Array.from(document.querySelectorAll('.tab-btn, button[onclick*="switchTab"]'));
-    const currentBtn = allTabButtons.find(btn => btn.textContent.includes('Current') || btn.getAttribute('onclick')?.includes('current'));
-    const otherTabs = allTabButtons.filter(btn => btn !== currentBtn);
-
-    if (currentBtn) {
-      // 1. 最初はCurrent以外のタブ（Knowledge, Memory, History）を非表示にする
-      otherTabs.forEach(btn => btn.classList.add('lr-tab-hidden'));
-
-      // Currentボタンがクリックされた時のトグル挙動を上書き＆バインド
-      currentBtn.addEventListener('click', (e) => {
-        // 現在、他のタブが開いているかどうかチェック
-        const isAlreadyOpen = !otherTabs[0].classList.contains('lr-tab-hidden');
-        if (isAlreadyOpen) {
-          otherTabs.forEach(btn => btn.classList.add('lr-tab-hidden'));
-        } else {
-          otherTabs.forEach(btn => btn.classList.remove('lr-tab-hidden'));
-        }
-      });
-
-      // 他のサブタブ（Knowledge等）を選択した瞬間に自動で閉じる
-      otherTabs.forEach(btn => {
-        btn.addEventListener('click', () => {
-          otherTabs.forEach(b => b.classList.add('lr-tab-hidden'));
-        });
-      });
-
-      // 2. AIモデルの都度切り替えボタン（インラインコンテナ）をCurrentのすぐ右側に動的生成
-      const aiContainer = document.createElement('div');
-      aiContainer.className = 'ai-quick-container';
-      
-      const aiTrigger = document.createElement('button');
-      aiTrigger.className = 'ai-trigger-btn';
-      aiTrigger.type = 'button';
-      aiTrigger.textContent = '🤖 AI';
-      
-      const aiOptions = document.createElement('div');
-      aiOptions.className = 'ai-quick-options';
-      
-      const models = [
-        { id: 'gemini', name: 'Gemini' },
-        { id: 'claude', name: 'Claude' },
-        { id: 'deepseek', name: 'DeepSeek' },
-        { id: 'openai', name: 'OpenAI' }
-      ];
-      
-      models.forEach(m => {
-        const btn = document.createElement('button');
-        btn.className = 'ai-opt-btn';
-        btn.type = 'button';
-        btn.textContent = m.name;
-        btn.addEventListener('click', (evt) => {
-          evt.stopPropagation();
-          // 設定画面にあるオリジナルのラジオボタンを擬似クリックして連動
-          const targetRadio = document.querySelector(`input[name="chatAi"][value="${m.id}"]`);
-          if (targetRadio) {
-            targetRadio.checked = true;
-            saveSettings(); // ローカルストレージに即時保存
-          }
-          aiOptions.classList.remove('open');
-        });
-        aiOptions.appendChild(btn);
-      });
-      
-      aiTrigger.addEventListener('click', (evt) => {
-        evt.stopPropagation();
-        aiOptions.classList.toggle('open');
-      });
-      
-      // 画面のどこかをタップしたらメニューが閉じるお掃除処理
-      document.addEventListener('click', () => {
-        aiOptions.classList.remove('open');
-      });
-      
-      aiContainer.appendChild(aiTrigger);
-      aiContainer.appendChild(aiOptions);
-      
-      // Currentボタンの真右（次要素の前）にドロップイン
-      currentBtn.parentNode.insertBefore(aiContainer, currentBtn.nextSibling);
-      
-      // クイックチェンジャーの表示状態を全自動で同期するグローバル関数化
-      window.updateAiQuickUI = function() {
-        const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-        const currentAi = activeAiRadio ? activeAiRadio.value : 'gemini';
-        
-        const currentModelObj = models.find(m => m.id === currentAi);
-        aiTrigger.textContent = `🤖 ${currentModelObj ? currentModelObj.name : 'AI'}`;
-        
-        const optButtons = aiOptions.querySelectorAll('.ai-opt-btn');
-        models.forEach((m, idx) => {
-          if (m.id === currentAi) {
-            optButtons[idx].classList.add('active');
-          } else {
-            optButtons[idx].classList.remove('active');
-          }
-        });
-      };
-      
-      // 初回同期を実行
-      window.updateAiQuickUI();
-    }
-  }, 100);
-
-  // プロジェクト読み込み関連
   const projects = getLocalProjectsList();
   if (projects.length > 0) {
     const latest = projects[0];
@@ -954,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     createNewProject();
   }
 
-  // スワイプ判定
+  // スワイプ処理
   const frame = document.querySelector('.phone-frame');
   if (frame) {
     let touchStartX = 0; let touchStartY = 0;
@@ -968,4 +824,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: true });
   }
+  
+  // 初回表示時のセレクトボックス位置同期
+  window.updateAiQuickUI();
 });
