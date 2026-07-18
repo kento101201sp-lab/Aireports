@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LifeReport - Local Production</title>
+  <link rel="manifest" href="./manifest.json">
+  <!-- 外部CSSファイルの読み込み -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="phone-frame">
+    
+    <!-- 1. ボトムシートメニュー (☰) -->
+    <div class="sheet-overlay" id="sheetOverlay" onclick="toggleBottomSheet()"></div>
+    <div class="bottom-sheet" id="bottomSheet">
+      <div class="sheet-header">
+        <div class="sheet-indicator"></div>
+        <div class="sheet-title-row">
+          <div class="sheet-brand">Menu</div>
+          <button class="icon-btn" onclick="toggleBottomSheet()">✕</button>
+        </div>
+      </div>
+      <div class="sheet-content">
+        <input type="text" class="search-box" placeholder="🔍 検索キーワードを入力...">
+        
+        <div class="sheet-section-title">アクション</div>
+        <ul class="sheet-list" style="margin-bottom: 12px;">
+          <li class="sheet-item" onclick="triggerNewProject()" style="color: #6366f1; font-weight: 700; background-color: rgba(99, 102, 241, 0.08);">➕ 新規プロジェクトを作成</li>
+        </ul>
+
+        <div class="sheet-section-title">過去のセッション履歴</div>
+        <ul class="sheet-list" id="projectList"></ul>
+      </div>
+    </div>
+
+    <!-- 2. 設定モーダル -->
+    <div class="modal-overlay" id="settingsModal">
+      <div class="settings-modal">
+        <div class="modal-header">
+          <span style="font-weight:700;">⚙️ 設定</span>
+          <button class="icon-btn" onclick="closeSettings()">✕</button>
+        </div>
+        <div class="modal-body">
+          
+          <!-- 個人メモリ設定エリア -->
+          <div class="setting-group">
+            <div class="setting-label">個人メモリ（全プロジェクト共通の前提） 👤</div>
+            <textarea id="personalMemory" class="settings-input" style="height: 90px; resize: vertical; line-height: 1.5;" placeholder="例: 職種、家族構成、ライフスタイル、全体共通で守ってほしい大原則など"></textarea>
+          </div>
+
+          <!-- AIキー設定 -->
+          <div class="setting-group">
+            <div class="setting-label">AI API 認証キー</div>
+            <input type="password" id="apiKeyGemini" class="settings-input" placeholder="Gemini Key (AIzaSy...)">
+            <input type="password" id="apiKeyClaude" class="settings-input" placeholder="Claude Key (sk-ant-...)">
+            <input type="password" id="apiKeyDeepSeek" class="settings-input" placeholder="DeepSeek Key (sk-...)">
+            <input type="password" id="apiKeyOpenAI" class="settings-input" placeholder="OpenAI Key (sk-...)">
+          </div>
+          
+          <div class="setting-group">
+            <div class="setting-label">チャットAIモデル</div>
+            <div class="radio-grid">
+              <label class="radio-label"><input type="radio" name="chatAi" value="gemini" checked>Gemini</label>
+              <label class="radio-label"><input type="radio" name="chatAi" value="claude">Claude🌟</label>
+              <label class="radio-label"><input type="radio" name="chatAi" value="deepseek">DeepSeek🚀</label>
+              <label class="radio-label"><input type="radio" name="chatAi" value="openai">OpenAI</label>
+            </div>
+          </div>
+
+          <!-- JSON一括バックアップ管理 -->
+          <div class="setting-group">
+            <div class="setting-label">データ管理 (JSON一括バックアップ) 💾</div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <button class="action-btn" onclick="exportAllData()" style="flex: 1; background-color: #2563eb;">データを書き出す</button>
+              <button class="action-btn" onclick="document.getElementById('importFileInput').click()" style="flex: 1; background-color: #059669;">データを読み込む</button>
+            </div>
+            <input type="file" id="importFileInput" style="display: none;" accept=".json" onchange="importAllData(this)">
+            <p style="font-size: 10px; color: #71717a; margin-top: 6px; line-height: 1.4;">※全履歴・全メモリ・設定を1ファイルにまとめて書き出します。他端末へのデータ移行もファイルを読み込ませるだけです。</p>
+          </div>
+          
+          <div class="setting-group">
+            <div class="setting-label">デフォルトレポート表示</div>
+            <div class="radio-grid" style="grid-template-columns: repeat(3, 1fr);">
+              <label class="radio-label"><input type="radio" name="repSize" value="25" checked>25%</label>
+              <label class="radio-label"><input type="radio" name="repSize" value="30">30%</label>
+              <label class="radio-label"><input type="radio" name="repSize" value="40">40%</label>
+            </div>
+          </div>
+
+          <div class="setting-group" style="border:none; margin-bottom:0; padding-bottom:0;">
+            <button class="action-btn" onclick="applyAndCloseSettings()" style="width: 100%; height: 44px; font-size: 14px; background-color: #4f46e5;">設定を保存して確定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. アプリケーションヘッダー -->
+    <header>
+      <div class="header-title-area">
+        <div class="header-title" id="headerTitle">新規プロジェクト</div>
+        <div class="sync-status" id="syncStatus">🔒 ローカルに安全に保存中</div>
+      </div>
+      <button class="icon-btn" onclick="openSettings()">⚙️</button>
+    </header>
+
+    <!-- 4. メインボディ -->
+    <div class="app-body">
+      <section class="report-section" id="reportSection">
+        <div class="report-header">
+          <div class="report-tabs">
+            <button class="tab-btn active" onclick="switchTab('current')">Current</button>
+            <button class="tab-btn" onclick="switchTab('knowledge')">Knowledge</button>
+            <button class="tab-btn" onclick="switchTab('memory')">Memory 🧠</button>
+            <button class="tab-btn" onclick="switchTab('history')">History</button>
+          </div>
+        </div>
+        <div class="report-content">
+          <div class="report-pane active" id="pane-current"></div>
+          <div class="report-pane" id="pane-knowledge"></div>
+          <div class="report-pane" id="pane-memory"></div>
+          <div class="report-pane" id="pane-history"></div>
+        </div>
+        <div class="report-resize-bar" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
+      </section>
+
+      <!-- チャットセクション -->
+      <section class="chat-section">
+        <div class="chat-history" id="chatHistory"></div>
+      </section>
+    </div>
+
+    <!-- 5. フッター -->
+    <footer>
+      <div class="preview-container" id="previewContainer">
+        <span class="preview-text" id="previewText"></span>
+        <span style="cursor:pointer; padding: 0 4px;" onclick="clearAttachment()">✕</span>
+      </div>
+      
+      <div class="input-row">
+        <button class="menu-btn" onclick="toggleBottomSheet()">☰</button>
+        
+        <button class="attach-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+        <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="handleFileSelect(this)">
+        
+        <textarea class="chat-input" id="chatInput" placeholder="メッセージを入力..." rows="1"></textarea>
+        <button class="send-btn" onclick="sendMessage()">送信</button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- 外部JavaScriptファイルの読み込み -->
+  <script src="app.js"></script>
+</body>
+</html>
