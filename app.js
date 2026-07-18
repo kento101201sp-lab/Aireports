@@ -18,10 +18,10 @@ function getChatLogsKey() { return `${CHAT_LOGS_KEY}_${currentProjectId}`; }
 function getReportDataKey() { return `${REPORT_DATA_KEY}_${currentProjectId}`; }
 
 // =========================================================================
-// 【新設】外部へデータをリアルタイム同期する非同期関数
+// 外部へデータをリアルタイム同期する非同期関数
 // =========================================================================
 async function syncToCloudRealtime() {
-  const syncUrl = document.getElementById('syncUrl')?.value.trim();
+  const syncUrl = document.getElementById('syncUrl')?.value ? document.getElementById('syncUrl').value.trim() : '';
   if (!syncUrl) return; 
 
   const payload = {
@@ -29,10 +29,10 @@ async function syncToCloudRealtime() {
     projectName: document.getElementById('headerTitle')?.textContent || '',
     timestamp: new Date().toISOString(),
     report: {
-      current: document.getElementById('pane-current').innerHTML,
-      knowledge: document.getElementById('pane-knowledge').innerHTML,
-      memory: document.getElementById('pane-memory').innerHTML,
-      history: document.getElementById('pane-history').innerHTML
+      current: document.getElementById('pane-current')?.innerHTML || '',
+      knowledge: document.getElementById('pane-knowledge')?.innerHTML || '',
+      memory: document.getElementById('pane-memory')?.innerHTML || '',
+      history: document.getElementById('pane-history')?.innerHTML || ''
     },
     chatLogs: chatLogs
   };
@@ -400,10 +400,10 @@ async function callRealAiApi() {
     chatHistory.scrollTop = chatHistory.scrollHeight;
   }
 
-  const currentHTML = document.getElementById('pane-current').innerHTML.trim();
-  const knowledgeHTML = document.getElementById('pane-knowledge').innerHTML.trim();
-  const memoryHTML = document.getElementById('pane-memory').innerHTML.trim();
-  const historyHTML = document.getElementById('pane-history').innerHTML.trim();
+  const currentHTML = document.getElementById('pane-current')?.innerHTML.trim() || '';
+  const knowledgeHTML = document.getElementById('pane-knowledge')?.innerHTML.trim() || '';
+  const memoryHTML = document.getElementById('pane-memory')?.innerHTML.trim() || '';
+  const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
   const personalMemoryText = document.getElementById('personalMemory')?.value.trim() || '未設定';
 
   const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴走するLifeReportのコアシステムです。
@@ -438,9 +438,8 @@ ${historyHTML}
   try {
     let aiResponseText = "";
 
-    // --- Claude 呼び出し ---
     if (selectedAi === 'claude') {
-      const apiKey = document.getElementById('apiKeyClaude').value.trim();
+      const apiKey = document.getElementById('apiKeyClaude')?.value.trim() || '';
       if (!apiKey) throw new Error("Claude APIキーが未設定です。");
 
       const messages = [];
@@ -465,9 +464,8 @@ ${historyHTML}
       if (resData.error) throw new Error(resData.error.message);
       aiResponseText = resData.content[0].text;
 
-    // --- DeepSeek 呼び出し ---
     } else if (selectedAi === 'deepseek') {
-      const apiKey = document.getElementById('apiKeyDeepSeek').value.trim();
+      const apiKey = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
       if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
 
       const messages = [{ role: "system", content: systemInstructionText }];
@@ -484,9 +482,8 @@ ${historyHTML}
       if (resData.error) throw new Error(resData.error.message);
       aiResponseText = resData.choices[0].message.content;
 
-    // --- Gemini 呼び出し ---
     } else if (selectedAi === 'gemini') {
-      const apiKey = document.getElementById('apiKeyGemini').value.trim();
+      const apiKey = document.getElementById('apiKeyGemini')?.value.trim() || '';
       if (!apiKey) throw new Error("Gemini APIキーが未設定です。");
 
       const contents = chatLogs.map(log => {
@@ -516,9 +513,8 @@ ${historyHTML}
       if (resData.error) throw new Error(resData.error.message);
       aiResponseText = resData.candidates[0].content.parts[0].text;
 
-    // --- OpenAI 呼び出し ---
     } else if (selectedAi === 'openai') {
-      const apiKey = document.getElementById('apiKeyOpenAI').value.trim();
+      const apiKey = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
       if (!apiKey) throw new Error("OpenAI APIキーが未設定です。");
 
       const messages = [{ role: "system", content: systemInstructionText }];
@@ -557,10 +553,10 @@ ${historyHTML}
       .trim();
 
     if (callingProjectId === currentProjectId) {
-      if (currentMatch) document.getElementById('pane-current').innerHTML = currentMatch[1].trim();
-      if (knowledgeMatch) document.getElementById('pane-knowledge').innerHTML = knowledgeMatch[1].trim();
-      if (memoryMatch) document.getElementById('pane-memory').innerHTML = memoryMatch[1].trim();
-      if (historyMatch) document.getElementById('pane-history').innerHTML = historyMatch[1].trim();
+      if (currentMatch && document.getElementById('pane-current')) document.getElementById('pane-current').innerHTML = currentMatch[1].trim();
+      if (knowledgeMatch && document.getElementById('pane-knowledge')) document.getElementById('pane-knowledge').innerHTML = knowledgeMatch[1].trim();
+      if (memoryMatch && document.getElementById('pane-memory')) document.getElementById('pane-memory').innerHTML = memoryMatch[1].trim();
+      if (historyMatch && document.getElementById('pane-history')) document.getElementById('pane-history').innerHTML = historyMatch[1].trim();
       if (titleMatch) updateProjectName(currentProjectId, titleMatch[1].trim());
 
       if (reportUpdated) saveReportData();
@@ -594,7 +590,7 @@ ${historyHTML}
     }
 
   } catch (err) {
-    if (callingProjectId === currentProjectId) {
+    if (callingProjectId === currentProjectId && progressMsg) {
       progressMsg.classList.remove('analyzing');
       progressMsg.style.border = "1px solid #ff0055";
       progressMsg.style.color = "#ff66a3";
@@ -604,7 +600,7 @@ ${historyHTML}
 }
 
 // =========================================================================
-// 6. データ永続化・設定保存・インポート／エクスポート
+// 6. データ永続化・設定保存・インポート／エクスポート（★バグ修正箇所）
 // =========================================================================
 function applyAndCloseSettings() {
   saveSettings();
@@ -612,16 +608,18 @@ function applyAndCloseSettings() {
 }
 
 function saveSettings() {
-  const chatAi = document.querySelector('input[name="chatAi"]:checked')?.value;
-  const repSize = document.querySelector('input[name="repSize"]:checked')?.value;
-  const apiKeyGemini = document.getElementById('apiKeyGemini')?.value.trim() || '';
-  const apiKeyClaude = document.getElementById('apiKeyClaude')?.value.trim() || '';
-  const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
-  const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
-  const personalMemory = document.getElementById('personalMemory')?.value.trim() || '';
+  const chatAi = document.querySelector('input[name="chatAi"]:checked')?.value || 'gemini';
+  const repSize = document.querySelector('input[name="repSize"]:checked')?.value || '25';
+  
+  // ★安全な取得方法に変更
+  const apiKeyGemini = document.getElementById('apiKeyGemini')?.value ? document.getElementById('apiKeyGemini').value.trim() : '';
+  const apiKeyClaude = document.getElementById('apiKeyClaude')?.value ? document.getElementById('apiKeyClaude').value.trim() : '';
+  const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value ? document.getElementById('apiKeyDeepSeek').value.trim() : '';
+  const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value ? document.getElementById('apiKeyOpenAI').value.trim() : '';
+  const personalMemory = document.getElementById('personalMemory')?.value ? document.getElementById('personalMemory').value.trim() : '';
   
   const appTheme = document.querySelector('input[name="appTheme"]:checked')?.value || 'dark';
-  const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
+  const syncUrl = document.getElementById('syncUrl')?.value ? document.getElementById('syncUrl').value.trim() : '';
   
   const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
@@ -631,8 +629,12 @@ function saveSettings() {
     if (reportSection) reportSection.style.setProperty('--default-height', `${repSize}%`);
   }
 
-  if (appTheme === 'light') document.body.classList.add('theme-light');
-  else document.body.classList.remove('theme-light');
+  // テーマ切り替え処理
+  if (appTheme === 'light') {
+    document.body.classList.add('theme-light');
+  } else {
+    document.body.classList.remove('theme-light');
+  }
 
   if (window.updateAiQuickUI) window.updateAiQuickUI();
   syncToCloudRealtime();
@@ -647,10 +649,10 @@ function saveChatLogs() {
 
 function saveReportData() {
   const reportData = {
-    current: document.getElementById('pane-current').innerHTML,
-    knowledge: document.getElementById('pane-knowledge').innerHTML,
-    memory: document.getElementById('pane-memory').innerHTML,
-    history: document.getElementById('pane-history').innerHTML
+    current: document.getElementById('pane-current')?.innerHTML || '',
+    knowledge: document.getElementById('pane-knowledge')?.innerHTML || '',
+    memory: document.getElementById('pane-memory')?.innerHTML || '',
+    history: document.getElementById('pane-history')?.innerHTML || ''
   };
   localStorage.setItem(getReportDataKey(), JSON.stringify(reportData));
   syncToCloudRealtime();
@@ -701,28 +703,29 @@ function applyLoadedSettings(settings) {
     const reportSection = document.getElementById('reportSection');
     if (reportSection) reportSection.style.setProperty('--default-height', `${settings.repSize}%`); 
   }
-  if (settings.apiKeyGemini) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
-  if (settings.apiKeyClaude) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
-  if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
-  if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
+  if (settings.apiKeyGemini && document.getElementById('apiKeyGemini')) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
+  if (settings.apiKeyClaude && document.getElementById('apiKeyClaude')) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
+  if (settings.apiKeyDeepSeek && document.getElementById('apiKeyDeepSeek')) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
+  if (settings.apiKeyOpenAI && document.getElementById('apiKeyOpenAI')) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
   
   if (settings.appTheme) {
     const themeRadio = document.querySelector(`input[name="appTheme"][value="${settings.appTheme}"]`);
     if (themeRadio) themeRadio.checked = true;
     if (settings.appTheme === 'light') document.body.classList.add('theme-light');
+    else document.body.classList.remove('theme-light');
   }
-  if (settings.syncUrl) document.getElementById('syncUrl').value = settings.syncUrl;
+  if (settings.syncUrl && document.getElementById('syncUrl')) document.getElementById('syncUrl').value = settings.syncUrl;
+  if (settings.personalMemory && document.getElementById('personalMemory')) document.getElementById('personalMemory').value = settings.personalMemory;
 
-  document.getElementById('personalMemory').value = settings.personalMemory || '';
   if (window.updateAiQuickUI) window.updateAiQuickUI();
 }
 
 function applyReportData(data) {
   if (!data) return;
-  if (data.current) document.getElementById('pane-current').innerHTML = data.current;
-  if (data.knowledge) document.getElementById('pane-knowledge').innerHTML = data.knowledge;
-  if (data.memory) document.getElementById('pane-memory').innerHTML = data.memory;
-  if (data.history) document.getElementById('pane-history').innerHTML = data.history;
+  if (data.current && document.getElementById('pane-current')) document.getElementById('pane-current').innerHTML = data.current;
+  if (data.knowledge && document.getElementById('pane-knowledge')) document.getElementById('pane-knowledge').innerHTML = data.knowledge;
+  if (data.memory && document.getElementById('pane-memory')) document.getElementById('pane-memory').innerHTML = data.memory;
+  if (data.history && document.getElementById('pane-history')) document.getElementById('pane-history').innerHTML = data.history;
 }
 
 // =========================================================================
@@ -740,9 +743,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // クイックUI同期関数をセーフ構造に
   window.updateAiQuickUI = function() {
     const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-    if (aiModelSelect && activeAiRadio) aiModelSelect.value = activeAiRadio.value;
+    const selectEl = document.getElementById('aiModelSelect');
+    if (selectEl && activeAiRadio) selectEl.value = activeAiRadio.value;
   };
 
   const savedUI = localStorage.getItem(STORAGE_KEY);
