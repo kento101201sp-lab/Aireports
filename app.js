@@ -100,7 +100,8 @@ function renderProjectsList() {
   listEl.innerHTML = '';
 
   if (projects.length === 0) {
-    listEl.innerHTML = '<li class="sheet-item" style="text-align:center; color:#71717a; pointer-events:none;">セッション履歴がありません</li>';
+    // 【未来的演出】履歴なしテキストをネオンシアン＆発光フォントに変更
+    listEl.innerHTML = '<li class="sheet-item" style="text-align:center; color:#00f3ff; text-shadow: 0 0 6px rgba(0,243,255,0.6); font-family:monospace; pointer-events:none;">セッション履歴がありません</li>';
     return;
   }
 
@@ -179,7 +180,7 @@ function setActiveProjectUI(id, name) {
 
 function updateProjectName(id, newName) {
   let projects = getLocalProjectsList();
-  const proj = projects.find(p => p.id !== id); // バグ回避のため一応元の判定を維持
+  const proj = projects.find(p => p.id !== id); 
   const targetProj = projects.find(p => p.id === id);
   if (targetProj) {
     targetProj.name = newName;
@@ -573,8 +574,11 @@ ${historyHTML}
   } catch (err) {
     if (callingProjectId === currentProjectId) {
       progressMsg.classList.remove('analyzing');
-      progressMsg.style.border = "1px solid #ef4444";
-      progressMsg.style.color = "#f87171";
+      // 【未来的演出】エラーメッセージをサイバーパンクなネオンマゼンタ＆発光枠にアップデート
+      progressMsg.style.border = "1px solid #ff0055";
+      progressMsg.style.boxShadow = "0 0 10px rgba(255, 0, 85, 0.4)";
+      progressMsg.style.backgroundColor = "rgba(255, 0, 85, 0.08)";
+      progressMsg.style.color = "#ff66a3";
       progressMsg.textContent = `❌ エラー: ${err.message}`;
     }
   }
@@ -700,12 +704,9 @@ function applyLoadedSettings(settings) {
   if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
   if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
   
-  // クリーンアップ処理用テキストの定義
   const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
   let savedMemory = settings.personalMemory || '';
   
-  // 過去のキャッシュ（localStorage）に例文テキストが文字データとして直接入ってしまっている場合、
-  // 実際の入力値（value）としては強制的に空文字にリセットして弾く
   if (savedMemory.trim() === defaultText.trim() || savedMemory.includes("【全体共通の前提ルールやプロフィール】")) {
     savedMemory = '';
   }
@@ -715,7 +716,7 @@ function applyLoadedSettings(settings) {
 }
 
 function setPersonalMemoryPlaceholder() {
-  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
+  const defaultText = "【全体共通の前提ルールやプロフィール】\n例：\n・職種：ITエンジニア\n・家族構成：5人家族\n<td>・生活リズム：日曜と水曜にまとめ買い\n・AIへのルール：箇条書きを多めにして、要点をわかりやすく";
   const personalMemoryEl = document.getElementById('personalMemory');
   if (personalMemoryEl) {
     personalMemoryEl.placeholder = defaultText;
@@ -738,7 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (savedUI) {
     applyLoadedSettings(JSON.parse(savedUI));
   } else {
-    setPersonalMemoryPlaceholder(); // 初回起動時はプレースホルダーだけセット
+    setPersonalMemoryPlaceholder(); 
   }
 
   const projects = getLocalProjectsList();
@@ -767,7 +768,6 @@ document.addEventListener('DOMContentLoaded', () => {
     createNewProject();
   }
 
-  // 左端エッジスワイプでメニュー展開 (モバイル誤動作防止用)
   const frame = document.querySelector('.phone-frame');
   if (frame) {
     let touchStartX = 0; let touchStartY = 0;
