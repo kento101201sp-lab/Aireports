@@ -1242,7 +1242,8 @@
       syncToCloudRealtime();
     }
 
-    exportAllData() {
+    // ★修正箇所: functionキーワードを追加
+    function exportAllData() {
       const backup = {};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
