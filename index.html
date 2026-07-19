@@ -12,44 +12,45 @@
        1. トリプルテーマ定義
        ========================================================================= */
     :root {
-      /* デフォルト: Modern（男女問わず好まれるクリーン・ミニマルモダン） */
-      --bg-body: #f8fafc;
-      --bg-frame: #ffffff;
-      --bg-deck: #f1f5f9;
-      --bg-pane: #ffffff;
-      --bg-input: #f1f5f9;
-      --text-main: #1e293b;
-      --accent-cyan: #0ea5e9;
-      --accent-purple: #6366f1;
-      --border-color: #cbd5e1;
-      --msg-user-bg: #475569;
+      /* デフォルト: Modern（シティ感 × 未来感 × クラシカル） */
+      --bg-body: #090d16;       /* 洗練された都市の深夜 */
+      --bg-frame: #101524;      /* メタリックで重厚な構造体 */
+      --bg-deck: #171e31;       /* 伝統的で落ち着きのあるディープトーン */
+      --bg-pane: #101524;
+      --bg-input: #1d263f;
+      --text-main: #f1f5f9;     /* クリアな視認性のシルバーホワイト */
+      --accent-cyan: #00e5ff;   /* 未来を穿つネオンシアン */
+      --accent-purple: #818cf8; /* 格調高いクラシカルインディゴ */
+      --border-color: #242f4d;  /* 極細でソリッドな境界線 */
+      --msg-user-bg: #2e3b5e;
       --msg-user-text: #ffffff;
-      --msg-ai-bg: #f8fafc;
-      --msg-ai-border: #e2e8f0;
-      --select-bg: #f1f5f9;
+      --msg-ai-bg: #171e31;
+      --msg-ai-border: #242f4d;
+      --select-bg: #171e31;
       --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      --report-height: 25dvh;   /* 動的コントロール用カスタムプロパティ */
     }
 
     body.theme-tech {
-      /* Modernテーマ（上記と同一: 洗練されたユニセックス仕様） */
-      --bg-body: #f8fafc;
-      --bg-frame: #ffffff;
-      --bg-deck: #f1f5f9;
-      --bg-pane: #ffffff;
-      --bg-input: #f1f5f9;
-      --text-main: #1e293b;
-      --accent-cyan: #0ea5e9;
-      --accent-purple: #6366f1;
-      --border-color: #cbd5e1;
-      --msg-user-bg: #475569;
+      /* Modernテーマ（上記と同一） */
+      --bg-body: #090d16;
+      --bg-frame: #101524;
+      --bg-deck: #171e31;
+      --bg-pane: #101524;
+      --bg-input: #1d263f;
+      --text-main: #f1f5f9;
+      --accent-cyan: #00e5ff;
+      --accent-purple: #818cf8;
+      --border-color: #242f4d;
+      --msg-user-bg: #2e3b5e;
       --msg-user-text: #ffffff;
-      --msg-ai-bg: #f8fafc;
-      --msg-ai-border: #e2e8f0;
-      --select-bg: #f1f5f9;
-      --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      --msg-ai-bg: #171e31;
+      --msg-ai-border: #242f4d;
+      --select-bg: #171e31;
     }
 
     body.theme-cyber {
+      /* サイバーパンク（極彩色ネオン） */
       --bg-body: #0a0b10;
       --bg-frame: #12141d;
       --bg-deck: #1a1d29;
@@ -64,7 +65,6 @@
       --msg-ai-bg: #151822;
       --msg-ai-border: #00f5ff;
       --select-bg: #1a1d29;
-      --font-app: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
 
     body.theme-soft {
@@ -82,7 +82,6 @@
       --msg-ai-bg: #faf9f7;
       --msg-ai-border: #d6cfc7;
       --select-bg: #f0ede9;
-      --font-app: "Hiragino Maru Gothic ProN", "Kosugi Maru", "Yu Gothic", sans-serif;
     }
 
     /* =========================================================================
@@ -119,7 +118,6 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* 【改良】タイトルのみのスッキリしたヘッダー（ステータスは設定へ移動） */
     .header {
       background: var(--bg-deck);
       padding: 14px 16px;
@@ -146,9 +144,9 @@
       width: 100%;
     }
 
-    /* 多層レポートパネル（常時表示モード） */
+    /* 多層レポートパネル（設定連動の可変ハイト） */
     .report-section {
-      height: 20dvh;
+      height: var(--report-height);
       background: var(--bg-pane);
       display: flex;
       flex-direction: column;
@@ -156,7 +154,6 @@
       position: relative;
       overflow: hidden;
     }
-    .report-section.expanded { height: 55dvh !important; }
     .report-content { flex: 1; overflow-y: auto; padding: 12px 16px; user-select: text; }
     .report-pane { display: none; font-size: 13px; line-height: 1.6; }
     .report-pane.active { display: block; }
@@ -194,7 +191,6 @@
       gap: 6px;
     }
     
-    /* 【改良】右側エリア：展開バーとエクスポートボタンを同居 */
     .control-right-area {
       display: flex;
       align-items: center;
@@ -217,7 +213,6 @@
     }
     .expand-trigger-btn:hover { opacity: 1; color: var(--accent-cyan); }
 
-    /* コンパクトセレクトボックス */
     .mini-select-wrapper {
       position: relative;
       width: 104px;
@@ -280,14 +275,14 @@
       max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; user-select: text;
     }
     .msg.user {
-      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
     .msg.ai {
       align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border);
     }
     .msg.ai strong { color: var(--accent-cyan); font-weight: 600; }
     
-    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(14, 165, 233, 0.04); border: 1px dashed var(--accent-cyan); }
+    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.04); border: 1px dashed var(--accent-cyan); }
     .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -377,7 +372,7 @@
     .send-btn:active { transform: scale(0.95); }
 
     /* ボトムシート */
-    .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(1px); }
+    .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(2px); }
     .sheet-overlay.open { opacity: 1; pointer-events: auto; }
     .bottom-sheet {
       position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-pane); border-top: 2px solid var(--accent-purple); border-top-left-radius: 18px; border-top-right-radius: 18px;
@@ -388,27 +383,45 @@
     .sheet-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .sheet-title { color: var(--text-main); font-weight: 600; font-size: 14px; }
     .sheet-header-actions { display: flex; align-items: center; gap: 10px; }
-    .sheet-gear-btn { background: none; border: none; color: var(--text-main); font-size: 18px; cursor: pointer; opacity: 0.7; transition: transform 0.2s, opacity 0.2s; }
-    .sheet-gear-btn:hover { opacity: 1; transform: rotate(30deg); }
-    .new-proj-btn { background: var(--accent-cyan); color: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    
+    /* 【改良】記号からテキスト「⚙️ 設定」へ変更しスタイル微調整 */
+    .sheet-gear-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: color 0.2s, opacity 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
+    }
+    .sheet-gear-btn:hover { opacity: 1; color: var(--accent-cyan); border-color: var(--accent-cyan); }
+    .new-proj-btn { background: var(--accent-cyan); color: #090d16; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
     
     .sheet-body { flex: 1; overflow-y: auto; padding: 8px 0 24px; }
     .sheet-item { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color); }
     .sheet-item:hover { background: var(--bg-deck); }
-    .sheet-item.active { background: rgba(99, 102, 241, 0.05); }
+    .sheet-item.active { background: rgba(129, 140, 248, 0.08); }
     .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: 600; }
     .sheet-item-name { font-size: 14px; color: var(--text-main); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .project-del-btn { color: var(--text-main); opacity: 0.4; padding: 4px; font-size: 14px; transition: opacity 0.2s, color 0.2s; }
     .project-del-btn:hover { color: #ff4a4a; opacity: 1; }
 
     /* モーダル */
-    .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(2px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
+    .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
     .modal-mask.open { opacity: 1; pointer-events: auto; }
-    .modal-window { background: var(--bg-pane); width: 90%; max-width: 420px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal-window { background: var(--bg-pane); width: 90%; max-width: 420px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
     .modal-head { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; font-size: 16px; }
     .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
     .setting-group { display: flex; flex-direction: column; gap: 6px; }
-    .setting-label { font-size: 12px; color: var(--text-main); opacity: 0.7; font-weight: 600; }
+    .setting-label { font-size: 12px; color: var(--text-main); opacity: 0.7; font-weight: 600; letter-spacing: 0.5px; }
     .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; }
     .cyber-input:focus { border-color: var(--accent-purple); }
     
@@ -416,8 +429,13 @@
     .radio-row { display: flex; align-items: center; position: relative; }
     .radio-row input[type="radio"] { display: none; }
     .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 13px; cursor: pointer; color: var(--text-main); opacity: 0.8; transition: all 0.2s; }
-    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(99, 102, 241, 0.08); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
+    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(129, 140, 248, 0.1); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
     
+    /* プリセットボタングループ用 */
+    .preset-btn-group { display: flex; gap: 6px; }
+    .preset-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .preset-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
     .modal-foot { padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
     .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     .btn-primary { background: var(--accent-purple); border: none; color: #ffffff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
@@ -426,7 +444,6 @@
 <body>
 
   <div class="phone-frame">
-    <!-- ヘッダー：プロジェクト名を堂々と表示 -->
     <header class="header">
       <div class="header-text-group">
         <h1 class="header-title" id="headerProjectName">ロード中...</h1>
@@ -445,7 +462,6 @@
 
     <!-- コントロール・展開バー -->
     <div class="control-expand-bar">
-      <!-- 左側：セレクトボックス縦2段 -->
       <div class="control-left-grid">
         <div class="control-row-top">
           <div class="mini-select-wrapper">
@@ -467,7 +483,6 @@
         </div>
       </div>
       
-      <!-- 【改良】右側：展開バーの右端にエクスポートボタンを自然に内包 -->
       <div class="control-right-area">
         <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
         <button class="inline-export-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
@@ -500,7 +515,8 @@
       <div class="sheet-header">
         <span class="sheet-title">過去のセッション履歴</span>
         <div class="sheet-header-actions">
-          <button class="sheet-gear-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
+          <!-- 【改良】記号から「⚙️ 設定」のテキストボタンに変更 -->
+          <button class="sheet-gear-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️ 設定</button>
           <button class="new-proj-btn" type="button" onclick="triggerNewProject()">＋ 新規生成</button>
         </div>
       </div>
@@ -516,11 +532,25 @@
       <div class="modal-head">🔧 システム環境設定</div>
       <div class="modal-body">
         
-        <!-- 【改良】ヘッダーからお引越ししてきたローカル保存ステータス表示 -->
+        <!-- データセキュア動作モード -->
         <div class="setting-group">
           <span class="setting-label">データセキュア動作モード</span>
           <div style="font-size: 13px; color: var(--text-main); display: flex; align-items: center; gap: 6px; background: var(--bg-input); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 500;">
             🔒 ローカル保存モード稼働中
+          </div>
+        </div>
+
+        <!-- 【新規】レポート幅（高さ％）調整項目 -->
+        <div class="setting-group">
+          <span class="setting-label">レポート領域の高さ（通常時画面比）</span>
+          <div class="preset-btn-group">
+            <button type="button" class="preset-btn" onclick="applyPresetHeight(25)">25%</button>
+            <button type="button" class="preset-btn" onclick="applyPresetHeight(35)">35%</button>
+            <button type="button" class="preset-btn" onclick="applyPresetHeight(45)">45%</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+            <input type="number" id="reportHeightInput" class="cyber-input" min="0" max="100" placeholder="自由入力 0-100">
+            <span style="font-size: 13px; font-weight: bold;">%</span>
           </div>
         </div>
 
@@ -536,15 +566,15 @@
           <div class="radio-pack" style="flex-direction: row; gap: 6px;">
             <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeTech" value="tech" checked>
-              <label for="themeTech" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Modern 💻</label>
+              <label for="themeTech" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 11px;">Modern 🏙️</label>
             </div>
             <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeCyber" value="cyber">
-              <label for="themeCyber" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Cyber ⚡</label>
+              <label for="themeCyber" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 11px;">Cyber ⚡</label>
             </div>
             <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeSoft" value="soft">
-              <label for="themeSoft" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Soft 🌸</label>
+              <label for="themeSoft" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 11px;">Soft 🌸</label>
             </div>
           </div>
         </div>
@@ -594,10 +624,10 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'life_report_production_settings_v2';
+    const STORAGE_KEY = 'life_report_production_settings_v3';
     const PROJECTS_LIST_KEY = 'life_report_projects_meta_list';
     const CHAT_LOGS_KEY = 'life_report_chat_logs';
-    const REPORT_DATA_KEY = 'life_report_panes_data_v2';
+    const REPORT_DATA_KEY = 'life_report_panes_data_v3';
 
     let currentProjectId = '';
     let chatLogs = []; 
@@ -646,6 +676,7 @@
       localStorage.setItem(PROJECTS_LIST_KEY, JSON.stringify(list));
     }
 
+    /* 【改良】新規プロジェクトから日付と時間を完全に排除 */
     function createNewProject() {
       let projects = getLocalProjectsList();
 
@@ -674,9 +705,7 @@
       }
 
       const id = 'proj_' + Date.now();
-      const now = new Date();
-      const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-      const defaultName = `新規プロジェクト (${timeStr})`;
+      const defaultName = `新規プロジェクト`; // 日付時間を無くし究極のシンプル構成に
 
       currentProjectId = id;
       projects.unshift({ id: id, name: defaultName });
@@ -685,7 +714,6 @@
       chatLogs = [];
       localStorage.removeItem(getChatLogsKey());
 
-      /* 【改良】重複を排除するため、Currentから「概要」のh4とpを削除 */
       const initialReport = {
         current: '<h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
         knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄集されます）</li></ul>',
@@ -825,12 +853,33 @@
       });
     });
 
+    /* 【改良】展開バーは設定された高さを一時的にリセットして全画面に広げるトグルに変更 */
     function toggleReportHeight() {
       const reportSection = document.getElementById('reportSection');
       const expandBar = document.getElementById('expandBar');
       if (!reportSection || !expandBar) return;
+      
       reportSection.classList.toggle('expanded');
-      expandBar.textContent = reportSection.classList.contains('expanded') ? '▲ レポート領域を収納 ▲' : '▼ レポート領域を展開 ▼';
+      if (reportSection.classList.contains('expanded')) {
+        reportSection.style.height = '75dvh';
+        expandBar.textContent = '▲ レポート領域を収納 ▲';
+      } else {
+        const savedUI = localStorage.getItem(STORAGE_KEY);
+        let baseHeight = '25';
+        if (savedUI) {
+          try {
+            const settings = JSON.parse(savedUI);
+            if (settings.reportHeight) baseHeight = settings.reportHeight;
+          } catch(e){}
+        }
+        reportSection.style.height = baseHeight + 'dvh';
+        expandBar.textContent = '▼ レポート領域を展開 ▼';
+      }
+    }
+
+    function applyPresetHeight(val) {
+      const input = document.getElementById('reportHeightInput');
+      if (input) input.value = val;
     }
 
     function switchTab(tabName) {
@@ -863,6 +912,13 @@
       switchTab('current');
       
       document.getElementById('reportSection')?.classList.remove('expanded');
+      
+      const savedUI = localStorage.getItem(STORAGE_KEY);
+      let baseHeight = '25';
+      if (savedUI) {
+        try { const s = JSON.parse(savedUI); if (s.reportHeight) baseHeight = s.reportHeight; } catch(e){}
+      }
+      document.getElementById('reportSection').style.height = baseHeight + 'dvh';
       document.getElementById('expandBar').textContent = '▼ レポート領域を展開 ▼';
 
       toggleBottomSheet();
@@ -928,7 +984,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'ご要望通りの微調整を反映しました！✨\n\n・エクスポートボタンを右側展開バーの横に配置しました。\n・レポートのCurrent内から、プロジェクト名と被っていた不要な「概要」項目を排除しました。\n・「ローカル保存モード」へと名称変更のうえ、設定(⚙️)の中に移動させました。\n・Modernテーマを、男女問わず好まれる洗練されたクリーン・ミニマルな配色に刷新しました。');
+      appendMessageToUI('ai', 'アップデート完了しました！🌌\n\n・履歴画面のボタンを**「⚙️ 設定」**テキスト表記に変更しました。\n・環境設定内から、レポート表示幅（高さ）を**25%/35%/45% または 0-100%の自由入力**でいつでも可変調整できるようになりました。\n・新規プロジェクト生成時の日付時間を排除し、ミニマルな作成体験にしました。\n・Modernテーマを、都市の洗練された重厚感と、シャープな未来感を併せ持つ**「ネオ・クラシック・モダン」**にリフレッシュしました。');
     }
 
     async function callRealAiApi() {
@@ -938,7 +994,7 @@
       
       const progressMsg = document.createElement('div');
       progressMsg.className = 'msg ai analyzing';
-      progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 2層メモリ同期中...</span>';
+      progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 メトロポリタン同期中...</span>';
       if (chatHistory) { chatHistory.appendChild(progressMsg); chatHistory.scrollTop = chatHistory.scrollHeight; }
 
       const currentHTML = document.getElementById('pane-current')?.innerHTML.trim() || '';
@@ -1123,11 +1179,22 @@
       const appTheme = activeTheme ? activeTheme.value : 'tech';
       const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
       
-      const settings = { chatAi, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
+      /* 【改良】レポート幅（高さ）の保存処理 */
+      let reportHeight = document.getElementById('reportHeightInput')?.value.trim() || '25';
+      if (Number(reportHeight) < 0) reportHeight = '0';
+      if (Number(reportHeight) > 100) reportHeight = '100';
+
+      const settings = { chatAi, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl, reportHeight };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 
       document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
       document.body.classList.add(`theme-${appTheme}`);
+
+      // 高さをDOMへリアルタイム反映
+      document.documentElement.style.setProperty('--report-height', `${reportHeight}dvh`);
+      if (!document.getElementById('reportSection').classList.contains('expanded')) {
+        document.getElementById('reportSection').style.height = `${reportHeight}dvh`;
+      }
 
       if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
       syncToCloudRealtime();
@@ -1196,6 +1263,14 @@
       }
       if (settings.syncUrl && document.getElementById('syncUrl')) document.getElementById('syncUrl').value = settings.syncUrl;
       if (settings.personalMemory && document.getElementById('personalMemory')) document.getElementById('personalMemory').value = settings.personalMemory;
+      
+      /* 【改良】保存されたレポート幅をUIに適用 */
+      if (settings.reportHeight) {
+        if (document.getElementById('reportHeightInput')) document.getElementById('reportHeightInput').value = settings.reportHeight;
+        document.documentElement.style.setProperty('--report-height', `${settings.reportHeight}dvh`);
+        document.getElementById('reportSection').style.height = `${settings.reportHeight}dvh`;
+      }
+
       if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
     }
 
