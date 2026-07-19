@@ -6,44 +6,85 @@
   <title>LifeReport - AI Copilot</title>
   <style>
     /* =========================================================================
-       1. 基本スタイル & 神秘的テーマ定義 (シンプル×ミステリアス)
+       1. トリプルテーマ定義 (すべて可読性・見やすさを最優先)
        ========================================================================= */
     :root {
-      /* デフォルト：Mystic Dark (星空とアメジストを基調とした神秘的なディープトーン) */
-      --bg-body: #0a0c16;
-      --bg-frame: #111424;
-      --bg-deck: #181c32;
-      --bg-pane: #14182c;
-      --bg-input: #1d223c;
-      --text-main: #f1f5f9;
-      --accent-cyan: #4cc9f0;    /* オーロラブルー */
-      --accent-purple: #9d4edd;  /* アメジストパープル */
-      --border-color: #262c4d;
-      --msg-user-bg: linear-gradient(135deg, #7b2cbf, #5a189a);
+      /* デフォルト：2. Modern Tech (30代男性向け・落ち着いた高級感のあるSlate調ダーク) */
+      --bg-body: #0f172a;
+      --bg-frame: #1e293b;
+      --bg-deck: #334155;
+      --bg-pane: #1e293b;
+      --bg-input: #0f172a;
+      --text-main: #f8fafc;
+      --accent-cyan: #38bdf8;    /* スカイブルー */
+      --accent-purple: #818cf8;  /* インディゴブルー */
+      --border-color: #475569;
+      --msg-user-bg: #2563eb;    /* 鮮明なブルー */
       --msg-user-text: #ffffff;
-      --msg-ai-bg: #181d36;
-      --msg-ai-border: #262c4d;
-      --select-bg: #181c32;
+      --msg-ai-bg: #1e293b;
+      --msg-ai-border: #475569;
+      --select-bg: #334155;
     }
 
-    /* 選択肢2：Mystic Light (薄明をイメージしたトワイライトホワイト) */
-    body.theme-light {
-      --bg-body: #f0f2f8;
+    /* テーマ1：Developer Cyber (開発者向けクール・エレクトリック)
+       黒基調のサイバー感を演出しつつ、文字がハッキリ読める高コントラスト設計 */
+    body.theme-cyber {
+      --bg-body: #0a0b10;
+      --bg-frame: #12141d;
+      --bg-deck: #1a1d29;
+      --bg-pane: #151822;
+      --bg-input: #1e2231;
+      --text-main: #f0f3f6;
+      --accent-cyan: #00f5ff;    /* ネオンシアン */
+      --accent-purple: #bd00ff;  /* ネオンパープル */
+      --border-color: #2a2f44;
+      --msg-user-bg: linear-gradient(135deg, #bd00ff, #00f5ff);
+      --msg-user-text: #ffffff;
+      --msg-ai-bg: #151822;
+      --msg-ai-border: #00f5ff;
+      --select-bg: #1a1d29;
+    }
+
+    /* テーマ2：Modern Tech (基本仕様のため明示的にも定義) */
+    body.theme-tech {
+      --bg-body: #0f172a;
+      --bg-frame: #1e293b;
+      --bg-deck: #334155;
+      --bg-pane: #1e293b;
+      --bg-input: #0f172a;
+      --text-main: #f8fafc;
+      --accent-cyan: #38bdf8;
+      --accent-purple: #818cf8;
+      --border-color: #475569;
+      --msg-user-bg: #2563eb;
+      --msg-user-text: #ffffff;
+      --msg-ai-bg: #1e293b;
+      --msg-ai-border: #475569;
+      --select-bg: #334155;
+    }
+
+    /* テーマ3：Soft Clean (女性でも親しみやすい、優しくクリーンな淡色ナチュラル)
+       目に刺さる純白を避け、トレンドの柔らかなグレージュと上品なくすみローズで構成 */
+    body.theme-soft {
+      --bg-body: #f5f3f0;
       --bg-frame: #ffffff;
-      --bg-deck: #e2e7f4;
-      --bg-pane: #f4f6fb;
-      --bg-input: #e9ecf5;
-      --text-main: #1e2238;
-      --accent-cyan: #0077b6;
-      --accent-purple: #7b2cbf;
-      --border-color: #cbd5e1;
-      --msg-user-bg: #e0aaff;
-      --msg-user-text: #3c096c;
-      --msg-ai-bg: #f4f6fb;
-      --msg-ai-border: #cbd5e1;
-      --select-bg: #e9ecf5;
+      --bg-deck: #eae6e1;
+      --bg-pane: #faf9f7;
+      --bg-input: #f0ede9;
+      --text-main: #332f2c;     /* 目が疲れない深いアッシュブラウン */
+      --accent-cyan: #6b9080;    /* セージミント */
+      --accent-purple: #b5838d;  /* くすみローズピンク */
+      --border-color: #d6cfc7;
+      --msg-user-bg: #ffb5a7;    /* 優しいコーラル */
+      --msg-user-text: #332f2c;
+      --msg-ai-bg: #faf9f7;
+      --msg-ai-border: #d6cfc7;
+      --select-bg: #f0ede9;
     }
 
+    /* =========================================================================
+       2. 基本構造 & レイアウト
+       ========================================================================= */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -58,10 +99,9 @@
       align-items: center;
       min-height: 100dvh;
       overflow: hidden;
-      transition: background-color 0.2s;
+      transition: background-color 0.2s, color 0.2s;
     }
 
-    /* 洗練されたメインフレーム */
     .phone-frame {
       width: 100%;
       max-width: 480px;
@@ -76,9 +116,7 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* =========================================================================
-       2. ヘッダー (エクスポートボタンを特等席に配置)
-       ========================================================================= */
+    /* ヘッダー */
     .header {
       background: var(--bg-deck);
       padding: 14px 16px;
@@ -137,9 +175,7 @@
       transform: rotate(30deg);
     }
 
-    /* =========================================================================
-       3. コントロールエリア (無駄な装飾を削ぎ落としたシンプルデザイン)
-       ========================================================================= */
+    /* ツインドロップダウン */
     .control-container {
       display: flex;
       gap: 8px;
@@ -166,8 +202,6 @@
       border: 1px solid var(--border-color);
       transition: all 0.2s;
     }
-    #reportTabSelect:focus { border-color: var(--accent-cyan); }
-    #aiModelSelect:focus { border-color: var(--accent-purple); }
     
     .cyber-select-wrapper::after {
       content: '▼';
@@ -180,9 +214,7 @@
       opacity: 0.6;
     }
 
-    /* =========================================================================
-       4. レポートコンテンツ表示領域
-       ========================================================================= */
+    /* レポート領域 */
     .report-section {
       --default-height: 25%;
       height: var(--default-height);
@@ -213,9 +245,7 @@
     }
     .expand-bar:hover { opacity: 1; color: var(--accent-cyan); }
 
-    /* =========================================================================
-       5. チャットログ・対話タイムライン
-       ========================================================================= */
+    /* チャットタイムライン */
     .chat-timeline {
       flex: 1;
       min-height: 0;
@@ -230,7 +260,7 @@
       max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; user-select: text;
     }
     .msg.user {
-      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 2px 8px rgba(123, 44, 191, 0.2);
+      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .msg.ai {
       align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border);
@@ -241,9 +271,7 @@
     .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* =========================================================================
-       6. 送信フォーム・インプットデッキ
-       ========================================================================= */
+    /* インプットエリア */
     .input-deck {
       background: var(--bg-deck); padding: 10px 12px; border-top: 1px solid var(--border-color); z-index: 10;
     }
@@ -272,9 +300,7 @@
     }
     .send-btn:hover { opacity: 0.9; }
 
-    /* =========================================================================
-       7. ボトムシート (履歴・セッション一覧)
-       ========================================================================= */
+    /* ボトムシート */
     .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(2px); }
     .sheet-overlay.open { opacity: 1; pointer-events: auto; }
     .bottom-sheet {
@@ -284,32 +310,34 @@
     .bottom-sheet.open { transform: translateY(0); }
     .sheet-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .sheet-title { color: var(--text-main); font-weight: 600; font-size: 15px; }
-    .new-proj-btn { background: var(--accent-cyan); color: var(--bg-body); border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .new-proj-btn { background: var(--accent-cyan); color: #000000; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .sheet-body { flex: 1; overflow-y: auto; padding: 8px 0 24px; }
     .sheet-item { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color); }
     .sheet-item:hover { background: var(--bg-deck); }
-    .sheet-item.active { background: rgba(157, 78, 221, 0.08); }
-    .sheet-item.active .sheet-item-name { color: var(--accent-purple); font-weight: 600; }
+    .sheet-item.active { background: rgba(129, 140, 248, 0.08); }
+    .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: 600; }
     .sheet-item-name { font-size: 14px; color: var(--text-main); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .project-del-btn { color: var(--text-main); opacity: 0.4; padding: 4px; font-size: 14px; transition: opacity 0.2s, color 0.2s; }
     .project-del-btn:hover { color: #ff4a4a; opacity: 1; }
 
-    /* =========================================================================
-       8. モーダルダイアログ (環境設定)
-       ========================================================================= */
+    /* モーダル */
     .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
     .modal-mask.open { opacity: 1; pointer-events: auto; }
-    .modal-window { background: var(--bg-pane); width: 90%; max-width: 400px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    .modal-window { background: var(--bg-pane); width: 90%; max-width: 420px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
     .modal-head { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; font-size: 16px; }
     .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
     .setting-group { display: flex; flex-direction: column; gap: 6px; }
     .setting-label { font-size: 12px; color: var(--text-main); opacity: 0.7; font-weight: 600; }
     .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; }
     .cyber-input:focus { border-color: var(--accent-purple); }
-    .radio-pack { display: flex; gap: 10px; }
-    .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; text-align: center; font-size: 12px; cursor: pointer; color: var(--text-main); opacity: 0.7; transition: all 0.2s; }
-    .radio-pack input[type="radio"] { display: none; }
-    .radio-pack input[type="radio"]:checked + .radio-label { background: rgba(157, 78, 221, 0.12); border-color: var(--accent-purple); color: var(--accent-purple); font-weight: 600; opacity: 1; }
+    
+    /* テーマ・設定用ラジオボタンの縦配列 */
+    .radio-pack { display: flex; flex-direction: column; gap: 8px; }
+    .radio-row { display: flex; align-items: center; position: relative; }
+    .radio-row input[type="radio"] { display: none; }
+    .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 13px; cursor: pointer; color: var(--text-main); opacity: 0.8; transition: all 0.2s; }
+    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(129, 140, 248, 0.12); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 3px 0 0 var(--accent-cyan); }
+    
     .modal-foot { padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
     .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     .btn-primary { background: var(--accent-purple); border: none; color: #ffffff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
@@ -325,13 +353,13 @@
         <div class="header-status">✨ クライアント保護モード稼働中</div>
       </div>
       <div class="header-right-actions">
-        <!-- 特等席に追加されたエクスポートショートカットボタン -->
+        <!-- 特等席：ワンタップエクスポート -->
         <button class="top-action-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📤</button>
         <button class="top-action-btn settings-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
       </div>
     </header>
 
-    <!-- ツインドロップダウンデッキ -->
+    <!-- コントロールセレクト -->
     <div class="control-container">
       <div class="cyber-select-wrapper">
         <select id="reportTabSelect" class="cyber-select">
@@ -351,7 +379,7 @@
       </div>
     </div>
 
-    <!-- 多層構造レポート表示区画 -->
+    <!-- 多層レポートパネル -->
     <section class="report-section" id="reportSection">
       <div class="report-content">
         <div class="report-pane active" id="pane-current"></div>
@@ -362,10 +390,10 @@
       <div class="expand-bar" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
     </section>
 
-    <!-- チャット対話タイムライン -->
+    <!-- タイムライン -->
     <main class="chat-timeline" id="chatHistory"></main>
 
-    <!-- チャット入力コントロールデッキ -->
+    <!-- 入力デッキ -->
     <footer class="input-deck">
       <div class="preview-container" id="previewContainer">
         <span id="previewText">📸 添付画像情報</span>
@@ -381,7 +409,7 @@
       </div>
     </footer>
 
-    <!-- ボトムシート（履歴リスト） -->
+    <!-- ボトムシート -->
     <div class="sheet-overlay" id="sheetOverlay" onclick="toggleBottomSheet()"></div>
     <div class="bottom-sheet" id="bottomSheet">
       <div class="sheet-header">
@@ -394,13 +422,13 @@
     </div>
   </div>
 
-  <!-- 環境設定モーダル -->
+  <!-- 環境設定モーダル (3種の選べるテーマ配置) -->
   <div class="modal-mask" id="settingsModal">
     <div class="modal-window">
       <div class="modal-head">🔧 システム環境設定</div>
       <div class="modal-body">
         
-        <!-- 基底AIモデル設定 (裏同期用隠し要素) -->
+        <!-- 裏同期用ダミー -->
         <div class="setting-group" style="display: none;">
           <input type="radio" name="chatAi" id="aiGemini" value="gemini" checked>
           <input type="radio" name="chatAi" id="aiClaude" value="claude">
@@ -408,38 +436,42 @@
           <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
         </div>
 
-        <!-- カラーテーマ選択 -->
+        <!-- ご要望の3大テーマ切り替えコンソール -->
         <div class="setting-group">
-          <span class="setting-label">カラーテーマ</span>
+          <span class="setting-label">カラーテーマ (全種類見やすさ最優先)</span>
           <div class="radio-pack">
-            <input type="radio" name="appTheme" id="themeDark" value="dark" checked>
-            <label for="themeDark" class="radio-label">Mystic Dark 🌃</label>
-            <input type="radio" name="appTheme" id="themeLight" value="light">
-            <label for="themeLight" class="radio-label">Mystic Light ☀️</label>
+            <div class="radio-row">
+              <input type="radio" name="appTheme" id="themeCyber" value="cyber">
+              <label for="themeCyber" class="radio-label">1. Developer Cyber ⚡ (クール・開発者向けネオン)</label>
+            </div>
+            <div class="radio-row">
+              <input type="radio" name="appTheme" id="themeTech" value="tech" checked>
+              <label for="themeTech" class="radio-label">2. Modern Tech 💻 (30代男性向け・洗練テック)</label>
+            </div>
+            <div class="radio-row">
+              <input type="radio" name="appTheme" id="themeSoft" value="soft">
+              <label for="themeSoft" class="radio-label">3. Soft Clean 🌸 (女性向け・クリーンナチュラル)</label>
+            </div>
           </div>
         </div>
 
-        <!-- 初期ビューの高さ設定 -->
+        <!-- 初期ビューの高さ -->
         <div class="setting-group">
           <span class="setting-label">レポート領域の初期高度</span>
-          <div class="radio-pack">
-            <input type="radio" name="repSize" id="sizeMin" value="15">
-            <label for="sizeMin" class="radio-label">Low (15%)</label>
-            <input type="radio" name="repSize" id="sizeMid" value="25" checked>
-            <label for="sizeMid" class="radio-label">Mid (25%)</label>
-            <input type="radio" name="repSize" id="sizeMax" value="40">
-            <label for="sizeMax" class="radio-label">High (40%)</label>
+          <div class="radio-pack" style="flex-direction:row;">
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMin" value="15"><label for="sizeMin" class="radio-label" style="text-align:center;">Low (15%)</label></div>
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMid" value="25" checked><label for="sizeMid" class="radio-label" style="text-align:center;">Mid (25%)</label></div>
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMax" value="40"><label for="sizeMax" class="radio-label" style="text-align:center;">High (40%)</label></div>
           </div>
         </div>
 
-        <!-- リアルタイムクラウド同期設定 -->
+        <!-- クラウドリアルタイム同期URL -->
         <div class="setting-group">
           <span class="setting-label">リアルタイム同期用 URL (GAS / Webhookなど)</span>
           <input type="url" id="syncUrl" class="cyber-input" placeholder="https://script.google.com/... などを入力">
-          <small style="opacity: 0.6; font-size: 11px;">※更新の都度、JSONデータがPOST送信されます。</small>
         </div>
 
-        <!-- 各種独立クラウドAPIキーエントリー -->
+        <!-- クラウドAPIキースロット -->
         <div class="setting-group">
           <span class="setting-label">Gemini API Key</span>
           <input type="password" id="apiKeyGemini" class="cyber-input" placeholder="AI-Keyを入力...">
@@ -457,13 +489,13 @@
           <input type="password" id="apiKeyOpenAI" class="cyber-input" placeholder="sk-proj-を入力...">
         </div>
 
-        <!-- 1層目: 共通個人メモリ -->
+        <!-- 全プロジェクト共通1層目メモリ -->
         <div class="setting-group">
-          <span class="setting-label">個人メモリ 🧠 (全プロジェクト共通の前提・プロファイル)</span>
+          <span class="setting-label">個人メモリ 🧠 (全セッション共有プロファイル)</span>
           <textarea id="personalMemory" class="cyber-input" style="height: 80px; resize: vertical; line-height: 1.4;"></textarea>
         </div>
 
-        <!-- インポート／エクスポートコンソール -->
+        <!-- データエクスポート・インポート -->
         <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
           <span class="setting-label">データバックアップマネジメント</span>
           <button type="button" class="btn-secondary" style="color:var(--accent-cyan); font-weight:600;" onclick="exportAllData()">📤 ローカルへJSONエクスポート</button>
@@ -482,7 +514,7 @@
   </div>
 
   <!-- =========================================================================
-     9. システムロジック・JavaScriptコア (元のロジックを100%完全移送)
+     3. コアロジック (3種類のテーマ動的クラススイッチ完全実装)
      ========================================================================= -->
   <script>
     const STORAGE_KEY = 'life_report_production_settings_v2';
@@ -531,16 +563,12 @@
           console.error("ネットワーク同期エラー:", e);
         });
       } catch (err) {
-        // サイレントに処理
+        // サイレント処理
       }
     }
 
     function getLocalProjectsList() {
-      try {
-        return JSON.parse(localStorage.getItem(PROJECTS_LIST_KEY) || '[]');
-      } catch(e) {
-        return [];
-      }
+      try { return JSON.parse(localStorage.getItem(PROJECTS_LIST_KEY) || '[]'); } catch(e) { return []; }
     }
 
     function saveLocalProjectsList(list) {
@@ -554,9 +582,7 @@
         const latestProj = projects[0];
         const logKey = `${CHAT_LOGS_KEY}_${latestProj.id}`;
         let logs = [];
-        try {
-          logs = JSON.parse(localStorage.getItem(logKey) || '[]');
-        } catch(e) {}
+        try { logs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e) {}
         const hasUserMessage = logs.some(log => log.sender === 'user');
 
         if (!hasUserMessage) {
@@ -645,7 +671,6 @@
         const delBtn = document.createElement('span');
         delBtn.className = 'project-del-btn';
         delBtn.innerHTML = '🗑️';
-        delBtn.title = 'プロジェクトを削除';
         delBtn.onclick = (e) => {
           e.stopPropagation();
           deleteProject(proj.id, proj.name);
@@ -673,27 +698,19 @@
           setActiveProjectUI(nextProj.id, nextProj.name);
 
           const savedReports = localStorage.getItem(getReportDataKey());
-          if (savedReports) {
-            try { applyReportData(JSON.parse(savedReports)); } catch(e){}
-          }
+          if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e){} }
 
           const savedLogs = localStorage.getItem(getChatLogsKey());
-          try {
-            chatLogs = savedLogs ? JSON.parse(savedLogs) : [];
-          } catch(e) { chatLogs = []; }
+          try { chatLogs = savedLogs ? JSON.parse(savedLogs) : []; } catch(e) { chatLogs = []; }
           
           if (chatHistory) {
             chatHistory.innerHTML = '';
             if (chatLogs.length > 0) {
               chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
-            } else {
-              setDefaultInitialAIMessage();
-            }
+            } else { setDefaultInitialAIMessage(); }
             chatHistory.scrollTop = chatHistory.scrollHeight;
           }
-        } else {
-          createNewProject();
-        }
+        } else { createNewProject(); }
       }
       renderProjectsList();
       syncToCloudRealtime();
@@ -730,15 +747,8 @@
       }
     }
 
-    function openSettings() { 
-      const modal = document.getElementById('settingsModal');
-      if (modal) modal.classList.add('open'); 
-    }
-
-    function closeSettings() { 
-      const modal = document.getElementById('settingsModal');
-      if (modal) modal.classList.remove('open'); 
-    }
+    function openSettings() { document.getElementById('settingsModal')?.classList.add('open'); }
+    function closeSettings() { document.getElementById('settingsModal')?.classList.remove('open'); }
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('settingsModal')?.addEventListener('click', (e) => {
@@ -756,8 +766,7 @@
 
     function switchTab(tabName) {
       document.querySelectorAll('.report-pane').forEach(pane => pane.classList.remove('active'));
-      const targetPane = document.getElementById(`pane-${tabName}`);
-      if (targetPane) targetPane.classList.add('active');
+      document.getElementById(`pane-${tabName}`)?.classList.add('active');
     }
 
     function selectProject(id, name) {
@@ -765,15 +774,11 @@
       setActiveProjectUI(id, name);
 
       const savedReports = localStorage.getItem(getReportDataKey());
-      if (savedReports) {
-        try { applyReportData(JSON.parse(savedReports)); } catch(e){}
-      }
+      if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e){} }
 
       const savedLogs = localStorage.getItem(getChatLogsKey());
       if (savedLogs) {
-        try {
-          chatLogs = JSON.parse(savedLogs);
-        } catch(e) { chatLogs = []; }
+        try { chatLogs = JSON.parse(savedLogs); } catch(e) { chatLogs = []; }
         if (chatHistory) {
           chatHistory.innerHTML = '';
           chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
@@ -787,7 +792,6 @@
       const reportTabSelect = document.getElementById('reportTabSelect');
       if (reportTabSelect) reportTabSelect.value = 'current';
       switchTab('current');
-
       toggleBottomSheet();
     }
 
@@ -803,40 +807,28 @@
         msg.innerHTML = formattedText;
       }
       chatHistory.appendChild(msg);
-      
-      if (sender === 'user') {
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-      }
+      if (sender === 'user') chatHistory.scrollTop = chatHistory.scrollHeight;
     }
 
     function handleFileSelect(input) {
       const file = input.files?.[0];
       if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        alert("画像ファイルのみサポートしています。");
-        input.value = '';
-        return;
-      }
+      if (!file.type.startsWith('image/')) { alert("画像のみサポートしています。"); input.value = ''; return; }
       const reader = new FileReader();
       reader.onload = function(e) {
         attachedFileData = e.target.result; 
         attachedFileName = file.name;
         const container = document.getElementById('previewContainer');
         const text = document.getElementById('previewText');
-        if (container && text) {
-          text.textContent = `📸 送信待機中: ${file.name}`;
-          container.classList.add('active');
-        }
+        if (container && text) { text.textContent = `📸 送信待機中: ${file.name}`; container.classList.add('active'); }
       };
       reader.readAsDataURL(file);
       input.value = '';
     }
 
     function clearAttachment() {
-      attachedFileData = null;
-      attachedFileName = "";
-      const container = document.getElementById('previewContainer');
-      if (container) container.classList.remove('active');
+      attachedFileData = null; attachedFileName = "";
+      document.getElementById('previewContainer')?.classList.remove('active');
     }
 
     async function sendMessage() {
@@ -860,7 +852,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\nWebhook/GAS等のURLを設定すると、外部クラウドへリアルタイム自動バックアップが走ります。共通の「個人メモリ」と組み合わせてご利用ください。');
+      appendMessageToUI('ai', 'LifeReport トリプルテーマセッションへようこそ！🚀\n\n「⚙️システム環境設定」から、エンジニア向けサイバー、30代男性向け洗練テック、女性向けソフトクリーンをいつでも切り替えられます。いずれも視認性最優先です！');
     }
 
     async function callRealAiApi() {
@@ -871,36 +863,20 @@
       const progressMsg = document.createElement('div');
       progressMsg.className = 'msg ai analyzing';
       progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 コンテキストと2層メモリを同期中...</span>';
-      
-      if (chatHistory) {
-        chatHistory.appendChild(progressMsg);
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-      }
+      if (chatHistory) { chatHistory.appendChild(progressMsg); chatHistory.scrollTop = chatHistory.scrollHeight; }
 
       const currentHTML = document.getElementById('pane-current')?.innerHTML.trim() || '';
       const knowledgeHTML = document.getElementById('pane-knowledge')?.innerHTML.trim() || '';
       const memoryHTML = document.getElementById('pane-memory')?.innerHTML.trim() || '';
       const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
-      const personalMemoryText = document.getElementById('personalMemory')?.value.trim() || '未設定';
 
       const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴走するLifeReportのコアシステムです。
-
 現在の画面上部のレポートと、このプロジェクト固有の個別メモリ（長期記憶）の状態（HTML）は以下の通りです：
-【Current（概要/決定事項）】:
-${currentHTML}
-
-【Knowledge（仕様・ルール・知識）】:
-${knowledgeHTML}
-
-【Memory（プロジェクト固有の長期記憶）】:
-${memoryHTML}
-
-【History（進捗履歴）】:
-${historyHTML}
+【Current】:\n${currentHTML}\n【Knowledge】:\n${knowledgeHTML}\n【Memory】:\n${memoryHTML}\n【History】:\n${historyHTML}
 
 【出力・表現に関する指示】
-- ユーザーに返すチャットの返答は、極限まで視視認性を重視してください。適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- 对話内容から、上部のレポートやプロジェクト固有のMemoryを「更新」「追記」「修正」すべき情報が生まれたと判断した場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
+- チャットの返答は、極限まで視認性を重視し、適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
+- レポートやMemoryを「更新」「追記」「修正」すべき情報が生まれた場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
 
 特殊出力フォーマット：
 <update_current>Currentの最新全HTML</update_current>
@@ -915,7 +891,6 @@ ${historyHTML}
         if (selectedAi === 'claude') {
           const apiKey = document.getElementById('apiKeyClaude')?.value.trim() || '';
           if (!apiKey) throw new Error("Claude APIキーが未設定です。");
-
           const messages = [];
           chatLogs.forEach(log => {
             let contentPayload = [];
@@ -928,7 +903,6 @@ ${historyHTML}
             }
             messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: contentPayload });
           });
-
           const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
@@ -941,12 +915,8 @@ ${historyHTML}
         } else if (selectedAi === 'deepseek') {
           const apiKey = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
           if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
-
           const messages = [{ role: "system", content: systemInstructionText }];
-          chatLogs.forEach(log => {
-            messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || (log.image ? "画像が送信されました" : "") });
-          });
-
+          chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || (log.image ? "画像送信" : "") }); });
           const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -959,7 +929,6 @@ ${historyHTML}
         } else if (selectedAi === 'gemini') {
           const apiKey = document.getElementById('apiKeyGemini')?.value.trim() || '';
           if (!apiKey) throw new Error("Gemini APIキーが未設定です。");
-
           const contents = chatLogs.map(log => {
             const parts = [];
             if (log.text) parts.push({ text: log.text });
@@ -971,13 +940,11 @@ ${historyHTML}
             }
             return { role: log.sender === 'user' ? 'user' : 'model', parts: parts.length > 0 ? parts : [{text:""}] };
           });
-
           if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
             let textPart = contents[contents.length - 1].parts.find(p => p.text !== undefined);
             if (!textPart) { textPart = { text: "" }; contents[contents.length - 1].parts.unshift(textPart); }
             textPart.text = `${systemInstructionText}\n\n----------------------------------------\nユーザー指示: ${textPart.text || "（画像）"}`;
           }
-
           const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -990,7 +957,6 @@ ${historyHTML}
         } else if (selectedAi === 'openai') {
           const apiKey = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
           if (!apiKey) throw new Error("OpenAI APIキーが未設定です。");
-
           const messages = [{ role: "system", content: systemInstructionText }];
           chatLogs.forEach(log => {
             let contentPayload = [];
@@ -998,7 +964,6 @@ ${historyHTML}
             if (log.image) contentPayload.push({ type: "image_url", image_url: { url: log.image } });
             messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: contentPayload.length > 0 ? contentPayload : (log.text || "") });
           });
-
           const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -1034,19 +999,15 @@ ${historyHTML}
           if (titleMatch) updateProjectName(currentProjectId, titleMatch[1].trim());
 
           if (reportUpdated) saveReportData();
-
           progressMsg.classList.remove('analyzing');
-          let formattedText = cleanResponseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          progressMsg.innerHTML = formattedText;
-
+          progressMsg.innerHTML = cleanResponseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
           chatLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
           saveChatLogs();
           if (chatHistory) chatHistory.scrollTop = chatHistory.scrollHeight;
         } else {
           if (reportUpdated) {
             const repKey = `${REPORT_DATA_KEY}_${callingProjectId}`;
-            let savedRep = {};
-            try { savedRep = JSON.parse(localStorage.getItem(repKey) || '{}'); } catch(e){}
+            let savedRep = {}; try { savedRep = JSON.parse(localStorage.getItem(repKey) || '{}'); } catch(e){}
             if (currentMatch) savedRep.current = currentMatch[1].trim();
             if (knowledgeMatch) savedRep.knowledge = knowledgeMatch[1].trim();
             if (memoryMatch) savedRep.memory = memoryMatch[1].trim();
@@ -1059,26 +1020,19 @@ ${historyHTML}
             if (proj) { proj.name = titleMatch[1].trim(); saveLocalProjectsList(projects); renderProjectsList(); }
           }
           const logKey = `${CHAT_LOGS_KEY}_${callingProjectId}`;
-          let origLogs = [];
-          try { origLogs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e){}
+          let origLogs = []; try { origLogs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e){}
           origLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
           localStorage.setItem(logKey, JSON.stringify(origLogs));
         }
 
       } catch (err) {
         if (callingProjectId === currentProjectId && progressMsg) {
-          progressMsg.classList.remove('analyzing');
-          progressMsg.style.border = "1px solid #ff0055";
-          progressMsg.style.color = "#ff66a3";
-          progressMsg.textContent = `❌ エラー: ${err.message}`;
+          progressMsg.classList.remove('analyzing'); progressMsg.style.border = "1px solid #ff0055"; progressMsg.style.color = "#ff66a3"; progressMsg.textContent = `❌ エラー: ${err.message}`;
         }
       }
     }
 
-    function applyAndCloseSettings() {
-      saveSettings();
-      closeSettings();
-    }
+    function applyAndCloseSettings() { saveSettings(); closeSettings(); }
 
     function saveSettings() {
       const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
@@ -1087,37 +1041,31 @@ ${historyHTML}
       const activeRepSize = document.querySelector('input[name="repSize"]:checked');
       const repSize = activeRepSize ? activeRepSize.value : '25';
       
-      const apiKeyGemini = document.getElementById('apiKeyGemini')?.value ? document.getElementById('apiKeyGemini').value.trim() : '';
-      const apiKeyClaude = document.getElementById('apiKeyClaude')?.value ? document.getElementById('apiKeyClaude').value.trim() : '';
-      const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value ? document.getElementById('apiKeyDeepSeek').value.trim() : '';
-      const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value ? document.getElementById('apiKeyOpenAI').value.trim() : '';
-      const personalMemory = document.getElementById('personalMemory')?.value ? document.getElementById('personalMemory').value.trim() : '';
+      const apiKeyGemini = document.getElementById('apiKeyGemini')?.value.trim() || '';
+      const apiKeyClaude = document.getElementById('apiKeyClaude')?.value.trim() || '';
+      const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
+      const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
+      const personalMemory = document.getElementById('personalMemory')?.value.trim() || '';
       
       const activeTheme = document.querySelector('input[name="appTheme"]:checked');
-      const appTheme = activeTheme ? activeTheme.value : 'dark';
-      const syncUrl = document.getElementById('syncUrl')?.value ? document.getElementById('syncUrl').value.trim() : '';
+      const appTheme = activeTheme ? activeTheme.value : 'tech';
+      const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
       
       const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
       
-      if (repSize) {
-        const reportSection = document.getElementById('reportSection');
-        if (reportSection) reportSection.style.setProperty('--default-height', `${repSize}%`);
-      }
+      if (repSize) { document.getElementById('reportSection')?.style.setProperty('--default-height', `${repSize}%`); }
 
-      if (appTheme === 'light') {
-        document.body.classList.add('theme-light');
-      } else {
-        document.body.classList.remove('theme-light');
-      }
+      // トリプルテーマクラスの動的スイッチング
+      document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
+      document.body.classList.add(`theme-${appTheme}`);
 
       if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
       syncToCloudRealtime();
     }
 
     function saveChatLogs() {
-      const MAX_MESSAGES = 80; 
-      if (chatLogs.length > MAX_MESSAGES) chatLogs = chatLogs.slice(-MAX_MESSAGES);
+      if (chatLogs.length > 80) chatLogs = chatLogs.slice(-80);
       localStorage.setItem(getChatLogsKey(), JSON.stringify(chatLogs));
       syncToCloudRealtime();
     }
@@ -1142,28 +1090,21 @@ ${historyHTML}
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `lifereport_backup_${Date.now()}.json`;
-      a.click();
+      a.href = url; a.download = `lifereport_backup_${Date.now()}.json`; a.click();
     }
 
     function importAllData(input) {
-      const file = input.files?.[0];
-      if (!file) return;
+      const file = input.files?.[0]; if (!file) return;
       if (!confirm("既存の全データが上書きされます。よろしいですか？")) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const data = JSON.parse(e.target.result);
           for (let i = localStorage.length - 1; i >= 0; i--) {
-            const key = localStorage.key(i);
-            if (key && key.startsWith('life_report_')) localStorage.removeItem(key);
+            const key = localStorage.key(i); if (key && key.startsWith('life_report_')) localStorage.removeItem(key);
           }
-          for (const key in data) {
-            if (key.startsWith('life_report_')) localStorage.setItem(key, data[key]);
-          }
-          alert("復元完了。再起動します。");
+          for (const key in data) { if (key.startsWith('life_report_')) localStorage.setItem(key, data[key]); }
+          alert("データインポートに成功しました！最新設定で再起動します。");
           window.location.reload();
         } catch (err) { alert("失敗: " + err.message); }
       };
@@ -1175,8 +1116,7 @@ ${historyHTML}
       if (settings.chatAi) { const radio = document.querySelector(`input[name="chatAi"][value="${settings.chatAi}"]`); if (radio) radio.checked = true; }
       if (settings.repSize) { 
         const radio = document.querySelector(`input[name="repSize"][value="${settings.repSize}"]`); if (radio) radio.checked = true; 
-        const reportSection = document.getElementById('reportSection');
-        if (reportSection) reportSection.style.setProperty('--default-height', `${settings.repSize}%`); 
+        document.getElementById('reportSection')?.style.setProperty('--default-height', `${settings.repSize}%`); 
       }
       if (settings.apiKeyGemini && document.getElementById('apiKeyGemini')) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
       if (settings.apiKeyClaude && document.getElementById('apiKeyClaude')) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
@@ -1186,12 +1126,11 @@ ${historyHTML}
       if (settings.appTheme) {
         const themeRadio = document.querySelector(`input[name="appTheme"][value="${settings.appTheme}"]`);
         if (themeRadio) themeRadio.checked = true;
-        if (settings.appTheme === 'light') document.body.classList.add('theme-light');
-        else document.body.classList.remove('theme-light');
+        document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
+        document.body.classList.add(`theme-${settings.appTheme}`);
       }
       if (settings.syncUrl && document.getElementById('syncUrl')) document.getElementById('syncUrl').value = settings.syncUrl;
       if (settings.personalMemory && document.getElementById('personalMemory')) document.getElementById('personalMemory').value = settings.personalMemory;
-
       if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
     }
 
@@ -1204,16 +1143,11 @@ ${historyHTML}
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const reportTabSelect = document.getElementById('reportTabSelect');
-      if (reportTabSelect) reportTabSelect.addEventListener('change', (e) => switchTab(e.target.value));
-
-      const aiModelSelect = document.getElementById('aiModelSelect');
-      if (aiModelSelect) {
-        aiModelSelect.addEventListener('change', (e) => {
-          const targetRadio = document.querySelector(`input[name="chatAi"][value="${e.target.value}"]`);
-          if (targetRadio) { targetRadio.checked = true; saveSettings(); }
-        });
-      }
+      document.getElementById('reportTabSelect')?.addEventListener('change', (e) => switchTab(e.target.value));
+      document.getElementById('aiModelSelect')?.addEventListener('change', (e) => {
+        const targetRadio = document.querySelector(`input[name="chatAi"][value="${e.target.value}"]`);
+        if (targetRadio) { targetRadio.checked = true; saveSettings(); }
+      });
 
       window.updateAiQuickUI = function() {
         const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
@@ -1228,34 +1162,23 @@ ${historyHTML}
           inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
         });
         inputEl.addEventListener('keydown', (e) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            e.preventDefault();
-            sendMessage();
-          }
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); sendMessage(); }
         });
       }
 
       const savedUI = localStorage.getItem(STORAGE_KEY);
-      if (savedUI) {
-        try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){}
-      }
+      if (savedUI) { try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){} }
 
       const projects = getLocalProjectsList();
       if (projects.length > 0) {
         const latest = projects[0];
         currentProjectId = latest.id;
         setActiveProjectUI(latest.id, latest.name);
-
         const savedReports = localStorage.getItem(getReportDataKey());
-        if (savedReports) {
-          try { applyReportData(JSON.parse(savedReports)); } catch(e){}
-        }
-
+        if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e){} }
         const savedLogs = localStorage.getItem(getChatLogsKey());
         if (savedLogs) {
-          try {
-            chatLogs = JSON.parse(savedLogs);
-          } catch(e) { chatLogs = []; }
+          try { chatLogs = JSON.parse(savedLogs); } catch(e) { chatLogs = []; }
           if (chatHistory) {
             chatHistory.innerHTML = '';
             chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
