@@ -6,24 +6,26 @@
   <title>LifeReport - AI Copilot</title>
   <style>
     /* =========================================================================
-       1. トリプルテーマ定義 (すべて可読性・見やすさを最優先)
+       1. トリプルテーマ定義 & フォントファミリーの最適化
        ========================================================================= */
     :root {
-      /* デフォルト：2. Modern Tech (落ち着いた高級感のあるSlate調ダーク) */
+      /* デフォルト：2. Modern Tech */
       --bg-body: #0f172a;
       --bg-frame: #1e293b;
       --bg-deck: #334155;
       --bg-pane: #1e293b;
       --bg-input: #0f172a;
       --text-main: #f8fafc;
-      --accent-cyan: #38bdf8;    /* スカイブルー */
-      --accent-purple: #818cf8;  /* インディゴブルー */
+      --accent-cyan: #38bdf8;
+      --accent-purple: #818cf8;
       --border-color: #475569;
-      --msg-user-bg: #2563eb;    /* 鮮明なブルー */
+      --msg-user-bg: #2563eb;
       --msg-user-text: #ffffff;
       --msg-ai-bg: #1e293b;
       --msg-ai-border: #475569;
       --select-bg: #334155;
+      /* チャットとして洗練された王道のプレーンサンセリフ */
+      --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     }
 
     /* テーマ1：Developer Cyber (開発者向けクール・エレクトリック) */
@@ -34,17 +36,19 @@
       --bg-pane: #151822;
       --bg-input: #1e2231;
       --text-main: #f0f3f6;
-      --accent-cyan: #00f5ff;    /* ネオンシアン */
-      --accent-purple: #bd00ff;  /* ネオンパープル */
+      --accent-cyan: #00f5ff;
+      --accent-purple: #bd00ff;
       --border-color: #2a2f44;
       --msg-user-bg: linear-gradient(135deg, #bd00ff, #00f5ff);
       --msg-user-text: #ffffff;
       --msg-ai-bg: #151822;
       --msg-ai-border: #00f5ff;
       --select-bg: #1a1d29;
+      /* 近未来感・コード感を演出する美しい等幅（モノスペース）フォント */
+      --font-app: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
 
-    /* テーマ2：Modern Tech (基本仕様のため明示的にも定義) */
+    /* テーマ2：Modern Tech */
     body.theme-tech {
       --bg-body: #0f172a;
       --bg-frame: #1e293b;
@@ -60,24 +64,27 @@
       --msg-ai-bg: #1e293b;
       --msg-ai-border: #475569;
       --select-bg: #334155;
+      --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     }
 
-    /* テーマ3：Soft Clean (女性でも親しみやすい、優しくクリーンな淡色ナチュラル) */
+    /* テーマ3：Soft Clean (淡色ナチュラル) */
     body.theme-soft {
       --bg-body: #f5f3f0;
       --bg-frame: #ffffff;
       --bg-deck: #eae6e1;
       --bg-pane: #faf9f7;
       --bg-input: #f0ede9;
-      --text-main: #332f2c;     /* 目が疲れない深いアッシュブラウン */
-      --accent-cyan: #6b9080;    /* セージミント */
-      --accent-purple: #b5838d;  /* くすみローズピンク */
+      --text-main: #332f2c;
+      --accent-cyan: #6b9080;
+      --accent-purple: #b5838d;
       --border-color: #d6cfc7;
-      --msg-user-bg: #ffb5a7;    /* 優しいコーラル */
+      --msg-user-bg: #ffb5a7;
       --msg-user-text: #332f2c;
       --msg-ai-bg: #faf9f7;
       --msg-ai-border: #d6cfc7;
       --select-bg: #f0ede9;
+      /* 丸みがあり、目に優しくリラックスして読めるフォント */
+      --font-app: "Hiragino Maru Gothic ProN", "Kosugi Maru", "Yu Gothic", sans-serif;
     }
 
     /* =========================================================================
@@ -87,7 +94,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: var(--font-app);
     }
     body {
       background-color: var(--bg-body);
@@ -179,7 +186,7 @@
       transform: rotate(30deg);
     }
 
-    /* ツインドロップダウン */
+    /* コントロールコンテナ */
     .control-container {
       display: flex;
       gap: 8px;
@@ -206,7 +213,6 @@
       border: 1px solid var(--border-color);
       transition: all 0.2s;
     }
-    
     .cyber-select-wrapper::after {
       content: '▼';
       font-size: 8px;
@@ -275,9 +281,9 @@
     .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* インプットエリア */
+    /* 入力デッキ (カプセル化・内包型に再ビルド) */
     .input-deck {
-      background: var(--bg-deck); padding: 10px 12px; border-top: 1px solid var(--border-color); z-index: 10;
+      background: var(--bg-deck); padding: 12px; border-top: 1px solid var(--border-color); z-index: 10;
     }
     .preview-container {
       display: none; background: var(--bg-pane); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;
@@ -286,23 +292,72 @@
     .preview-container.active { display: flex; }
     .clear-preview { cursor: pointer; color: #ff4a4a; font-weight: bold; }
 
-    .form-row { display: flex; align-items: flex-end; gap: 8px; }
-    .deck-btn {
-      background: var(--bg-pane); border: 1px solid var(--border-color); color: var(--text-main);
-      width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; transition: all 0.2s;
+    /* ボタン類をすべて内包する統合コンテナ */
+    .form-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 22px;
+      padding: 4px 6px 4px 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .deck-btn:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); background: var(--bg-input); }
+    .form-row:focus-within {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 1px var(--accent-purple);
+    }
+    .deck-btn {
+      background: none !important;
+      border: none !important;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 20px;
+      color: var(--text-main);
+      opacity: 0.6;
+      transition: opacity 0.2s, color 0.2s;
+      margin-bottom: 1px;
+    }
+    .deck-btn:hover { opacity: 1; color: var(--accent-cyan); }
     
     .chat-textarea {
-      flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 20px;
-      color: var(--text-main); padding: 10px 16px; font-size: 14px; resize: none; height: 40px; max-height: 120px; outline: none; line-height: 1.4; transition: border-color 0.2s;
+      flex: 1;
+      background: transparent !important;
+      border: none !important;
+      color: var(--text-main);
+      padding: 8px 4px;
+      font-size: 14px;
+      resize: none;
+      height: 36px;
+      max-height: 120px;
+      outline: none;
+      line-height: 1.4;
     }
-    .chat-textarea:focus { border-color: var(--accent-purple); }
 
+    /* 丸型のスタイリッシュな上向き矢印送信ボタン */
     .send-btn {
-      background: var(--accent-purple); color: #ffffff; border: none; padding: 0 18px; height: 40px; border-radius: 20px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;
+      background: var(--accent-purple) !important;
+      color: #ffffff !important;
+      border: none !important;
+      width: 32px;
+      height: 32px;
+      border-radius: 50% !important;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-bottom: 2px;
+      padding: 0 !important;
     }
     .send-btn:hover { opacity: 0.9; }
+    .send-btn:active { transform: scale(0.95); }
 
     /* ボトムシート */
     .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(2px); }
@@ -335,7 +390,6 @@
     .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; }
     .cyber-input:focus { border-color: var(--accent-purple); }
     
-    /* テーマ・設定用ラジオボタンの配列ベース */
     .radio-pack { display: flex; flex-direction: column; gap: 8px; }
     .radio-row { display: flex; align-items: center; position: relative; }
     .radio-row input[type="radio"] { display: none; }
@@ -353,7 +407,6 @@
     <!-- ヘッダーエリア -->
     <header class="header">
       <div class="header-left" onclick="toggleBottomSheet()">
-        <!-- メニューボタンをここに復活 -->
         <button class="top-action-btn" type="button" title="セッション履歴" style="pointer-events: none;">☰</button>
         <div class="header-text-group">
           <h1 class="header-title" id="headerTitle">ロード中...</h1>
@@ -361,7 +414,8 @@
         </div>
       </div>
       <div class="header-right-actions">
-        <button class="top-action-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📤</button>
+        <!-- エクスポートのアイコンを矢印逆に修正 (📤から📥へ) -->
+        <button class="top-action-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
         <button class="top-action-btn settings-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
       </div>
     </header>
@@ -400,19 +454,22 @@
     <!-- タイムライン -->
     <main class="chat-timeline" id="chatHistory"></main>
 
-    <!-- 入力デッキ -->
+    <!-- 入力デッキ (添付・送信ボタンを内包化) -->
     <footer class="input-deck">
       <div class="preview-container" id="previewContainer">
         <span id="previewText">📸 添付画像情報</span>
         <span class="clear-preview" onclick="clearAttachment()">✕</span>
       </div>
       <div class="form-row">
-        <label class="deck-btn">
+        <!-- 内包された添付ボタン -->
+        <label class="deck-btn" title="画像を添付">
           📎
           <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
         </label>
+        <!-- メッセージ入力欄 -->
         <textarea class="chat-textarea" id="chatInput" placeholder="メッセージを入力... (Ctrl+Enterで送信)"></textarea>
-        <button class="send-btn" type="button" onclick="sendMessage()">送信</button>
+        <!-- 内包された上向き矢印送信ボタン -->
+        <button class="send-btn" type="button" onclick="sendMessage()" title="送信">⬆</button>
       </div>
     </footer>
 
@@ -443,9 +500,9 @@
           <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
         </div>
 
-        <!-- 横並び化＆文字をスッキリ最適化したテーマコンソール -->
+        <!-- テーマコンソール -->
         <div class="setting-group">
-          <span class="setting-label">カラーテーマ (見やすさ重視)</span>
+          <span class="setting-label">カラーテーマ (フォントも連動して切り替わります)</span>
           <div class="radio-pack" style="flex-direction: row; gap: 6px;">
             <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeCyber" value="cyber">
@@ -502,12 +559,12 @@
           <textarea id="personalMemory" class="cyber-input" style="height: 60px; resize: vertical; line-height: 1.4;"></textarea>
         </div>
 
-        <!-- データエクスポート・インポート -->
+        <!-- データエクスポート・インポート (矢印を逆に修正) -->
         <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
           <span class="setting-label">データバックアップマネジメント</span>
-          <button type="button" class="btn-secondary" style="color:var(--accent-cyan); font-weight:600;" onclick="exportAllData()">📤 ローカルへJSONエクスポート</button>
+          <button type="button" class="btn-secondary" style="color:var(--accent-cyan); font-weight:600;" onclick="exportAllData()">📥 ローカルへJSONエクスポート</button>
           <label class="btn-secondary" style="color:var(--accent-purple); text-align:center; display:block; cursor:pointer; font-weight:600;">
-            📥 バックアップJSONをインポート
+            📤 バックアップJSONをインポート
             <input type="file" accept=".json" style="display:none;" onchange="importAllData(this)">
           </label>
         </div>
@@ -521,7 +578,7 @@
   </div>
 
   <!-- =========================================================================
-     3. コアロジック (3大テーマ制御)
+     3. コアロジック (スワイプ制御追加)
      ========================================================================= -->
   <script>
     const STORAGE_KEY = 'life_report_production_settings_v2';
@@ -619,7 +676,7 @@
 
       const initialReport = {
         current: '<h4>概要</h4><p>新しいプロジェクトが開始されました。開発要件や覚え書き、タスクについて自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
-        knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄積されます）</li></ul>',
+        knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄集されます）</li></ul>',
         memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や背景情報をAIが記憶します。</p>',
         history: '<h4>履歴</h4><ul><li>プロジェクト作成</li></ul>'
       };
@@ -839,7 +896,7 @@
       saveChatLogs();
 
       inputEl.value = '';
-      inputEl.style.height = '40px';
+      inputEl.style.height = '36px';
       clearAttachment();
       inputEl.blur();
 
@@ -849,7 +906,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\n「⚙️環境設定」から、Cyber、Modern、Softの3つのテーマをワンタップで横切り替えできるようになりました。いずれも視認性バツグンです！');
+      appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\n画面の「左端」から「右」へスワイプするだけでも、履歴メニューを引き出せるようになりました！');
     }
 
     async function callRealAiApi() {
@@ -1153,13 +1210,41 @@
       const inputEl = document.getElementById('chatInput');
       if (inputEl) {
         inputEl.addEventListener('input', () => {
-          inputEl.style.height = '40px';
+          inputEl.style.height = '36px';
           inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
         });
         inputEl.addEventListener('keydown', (e) => {
           if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); sendMessage(); }
         });
       }
+
+      /* =========================================================================
+         【新規追加】左から右へのエッジスワイプでボトムシート(メニュー)を開く
+         ========================================================================= */
+      let touchStartX = 0;
+      let touchStartY = 0;
+      const phoneFrame = document.querySelector('.phone-frame');
+
+      phoneFrame.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      phoneFrame.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = Math.abs(touchEndY - touchStartY);
+
+        // 画面左端付近(60px以内)からのスタート、かつ右方向へのしっかりしたスワイプ、かつ縦ブレが少ない場合
+        if (touchStartX < 60 && diffX > 60 && diffY < 40) {
+          const sheet = document.getElementById('bottomSheet');
+          if (sheet && !sheet.classList.contains('open')) {
+            toggleBottomSheet();
+          }
+        }
+      }, { passive: true });
+      /* ========================================================================= */
 
       const savedUI = localStorage.getItem(STORAGE_KEY);
       if (savedUI) { try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){} }
