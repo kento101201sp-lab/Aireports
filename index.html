@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <!-- 全画面アプリ化（PWA対応）用のメタタグ群 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>LifeReport - AI Copilot</title>
+  <title>Report - AI Copilot</title>
   <style>
     /* =========================================================================
-       1. トリプルテーマ定義 & フォントファミリーの最適化
+       1. トリプルテーマ定義
        ========================================================================= */
     :root {
       --bg-body: #0f172a;
@@ -118,25 +117,31 @@
       transition: background 0.2s, border-color 0.2s;
     }
 
-    /* ヘッダー（極限までシンプル化、タイトル固定） */
+    /* 【改良】元「LifeReport」の場所に概要タイトルが直接入るよう変更 */
     .header {
       background: var(--bg-deck);
       padding: 10px 16px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      justify-content: center;
       border-bottom: 1px solid var(--border-color);
+      min-height: 56px;
     }
     .header-text-group {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
+      width: 100%;
     }
     .header-title {
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-main);
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
     }
     .header-status {
       font-size: 10px;
@@ -144,7 +149,7 @@
       opacity: 0.8;
     }
 
-    /* 【改良点】多層レポートパネル（初期状態から20dvhで常時表示） */
+    /* 多層レポートパネル（常時表示モード） */
     .report-section {
       height: 20dvh;
       background: var(--bg-pane);
@@ -167,7 +172,7 @@
     .report-pane ul { margin-left: 14px; margin-bottom: 8px; }
     .report-pane li { margin-bottom: 3px; opacity: 0.9; }
 
-    /* コントロール・展開統合バー */
+    /* 【改良】コントロールバー：左側に2段並びコラム、右側に展開トリガーを配置 */
     .control-expand-bar {
       background: var(--bg-deck);
       border-top: 1px solid var(--border-color);
@@ -175,10 +180,21 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 8px;
-      gap: 6px;
+      padding: 6px 12px;
+      gap: 12px;
       z-index: 20;
       user-select: none;
+    }
+    .control-left-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .control-row-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .expand-trigger-btn {
       flex: 1;
@@ -188,16 +204,18 @@
       color: var(--text-main);
       opacity: 0.75;
       cursor: pointer;
-      padding: 6px 0;
+      padding: 12px 0;
       letter-spacing: 0.5px;
       transition: color 0.2s, opacity 0.2s;
+      border-left: 1px solid var(--border-color);
+      padding-left: 8px;
     }
     .expand-trigger-btn:hover { opacity: 1; color: var(--accent-cyan); }
 
-    /* 統合バー用のコンパクトセレクトボックス */
+    /* コンパクトセレクトボックス */
     .mini-select-wrapper {
       position: relative;
-      width: 105px;
+      width: 104px;
     }
     .mini-select {
       width: 100%;
@@ -207,7 +225,7 @@
       color: var(--text-main);
       font-size: 11px;
       font-weight: 500;
-      padding: 5px 18px 5px 8px;
+      padding: 5px 16px 5px 6px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
@@ -220,12 +238,27 @@
       content: '▼';
       font-size: 7px;
       position: absolute;
-      right: 6px;
+      right: 5px;
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
       opacity: 0.5;
     }
+
+    .inline-export-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 15px;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px;
+    }
+    .inline-export-btn:hover { opacity: 1; transform: scale(1.1); }
 
     /* タイムライン */
     .chat-timeline {
@@ -279,7 +312,6 @@
       box-shadow: 0 0 0 1px var(--accent-purple);
     }
     
-    /* ボタン類の基本スタイル */
     .deck-btn {
       background: none !important;
       border: none !important;
@@ -298,7 +330,6 @@
     }
     .deck-btn:hover { opacity: 1; color: var(--accent-cyan); }
     
-    /* 【改良点】メニューボタンのタイピング時フェードアウトアニメーション用スタイル */
     #menuBtn.hidden {
       opacity: 0;
       width: 0px;
@@ -349,7 +380,6 @@
     }
     .bottom-sheet.open { transform: translateY(0); }
     
-    /* 【改良点】メニュー内に設定ギアを綺麗に統合 */
     .sheet-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .sheet-title { color: var(--text-main); font-weight: 600; font-size: 14px; }
     .sheet-header-actions { display: flex; align-items: center; gap: 10px; }
@@ -386,21 +416,15 @@
     .modal-foot { padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
     .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
     .btn-primary { background: var(--accent-purple); border: none; color: #ffffff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
-
-    /* エクスポート用インライン調整ボタン */
-    .inline-export-btn {
-      background: none; border: none; color: var(--text-main); font-size: 16px; cursor: pointer; opacity: 0.75; transition: opacity 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; padding: 2px;
-    }
-    .inline-export-btn:hover { opacity: 1; transform: scale(1.1); }
   </style>
 </head>
 <body>
 
   <div class="phone-frame">
-    <!-- ヘッダーエリア（固定ステータスバー） -->
+    <!-- 【改良】ヘッダーのメインタイトル位置へ概要タイトルをダイレクトに表示 -->
     <header class="header">
       <div class="header-text-group">
-        <h1 class="header-title">LifeReport</h1>
+        <h1 class="header-title" id="headerProjectName">ロード中...</h1>
         <div class="header-status">✨ クライアント保護モード稼働中</div>
       </div>
     </header>
@@ -417,19 +441,20 @@
 
     <!-- コントロール・展開バー -->
     <div class="control-expand-bar">
-      <div class="mini-select-wrapper">
-        <select id="reportTabSelect" class="mini-select">
-          <option value="current">Current</option>
-          <option value="knowledge">Knowledge</option>
-          <option value="memory">Memory 🧠</option>
-          <option value="history">History</option>
-        </select>
-      </div>
-      
-      <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
-      
-      <!-- 【改良点】AIモデル選択のすぐ右隣にエクスポート（📥）を並列配置 -->
-      <div style="display: flex; align-items: center; gap: 6px;">
+      <!-- 【改良】左側にCurrentとAIモデル選択を2段で配置 -->
+      <div class="control-left-grid">
+        <div class="control-row-top">
+          <button class="inline-export-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
+          <div class="mini-select-wrapper">
+            <select id="reportTabSelect" class="mini-select">
+              <option value="current">Current</option>
+              <option value="knowledge">Knowledge</option>
+              <option value="memory">Memory 🧠</option>
+              <option value="history">History</option>
+            </select>
+          </div>
+        </div>
+        <!-- Currentの下へ綺麗に配置 -->
         <div class="mini-select-wrapper">
           <select id="aiModelSelect" class="mini-select">
             <option value="gemini">🤖 Gemini</option>
@@ -438,8 +463,10 @@
             <option value="openai">🤖 OpenAI</option>
           </select>
         </div>
-        <button class="inline-export-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
       </div>
+      
+      <!-- 右側に展開用の広いボタンスペースを確保 -->
+      <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
     </div>
 
     <!-- タイムライン -->
@@ -452,9 +479,7 @@
         <span class="clear-preview" onclick="clearAttachment()">✕</span>
       </div>
       <div class="form-row">
-        <!-- 【改良点】入力欄の左側にメニューボタン（☰）を配置 -->
         <button class="deck-btn" id="menuBtn" type="button" onclick="toggleBottomSheet()" title="セッション履歴">☰</button>
-        
         <label class="deck-btn" title="画像を添付">
           📎
           <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
@@ -470,7 +495,6 @@
       <div class="sheet-header">
         <span class="sheet-title">過去のセッション履歴</span>
         <div class="sheet-header-actions">
-          <!-- 【改良点】メニュー内に設定用ギア（⚙️）を配置 -->
           <button class="sheet-gear-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
           <button class="new-proj-btn" type="button" onclick="triggerNewProject()">＋ 新規生成</button>
         </div>
@@ -510,12 +534,6 @@
               <label for="themeSoft" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Soft 🌸</label>
             </div>
           </div>
-        </div>
-
-        <div class="setting-group" style="display:none;">
-          <input type="radio" name="repSize" id="sizeMin" value="15">
-          <input type="radio" name="repSize" id="sizeMid" value="25" checked>
-          <input type="radio" name="repSize" id="sizeMax" value="40">
         </div>
 
         <div class="setting-group">
@@ -586,7 +604,7 @@
 
       const payload = {
         projectId: currentProjectId,
-        projectName: getLocalProjectsList().find(p => p.id === currentProjectId)?.name || 'LifeReport',
+        projectName: getLocalProjectsList().find(p => p.id === currentProjectId)?.name || 'Report',
         timestamp: new Date().toISOString(),
         report: {
           current: document.getElementById('pane-current')?.innerHTML || '',
@@ -603,8 +621,6 @@
           mode: 'cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
-        }).then(res => {
-          if (!res.ok) console.warn("同期失敗");
         }).catch(e => {});
       } catch (err) {}
     }
@@ -657,7 +673,7 @@
       localStorage.removeItem(getChatLogsKey());
 
       const initialReport = {
-        current: '<h4>概要（プロジェクト名）</h4><p>新しいプロジェクトが開始されました。開発要件やタスクについて自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
+        current: '<h4>概要</h4><p>新しいプロジェクトが開始されました。開発要件やタスクについて自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
         knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄集されます）</li></ul>',
         memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や背景情報をAIが記憶します。</p>',
         history: '<h4>履歴</h4><ul><li>プロジェクト作成</li></ul>'
@@ -757,6 +773,8 @@
         if (item.getAttribute('data-id') === id) item.classList.add('active');
         else item.classList.remove('active');
       });
+      const hp = document.getElementById('headerProjectName');
+      if (hp) hp.textContent = name;
     }
 
     function updateProjectName(id, newName) {
@@ -766,6 +784,10 @@
         targetProj.name = newName;
         saveLocalProjectsList(projects);
         renderProjectsList();
+        if (id === currentProjectId) {
+          const hp = document.getElementById('headerProjectName');
+          if (hp) hp.textContent = newName;
+        }
       }
     }
 
@@ -826,7 +848,6 @@
       if (reportTabSelect) reportTabSelect.value = 'current';
       switchTab('current');
       
-      // 常時表示(20dvh)ベースにするため、展開状態は解除
       document.getElementById('reportSection')?.classList.remove('expanded');
       document.getElementById('expandBar').textContent = '▼ レポート領域を展開 ▼';
 
@@ -882,7 +903,6 @@
       inputEl.value = '';
       inputEl.style.height = '36px';
       
-      // 送信完了時にメニューボタンのフェードアウトを解除
       document.getElementById('menuBtn')?.classList.remove('hidden');
 
       clearAttachment();
@@ -894,7 +914,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'LifeReport へようこそ！🚀\n\n入力欄の左側の「☰」から過去セッション一覧を開けます。設定画面（⚙️）もそのメニュー内に引っ越しました！');
+      appendMessageToUI('ai', 'レイアウトの微調整を反映しました！✨\n\nヘッダーの「LifeReport」があった一番目立つ場所に概要タイトルをそのままドッキングし、AIモデルの切り替え（Gemini等）を「Current」タブ選択器の真下へ縦に並べました。挙動に違和感がないか触ってみてください！');
     }
 
     async function callRealAiApi() {
@@ -912,13 +932,12 @@
       const memoryHTML = document.getElementById('pane-memory')?.innerHTML.trim() || '';
       const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
 
-      const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴伴走するLifeReportのコアシステムです。
+      const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴伴走するReportコアシステムです。
 現在のレポートと個別メモリ（長期記憶）の状態：
 【Current】:\n${currentHTML}\n【Knowledge】:\n${knowledgeHTML}\n【Memory】:\n${memoryHTML}\n【History】:\n${historyHTML}
 
 【出力指示】
 - チャットの返答は、視認性を重視し、適度に「太字(**)」や「箇条書き(-)」を用いて構造的に回答してください。
-- レポートの「Current（概要）」タブに、適宜プロジェクト名がわかるタイトル(h4タグ等)を自動で構造化・維持するようにしてください。
 - レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新 of 全HTML構造を含めて出力してください。
 
 <update_current>Current最新HTML</update_current>
@@ -1126,7 +1145,7 @@
       const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url; a.download = `lifereport_backup_${Date.now()}.json`; a.click();
+      a.href = url; a.download = `report_backup_${Date.now()}.json`; a.click();
     }
 
     function importAllData(input) {
@@ -1189,7 +1208,6 @@
 
       const inputEl = document.getElementById('chatInput');
       if (inputEl) {
-        // 【改良点】タイピング時のメニューボタン(☰)フェードアウト制御ロジック
         inputEl.addEventListener('input', () => {
           inputEl.style.height = '36px';
           inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
@@ -1208,7 +1226,6 @@
         });
       }
 
-      /* スワイプメニュー（トリガー領域を入力欄左側に準拠させて左端からのスワイプを維持） */
       let touchStartX = 0;
       let touchStartY = 0;
       const phoneFrame = document.querySelector('.phone-frame');
