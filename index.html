@@ -7,40 +7,56 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Report - AI Copilot</title>
-  <!-- Google Fonts: 視認性とラグジュアリー感を両立するフォントの導入 -->
+  
+  <!-- 視認性と美しさを両立するフォント（Inter + Noto Sans JP）の導入 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <!-- 【Step 1】Markdownパース用ライブラリ marked.js の追加 -->
+  <!-- Markdownパース用ライブラリ -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
     /* =========================================================================
-       1. トリプルテーマ定義（ラグジュアリー＆フェミニン・モダンへのリファイン）
+       1. トリプルテーマ定義（コントラストと視認性の最適化）
        ========================================================================= */
     :root {
       /* Default: Modern (ラグジュアリー・モーヴモダン) */
-      --bg-body: linear-gradient(135deg, #140f1a 0%, #1d1625 50%, #16101c 100%);
-      --bg-frame: rgba(26, 20, 33, 0.88);      
-      --bg-deck: rgba(36, 28, 45, 0.9);       
-      --bg-pane: rgba(31, 24, 39, 0.85);
-      --bg-input: rgba(46, 35, 58, 0.7);
-      --text-main: #f4f0f6;     
-      --accent-cyan: #e5b3b4;   /* 優美なローズシャンパン */
-      --accent-purple: #dec199; /* 洗練されたアンティークゴールド */
-      --border-color: rgba(255, 255, 255, 0.06);  
-      --msg-user-bg: linear-gradient(135deg, #a57580, #63506d); /* 艶やかなニュアンスグラデーション */
+      --bg-body: linear-gradient(135deg, #120e18 0%, #1a1422 50%, #140f1c 100%);
+      --bg-frame: rgba(24, 19, 30, 0.93);      
+      --bg-deck: rgba(34, 26, 42, 0.96);       
+      --bg-pane: rgba(28, 21, 35, 0.88);
+      --bg-input: rgba(44, 33, 56, 0.75);
+      --text-main: #f5f2f7;     
+      --accent-cyan: #e8b9ba;   /* 優美なローズシャンパン */
+      --accent-purple: #dfc5a0; /* 洗練されたアンティークゴールド */
+      --border-color: rgba(255, 255, 255, 0.08);  
+      --msg-user-bg: linear-gradient(135deg, #a87883, #675271); 
       --msg-user-text: #ffffff;
-      --msg-ai-bg: rgba(41, 31, 51, 0.6);
-      --msg-ai-border: rgba(229, 179, 180, 0.25);
-      --select-bg: #241c2d;
-      --font-app: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      --msg-ai-bg: rgba(38, 29, 48, 0.65);
+      --msg-ai-border: rgba(232, 185, 186, 0.25);
+      --select-bg: #221a2a;
+      --font-app: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --report-height: 25dvh;   
     }
 
-    body.theme-tech { /* Modernと同一 */ }
+    body.theme-tech {
+      --bg-body: linear-gradient(135deg, #120e18 0%, #1a1422 50%, #140f1c 100%);
+      --bg-frame: rgba(24, 19, 30, 0.93);      
+      --bg-deck: rgba(34, 26, 42, 0.96);       
+      --bg-pane: rgba(28, 21, 35, 0.88);
+      --bg-input: rgba(44, 33, 56, 0.75);
+      --text-main: #f5f2f7;     
+      --accent-cyan: #e8b9ba;   
+      --accent-purple: #dfc5a0; 
+      --border-color: rgba(255, 255, 255, 0.08);  
+      --msg-user-bg: linear-gradient(135deg, #a87883, #675271); 
+      --msg-user-text: #ffffff;
+      --msg-ai-bg: rgba(38, 29, 48, 0.65);
+      --msg-ai-border: rgba(232, 185, 186, 0.25);
+      --select-bg: #221a2a;
+    }
 
     body.theme-cyber {
       /* Cyberpunk (ナイト・ネオン) */
@@ -52,30 +68,30 @@
       --text-main: #f0f5fa;
       --accent-cyan: #00f5ff;
       --accent-purple: #bd00ff;
-      --border-color: rgba(0, 245, 255, 0.15);
+      --border-color: rgba(0, 245, 255, 0.18);
       --msg-user-bg: linear-gradient(135deg, #bd00ff, #00f5ff);
       --msg-user-text: #050508;
       --msg-ai-bg: #0f111a;
-      --msg-ai-border: rgba(0, 245, 255, 0.4);
+      --msg-ai-border: rgba(0, 245, 255, 0.45);
       --select-bg: #141722;
     }
 
     body.theme-soft {
       /* Soft (エクリュ・リネン) */
-      --bg-body: linear-gradient(135deg, #f4f1eb 0%, #ede8e0 100%);
-      --bg-frame: rgba(255, 255, 255, 0.9);
-      --bg-deck: #e6e0d5;
-      --bg-pane: #faf9f6;
-      --bg-input: #f3efe6;
-      --text-main: #3a352a;
-      --accent-cyan: #4e7c66;
-      --accent-purple: #a3707c;
-      --border-color: rgba(142, 132, 112, 0.2);
-      --msg-user-bg: #e0bbb4;
-      --msg-user-text: #3a352a;
-      --msg-ai-bg: #faf9f6;
-      --msg-ai-border: rgba(142, 132, 112, 0.3);
-      --select-bg: #f3efe6;
+      --bg-body: linear-gradient(135deg, #f5f2eb 0%, #eae5dc 100%);
+      --bg-frame: rgba(255, 255, 255, 0.96);
+      --bg-deck: #e8e2d6;
+      --bg-pane: #fdfcfb;
+      --bg-input: #f4efe5;
+      --text-main: #2d2922; 
+      --accent-cyan: #39634f; 
+      --accent-purple: #925b67; 
+      --border-color: rgba(130, 120, 100, 0.25);
+      --msg-user-bg: #dbaea6;
+      --msg-user-text: #2d2922;
+      --msg-ai-bg: #fdfcfb;
+      --msg-ai-border: rgba(130, 120, 100, 0.35);
+      --select-bg: #f4efe5;
     }
 
     /* =========================================================================
@@ -86,13 +102,16 @@
       margin: 0;
       padding: 0;
       font-family: var(--font-app);
+      letter-spacing: 0.02em; 
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-    body.theme-soft ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.1); }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.22); }
+    body.theme-soft ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); }
 
     body {
       background: var(--bg-body);
@@ -129,7 +148,7 @@
       justify-content: center;
       border-bottom: 1px solid var(--border-color);
       min-height: 56px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     }
     .header-text-group {
       display: flex;
@@ -163,20 +182,19 @@
       border-bottom: 1px solid var(--border-color);
     }
     .report-content { flex: 1; overflow-y: auto; padding: 16px; user-select: text; }
-    .report-pane { display: none; font-size: 13px; line-height: 1.6; }
+    .report-pane { display: none; font-size: 13.5px; line-height: 1.65; }
     .report-pane.active { display: block; animation: fadeIn 0.2s ease-out; }
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
 
     .report-pane h4 {
-      color: var(--accent-cyan); font-size: 13px; margin-top: 16px; margin-bottom: 6px;
-      border-left: 3px solid var(--accent-cyan); padding-left: 8px; font-weight: 600;
-      letter-spacing: 0.3px;
+      color: var(--accent-cyan); font-size: 14px; margin-top: 18px; margin-bottom: 8px;
+      border-left: 3px solid var(--accent-cyan); padding-left: 8px; font-weight: 700;
     }
     .report-pane h4:first-child { margin-top: 0; }
-    .report-pane p { margin-bottom: 8px; color: var(--text-main); opacity: 0.9; }
-    .report-pane ul { margin-left: 16px; margin-bottom: 10px; }
-    .report-pane li { margin-bottom: 4px; opacity: 0.9; }
+    .report-pane p { margin-bottom: 8px; color: var(--text-main); opacity: 0.95; }
+    .report-pane ul { margin-left: 18px; margin-bottom: 10px; }
+    .report-pane li { margin-bottom: 5px; opacity: 0.95; }
 
     /* コントロールバー構造 */
     .control-expand-bar {
@@ -211,7 +229,7 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--text-main);
-      opacity: 0.7;
+      opacity: 0.8;
       cursor: pointer;
       padding: 6px 0;
       letter-spacing: 0.5px;
@@ -231,7 +249,7 @@
       background: var(--bg-input);
       color: var(--text-main);
       font-size: 11px;
-      font-weight: 500;
+      font-weight: 600;
       padding: 6px 18px 6px 8px;
       border-radius: 6px;
       outline: none;
@@ -247,11 +265,11 @@
       content: '▼';
       font-size: 7px;
       position: absolute;
-      right: 6px;
+      right: 7px;
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
-      opacity: 0.5;
+      opacity: 0.6;
     }
 
     .inline-export-btn {
@@ -260,7 +278,7 @@
       color: var(--text-main);
       font-size: 16px;
       cursor: pointer;
-      opacity: 0.7;
+      opacity: 0.75;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
@@ -282,46 +300,56 @@
       background: transparent;
     }
     .msg {
-      max-width: 85%; padding: 11px 15px; border-radius: 14px; font-size: 13.5px; line-height: 1.55; word-break: break-word; white-space: pre-wrap; user-select: text;
+      max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.65; word-break: break-word; white-space: pre-wrap; user-select: text;
     }
     .msg.user {
-      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 4px 12px rgba(165, 117, 128, 0.15);
+      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 4px 12px rgba(165, 117, 128, 0.12);
+      font-weight: 500;
     }
+    
+    /* 【修正】AIの返答をテキストボックス（吹き出し）にせず画面いっぱいに広げる */
     .msg.ai {
-      align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      white-space: normal; /* Markdownパース後のレイアウト崩れ防止 */
+      align-self: flex-start;
+      max-width: 100%;
+      width: 100%;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 12px 0;
+      border-radius: 0;
+      white-space: normal;
     }
-    .msg.ai strong { color: var(--accent-cyan); font-weight: 600; }
+    .msg.ai strong { color: var(--accent-cyan); font-weight: 700; }
     
     .msg.ai code {
-      font-family: var(--font-mono); background: rgba(255,255,255,0.1); color: var(--accent-purple); padding: 2px 5px; border-radius: 4px; font-size: 12.5px; margin: 0 2px;
+      font-family: var(--font-mono); background: rgba(255,255,255,0.12); color: var(--accent-purple); padding: 2px 5px; border-radius: 4px; font-size: 13px; margin: 0 2px;
     }
-    body.theme-soft .msg.ai code { background: rgba(0,0,0,0.05); }
+    body.theme-soft .msg.ai code { background: rgba(0,0,0,0.06); color: var(--accent-purple); }
 
-    /* Markdownレンダリング時の見出し・箇条書き・テーブル微調整 */
-    .msg.ai h1, .msg.ai h2, .msg.ai h3, .msg.ai h4 { color: var(--accent-cyan); margin: 10px 0 6px 0; font-size: 14px; font-weight: 600; }
+    /* Markdownレンダリング時の視認性最適化 */
+    .msg.ai h1, .msg.ai h2, .msg.ai h3, .msg.ai h4 { color: var(--accent-cyan); margin: 14px 0 8px 0; font-size: 14.5px; font-weight: 700; }
     .msg.ai p { margin-bottom: 8px; }
-    .msg.ai ul, .msg.ai ol { margin-left: 18px; margin-bottom: 8px; }
-    .msg.ai li { margin-bottom: 2px; }
+    .msg.ai ul, .msg.ai ol { margin-left: 20px; margin-bottom: 8px; }
+    .msg.ai li { margin-bottom: 4px; }
     
-    /* Markdownテーブル用ラグジュアリーデザイン */
-    .msg.ai table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
-    .msg.ai th, .msg.ai td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; }
-    .msg.ai th { background: rgba(255, 255, 255, 0.06); color: var(--accent-purple); font-weight: 600; }
-    body.theme-soft .msg.ai th { background: rgba(0, 0, 0, 0.03); }
+    /* Markdownテーブル用デザイン */
+    .msg.ai table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12.5px; }
+    .msg.ai th, .msg.ai td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; line-height: 1.5; }
+    .msg.ai th { background: rgba(255, 255, 255, 0.08); color: var(--accent-purple); font-weight: 700; }
+    body.theme-soft .msg.ai th { background: rgba(0, 0, 0, 0.04); }
 
-    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(229, 179, 180, 0.05); border: 1px dashed var(--accent-cyan); }
+    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(229, 179, 180, 0.05); border: 1px dashed var(--accent-cyan); font-weight: 500; max-width: 85%; border-radius: 14px; padding: 12px 16px; }
     .spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* 入力デッキ */
     .input-deck {
       background: var(--bg-deck); padding: 12px 14px; border-top: 1px solid var(--border-color); z-index: 10;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
     }
     .preview-container {
       display: none; background: var(--bg-pane); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
-      font-size: 12px; color: var(--accent-cyan); align-items: center; justify-content: space-between; border: 1px dashed var(--accent-cyan);
+      font-size: 12px; color: var(--accent-cyan); align-items: center; justify-content: space-between; border: 1px dashed var(--accent-cyan); font-weight: 500;
     }
     .preview-container.active { display: flex; }
     .clear-preview { cursor: pointer; color: #ff4a4a; font-weight: bold; padding: 2px 6px; }
@@ -352,7 +380,7 @@
       cursor: pointer;
       font-size: 16px;
       color: var(--text-main);
-      opacity: 0.65;
+      opacity: 0.75;
       transition: all 0.2s ease;
       margin-bottom: 2px;
       overflow: hidden;
@@ -392,12 +420,12 @@
       justify-content: center;
       align-items: center;
       font-size: 13px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
       transition: opacity 0.2s, transform 0.1s;
       margin-bottom: 2px;
       padding: 0 !important;
-      box-shadow: 0 2px 8px rgba(222, 193, 153, 0.3);
+      box-shadow: 0 2px 8px rgba(222, 193, 153, 0.25);
     }
     body.theme-cyber .send-btn { color: #ffffff !important; }
     .send-btn:hover { opacity: 0.9; }
@@ -414,7 +442,7 @@
     .bottom-sheet.open { transform: translateY(0); }
     
     .sheet-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .sheet-title { color: var(--text-main); font-weight: 600; font-size: 14px; letter-spacing: 0.3px; }
+    .sheet-title { color: var(--text-main); font-weight: 700; font-size: 14.5px; }
     .sheet-header-actions { display: flex; align-items: center; gap: 10px; }
     
     .sheet-gear-btn {
@@ -422,9 +450,9 @@
       border: none;
       color: var(--text-main);
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      opacity: 0.8;
+      opacity: 0.85;
       transition: all 0.2s;
       display: flex;
       align-items: center;
@@ -441,38 +469,37 @@
     .sheet-body { flex: 1; overflow-y: auto; padding: 8px 0 24px; }
     .sheet-item { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
     .sheet-item:hover { background: var(--bg-deck); }
-    .sheet-item.active { background: rgba(165, 117, 128, 0.06); }
-    .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: 600; }
-    .sheet-item-name { font-size: 13.5px; color: var(--text-main); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; }
-    .project-del-btn { color: var(--text-main); opacity: 0.3; padding: 6px; font-size: 13px; transition: all 0.2s; border-radius: 4px; }
+    .sheet-item.active { background: rgba(165, 117, 128, 0.08); }
+    .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: 700; }
+    .sheet-item-name { font-size: 14px; color: var(--text-main); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; }
+    .project-del-btn { color: var(--text-main); opacity: 0.4; padding: 6px; font-size: 13px; transition: all 0.2s; border-radius: 4px; }
     .project-del-btn:hover { color: #ff4a4a; opacity: 1; background: rgba(255,74,74,0.05); }
 
     /* モーダル */
     .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; z-index: 1000; }
     .modal-mask.open { opacity: 1; pointer-events: auto; }
     .modal-window { background: var(--bg-pane); width: 92%; max-width: 430px; border: 1px solid var(--border-color); border-radius: 18px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 20px 40px rgba(0,0,0,0.4); overflow: hidden; }
-    .modal-head { padding: 18px 20px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; font-size: 15px; letter-spacing: 0.3px; }
+    .modal-head { padding: 18px 20px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 700; font-size: 15px; letter-spacing: 0.5px; }
     .modal-body { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
     .setting-group { display: flex; flex-direction: column; gap: 6px; }
-    .setting-label { font-size: 11.5px; color: var(--text-main); opacity: 0.65; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
-    .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 9px 12px; font-size: 13px; outline: none; width: 100%; transition: border-color 0.2s; }
+    .setting-label { font-size: 11.5px; color: var(--text-main); opacity: 0.75; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+    .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 9px 12px; font-size: 13.5px; outline: none; width: 100%; transition: border-color 0.2s; }
     .cyber-input:focus { border-color: var(--accent-purple); }
     
     .radio-pack { display: flex; flex-direction: column; gap: 8px; }
     .radio-row { display: flex; align-items: center; position: relative; }
     .radio-row input[type="radio"] { display: none; }
-    .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 13px; cursor: pointer; color: var(--text-main); opacity: 0.8; transition: all 0.2s; }
-    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(165, 117, 128, 0.1); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
+    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(165, 117, 128, 0.12); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 700; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
     
     .preset-btn-group { display: flex; gap: 6px; }
-    .preset-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .preset-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
     .preset-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
     .modal-foot { padding: 14px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; background: rgba(0,0,0,0.05); }
-    .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500; transition: background 0.2s; }
+    .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.2s; }
     .btn-secondary:hover { background: rgba(255,255,255,0.05); }
     body.theme-soft .btn-secondary:hover { background: rgba(0,0,0,0.05); }
-    .btn-primary { background: var(--accent-purple); border: none; color: #140f1a; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(222,193,153,0.2); }
+    .btn-primary { background: var(--accent-purple); border: none; color: #140f1a; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; box-shadow: 0 2px 8px rgba(222, 193, 153, 0.25); }
     body.theme-cyber .btn-primary { color: #ffffff; }
     .btn-primary:hover { opacity: 0.9; }
   </style>
@@ -568,7 +595,7 @@
         <!-- データセキュア動作モード -->
         <div class="setting-group">
           <span class="setting-label">データセキュア動作モード</span>
-          <div style="font-size: 12.5px; color: var(--text-main); display: flex; align-items: center; gap: 6px; background: var(--bg-input); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 500;">
+          <div style="font-size: 12.5px; color: var(--text-main); display: flex; align-items: center; gap: 6px; background: var(--bg-input); padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-weight: 600;">
             🔒 ローカル保存モード稼働中
           </div>
         </div>
@@ -636,7 +663,7 @@
 
         <div class="setting-group">
           <span class="setting-label">個人メモリ 🧠 (全セッション共有プロファイル)</span>
-          <textarea id="personalMemory" class="cyber-input" style="height: 60px; resize: vertical; line-height: 1.4;"></textarea>
+          <textarea id="personalMemory" class="cyber-input" style="height: 60px; resize: vertical; line-height: 1.45;"></textarea>
         </div>
 
         <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
@@ -711,30 +738,6 @@
 
     function createNewProject() {
       let projects = getLocalProjectsList();
-
-      if (projects.length > 0) {
-        const latestProj = projects[0];
-        const logKey = `${CHAT_LOGS_KEY}_${latestProj.id}`;
-        let logs = [];
-        try { logs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e) {}
-        const hasUserMessage = logs.some(log => log.sender === 'user');
-
-        if (!hasUserMessage) {
-          currentProjectId = latestProj.id;
-          setActiveProjectUI(latestProj.id, latestProj.name);
-          const savedReports = localStorage.getItem(getReportDataKey());
-          if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e) {} }
-          chatLogs = logs;
-          if (chatHistory) {
-            chatHistory.innerHTML = '';
-            if (chatLogs.length > 0) {
-              chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
-            } else { setDefaultInitialAIMessage(); }
-          }
-          renderProjectsList();
-          return;
-        }
-      }
 
       const id = 'proj_' + Date.now();
       const defaultName = `新規プロジェクト`;
@@ -845,7 +848,7 @@
     function setActiveProjectUI(id, name) {
       document.querySelectorAll('#projectList .sheet-item').forEach(item => {
         if (item.getAttribute('data-id') === id) item.classList.add('active');
-        else item.classList.remove('active');
+        else item.classList.remove('remove');
       });
       const hp = document.getElementById('headerProjectName');
       if (hp) hp.textContent = name;
@@ -923,7 +926,16 @@
       setActiveProjectUI(id, name);
 
       const savedReports = localStorage.getItem(getReportDataKey());
-      if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e){} }
+      if (savedReports) { 
+        try { applyReportData(JSON.parse(savedReports)); } catch(e){} 
+      } else {
+        applyReportData({
+          current: '<h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
+          knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄集されます）</li></ul>',
+          memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や背景情報をAIが記憶します。</p>',
+          history: '<h4>履歴</h4><ul><li>プロジェクト作成</li></ul>'
+        });
+      }
 
       const savedLogs = localStorage.getItem(getChatLogsKey());
       if (savedLogs) {
@@ -941,384 +953,13 @@
       const reportTabSelect = document.getElementById('reportTabSelect');
       if (reportTabSelect) reportTabSelect.value = 'current';
       switchTab('current');
-      
-      document.getElementById('reportSection')?.classList.remove('expanded');
-      
-      const savedUI = localStorage.getItem(STORAGE_KEY);
-      let baseHeight = '25';
-      if (savedUI) {
-        try { const s = JSON.parse(savedUI); if (s.reportHeight) baseHeight = s.reportHeight; } catch(e){}
+
+      const sheet = document.getElementById('bottomSheet');
+      const overlay = document.getElementById('sheetOverlay');
+      if (sheet && overlay) {
+        sheet.classList.remove('open');
+        overlay.classList.remove('open');
       }
-      document.getElementById('reportSection').style.height = baseHeight + 'dvh';
-      document.getElementById('expandBar').textContent = '展開 ▼';
-
-      toggleBottomSheet();
-    }
-
-    // 【Step 2】AIの返信（および過去ログ読込時）に marked.js でMarkdown表示を適用
-    function appendMessageToUI(sender, text, base64Image = null) {
-      if (!chatHistory) return;
-      const msg = document.createElement('div');
-      msg.className = `msg ${sender}`;
-      
-      if (base64Image) {
-        msg.innerHTML = `<img src="${base64Image}" style="max-width: 100%; max-height: 180px; border-radius: 8px; display: block; margin-bottom: 4px;">${text ? text : '📸 画像を送信しました'}`;
-      } else {
-        if (sender === 'ai' && typeof marked !== 'undefined') {
-          msg.innerHTML = marked.parse(text || '');
-        } else {
-          // ユーザーメッセージはエスケープして改行を保持
-          msg.textContent = text || '';
-        }
-      }
-      chatHistory.appendChild(msg);
-      if (sender === 'user') {
-        requestAnimationFrame(() => {
-          chatHistory.scrollTop = chatHistory.scrollHeight;
-        });
-      }
-    }
-
-    function handleFileSelect(input) {
-      const file = input.files?.[0];
-      if (!file) return;
-      if (!file.type.startsWith('image/')) { alert("画像のみサポートしています。"); input.value = ''; return; }
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        attachedFileData = e.target.result; 
-        attachedFileName = file.name;
-        const container = document.getElementById('previewContainer');
-        const text = document.getElementById('previewText');
-        if (container && text) { text.textContent = `📸 送信待機中: ${file.name}`; container.classList.add('active'); }
-      };
-      reader.readAsDataURL(file);
-      input.value = '';
-    }
-
-    function clearAttachment() {
-      attachedFileData = null; attachedFileName = "";
-      document.getElementById('previewContainer')?.classList.remove('active');
-    }
-
-    async function sendMessage() {
-      const inputEl = document.getElementById('chatInput');
-      if (!inputEl) return;
-      const text = inputEl.value.trim();
-      if (!text && !attachedFileData) return;
-
-      appendMessageToUI('user', text, attachedFileData);
-      chatLogs.push({ sender: 'user', text: text, image: attachedFileData });
-      saveChatLogs();
-
-      inputEl.value = '';
-      inputEl.style.height = '36px';
-      
-      document.getElementById('menuBtn')?.classList.remove('hidden');
-
-      clearAttachment();
-      inputEl.blur();
-
-      await callRealAiApi();
-    }
-
-    function setDefaultInitialAIMessage() {
-      if (!chatHistory) return;
-      chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'Markdownパースエンジンの導入が完了しました！🔮\n\nここからの対話では、AIの回答に**見出し**や**箇条書き**はもちろん、以下のような**綺麗なテーブル（表）**も標準でレンダリング可能になっています。\n\n| 機能 | 状態 | 恩恵 |\n| :--- | :---: | :--- |\n| marked.js | 有効 | 複雑なドキュメントの視認性向上 |\n| テーブルCSS | 最適化済 | モーヴ＆ゴールドの極上デザイン |\n\n何か試してみたいドキュメント構造化やご相談があれば、いつでもメッセージを入力してください。');
-    }
-
-    async function callRealAiApi() {
-      const callingProjectId = currentProjectId; 
-      const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-      const selectedAi = activeAiRadio ? activeAiRadio.value : 'gemini';
-      
-      const progressMsg = document.createElement('div');
-      progressMsg.className = 'msg ai analyzing';
-      progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 同期セッション確立中...</span>';
-      if (chatHistory) { chatHistory.appendChild(progressMsg); chatHistory.scrollTop = chatHistory.scrollHeight; }
-
-      const currentHTML = document.getElementById('pane-current')?.innerHTML.trim() || '';
-      const knowledgeHTML = document.getElementById('pane-knowledge')?.innerHTML.trim() || '';
-      const memoryHTML = document.getElementById('pane-memory')?.innerHTML.trim() || '';
-      const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
-
-      // 【Step 3】AIへの指示プロンプトをMarkdownファーストに完全最適化
-      const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴伴走するReportコアシステムです。
-現在のレポートと個別メモリ（長期記憶）の状態：
-【Current】:\n${currentHTML}\n【Knowledge】:\n${knowledgeHTML}\n【Memory】:\n${memoryHTML}\n【History】:\n${historyHTML}
-
-【出力指示】
-- チャットの回答は、必ずMarkdown形式を使用してください。HTML形式での出力は禁止します。
-- 視認性を高めるため、適切な見出し（##、###）、表（テーブル）、箇条書き（- や 1.）を積極的に組み合わせて構造的に回答してください。
-- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新 of 全HTML構造を含めて出力してください（この特殊タグ自体は処理用のためMarkdown化せずそのまま出力してください）。
-
-<update_current>Current最新HTML</update_current>
-<update_knowledge>Knowledge最新HTML</update_knowledge>
-<update_memory>Memory最新HTML</update_memory>
-<update_history>History最新HTML</update_history>
-<update_title>適切なプロジェクト名</update_title>`;
-
-      try {
-        let aiResponseText = "";
-
-        if (selectedAi === 'claude') {
-          const apiKey = document.getElementById('apiKeyClaude')?.value.trim() || '';
-          if (!apiKey) throw new Error("Claude APIキーが未設定です。");
-          const messages = [];
-          chatLogs.forEach(log => {
-            let contentPayload = [];
-            if (log.text) contentPayload.push({ type: "text", text: log.text });
-            if (log.image) {
-              const commaIdx = log.image.indexOf(',');
-              const mediaType = log.image.substring(5, log.image.indexOf(';'));
-              const base64Data = log.image.substring(commaIdx + 1);
-              contentPayload.push({ type: "image", source: { type: "base64", media_type: mediaType, data: base64Data } });
-            }
-            messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: contentPayload });
-          });
-          const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-            body: JSON.stringify({ model: 'claude-3-5-sonnet-latest', system: systemInstructionText, max_tokens: 4000, messages: messages })
-          });
-          const resData = await response.json();
-          if (resData.error) throw new Error(resData.error.message);
-          aiResponseText = resData.content[0].text;
-
-        } else if (selectedAi === 'deepseek') {
-          const apiKey = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
-          if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
-          const messages = [{ role: "system", content: systemInstructionText }];
-          chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || "" }); });
-          const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model: 'deepseek-chat', messages: messages })
-          });
-          const resData = await response.json();
-          if (resData.error) throw new Error(resData.error.message);
-          aiResponseText = resData.choices[0].message.content;
-
-        } else if (selectedAi === 'gemini') {
-          const apiKey = document.getElementById('apiKeyGemini')?.value.trim() || '';
-          if (!apiKey) throw new Error("Gemini APIキーが未設定です。");
-          const contents = chatLogs.map(log => {
-            const parts = [];
-            if (log.text) parts.push({ text: log.text });
-            if (log.image) {
-              const commaIndex = log.image.indexOf(',');
-              const mimeType = log.image.substring(5, log.image.indexOf(';'));
-              const base64Data = log.image.substring(commaIndex + 1);
-              parts.push({ inlineData: { mimeType: mimeType, data: base64Data } });
-            }
-            return { role: log.sender === 'user' ? 'user' : 'model', parts: parts.length > 0 ? parts : [{text:""}] };
-          });
-          if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
-            let textPart = contents[contents.length - 1].parts.find(p => p.text !== undefined);
-            if (!textPart) { textPart = { text: "" }; contents[contents.length - 1].parts.unshift(textPart); }
-            textPart.text = `${systemInstructionText}\n\n----------------------------------------\n指示: ${textPart.text || ""}`;
-          }
-          const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: contents })
-          });
-          const resData = await response.json();
-          if (resData.error) throw new Error(resData.error.message);
-          aiResponseText = resData.candidates[0].content.parts[0].text;
-
-        } else if (selectedAi === 'openai') {
-          const apiKey = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
-          if (!apiKey) throw new Error("OpenAI APIキーが未設定です。");
-          const messages = [{ role: "system", content: systemInstructionText }];
-          chatLogs.forEach(log => {
-            let contentPayload = [];
-            if (log.text) contentPayload.push({ type: "text", text: log.text });
-            if (log.image) contentPayload.push({ type: "image_url", image_url: { url: log.image } });
-            messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: contentPayload.length > 0 ? contentPayload : (log.text || "") });
-          });
-          const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model: 'gpt-4o-mini', messages: messages })
-          });
-          const resData = await response.json();
-          if (resData.error) throw new Error(resData.error.message);
-          aiResponseText = resData.choices[0].message.content;
-        }
-
-        let reportUpdated = false;
-        const currentMatch = aiResponseText.match(/<update_current>([\s\S]*?)<\/update_current>/i);
-        const knowledgeMatch = aiResponseText.match(/<update_knowledge>([\s\S]*?)<\/update_knowledge>/i);
-        const memoryMatch = aiResponseText.match(/<update_memory>([\s\S]*?)<\/update_memory>/i);
-        const historyMatch = aiResponseText.match(/<update_history>([\s\S]*?)<\/update_history>/i);
-        const titleMatch = aiResponseText.match(/<update_title>([\s\S]*?)<\/update_title>/i);
-
-        if (currentMatch || knowledgeMatch || memoryMatch || historyMatch) reportUpdated = true;
-
-        let cleanResponseText = aiResponseText
-          .replace(/<update_current>[\s\S]*?<\/update_current>/gi, '')
-          .replace(/<update_knowledge>[\s\S]*?<\/update_knowledge>/gi, '')
-          .replace(/<update_memory>[\s\S]*?<\/update_memory>/gi, '')
-          .replace(/<update_history>[\s\S]*?<\/update_history>/gi, '')
-          .replace(/<update_title>[\s\S]*?<\/update_title>/gi, '')
-          .trim();
-
-        if (callingProjectId === currentProjectId) {
-          if (currentMatch && document.getElementById('pane-current')) document.getElementById('pane-current').innerHTML = currentMatch[1].trim();
-          if (knowledgeMatch && document.getElementById('pane-knowledge')) document.getElementById('pane-knowledge').innerHTML = knowledgeMatch[1].trim();
-          if (memoryMatch && document.getElementById('pane-memory')) document.getElementById('pane-memory').innerHTML = memoryMatch[1].trim();
-          if (historyMatch && document.getElementById('pane-history')) document.getElementById('pane-history').innerHTML = historyMatch[1].trim();
-          if (titleMatch) updateProjectName(currentProjectId, titleMatch[1].trim());
-
-          if (reportUpdated) saveReportData();
-          progressMsg.classList.remove('analyzing');
-          
-          // 【Step 2】リアルタイム出力時も marked.js でパース
-          if (typeof marked !== 'undefined') {
-            progressMsg.innerHTML = marked.parse(cleanResponseText);
-          } else {
-            progressMsg.textContent = cleanResponseText;
-          }
-
-          chatLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
-          saveChatLogs();
-          if (chatHistory) chatHistory.scrollTop = chatHistory.scrollHeight;
-        } else {
-          if (reportUpdated) {
-            const repKey = `${REPORT_DATA_KEY}_${callingProjectId}`;
-            let savedRep = {}; try { savedRep = JSON.parse(localStorage.getItem(repKey) || '{}'); } catch(e){}
-            if (currentMatch) savedRep.current = currentMatch[1].trim();
-            if (knowledgeMatch) savedRep.knowledge = knowledgeMatch[1].trim();
-            if (memoryMatch) savedRep.memory = memoryMatch[1].trim();
-            if (historyMatch) savedRep.history = historyMatch[1].trim();
-            localStorage.setItem(repKey, JSON.stringify(savedRep));
-          }
-          if (titleMatch) {
-            let projects = getLocalProjectsList();
-            const proj = projects.find(p => p.id === callingProjectId);
-            if (proj) { proj.name = titleMatch[1].trim(); saveLocalProjectsList(projects); renderProjectsList(); }
-          }
-          const logKey = `${CHAT_LOGS_KEY}_${callingProjectId}`;
-          let origLogs = []; try { origLogs = JSON.parse(localStorage.getItem(logKey) || '[]'); } catch(e){}
-          origLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
-          localStorage.setItem(logKey, JSON.stringify(origLogs));
-        }
-
-      } catch (err) {
-        console.error("API Call Failed:", err);
-        if (callingProjectId === currentProjectId && progressMsg) {
-          progressMsg.classList.remove('analyzing'); progressMsg.style.border = "1px solid #ff0055"; progressMsg.style.color = "#ff66a3"; progressMsg.textContent = `❌ エラー: ${err.message}`;
-        }
-      }
-    }
-
-    function applyAndCloseSettings() { saveSettings(); closeSettings(); }
-
-    function saveSettings() {
-      const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-      const chatAi = activeAiRadio ? activeAiRadio.value : 'gemini';
-      
-      const apiKeyGemini = document.getElementById('apiKeyGemini')?.value.trim() || '';
-      const apiKeyClaude = document.getElementById('apiKeyClaude')?.value.trim() || '';
-      const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
-      const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
-      const personalMemory = document.getElementById('personalMemory')?.value.trim() || '';
-      
-      const activeTheme = document.querySelector('input[name="appTheme"]:checked');
-      const appTheme = activeTheme ? activeTheme.value : 'tech';
-      const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
-      
-      let reportHeight = document.getElementById('reportHeightInput')?.value.trim() || '25';
-      if (Number(reportHeight) < 0) reportHeight = '0';
-      if (Number(reportHeight) > 100) reportHeight = '100';
-
-      const settings = { chatAi, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl, reportHeight };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-
-      document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
-      document.body.classList.add(`theme-${appTheme}`);
-
-      document.documentElement.style.setProperty('--report-height', `${reportHeight}dvh`);
-      if (!document.getElementById('reportSection').classList.contains('expanded')) {
-        document.getElementById('reportSection').style.height = `${reportHeight}dvh`;
-      }
-
-      if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
-      syncToCloudRealtime();
-    }
-
-    function saveChatLogs() {
-      if (chatLogs.length > 80) chatLogs = chatLogs.slice(-80);
-      localStorage.setItem(getChatLogsKey(), JSON.stringify(chatLogs));
-      syncToCloudRealtime();
-    }
-
-    function saveReportData() {
-      const reportData = {
-        current: document.getElementById('pane-current')?.innerHTML || '',
-        knowledge: document.getElementById('pane-knowledge')?.innerHTML || '',
-        memory: document.getElementById('pane-memory')?.innerHTML || '',
-        history: document.getElementById('pane-history')?.innerHTML || ''
-      };
-      localStorage.setItem(getReportDataKey(), JSON.stringify(reportData));
-      syncToCloudRealtime();
-    }
-
-    function exportAllData() {
-      const backup = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('life_report_')) backup[key] = localStorage.getItem(key);
-      }
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = `report_backup_${Date.now()}.json`; a.click();
-    }
-
-    function importAllData(input) {
-      const file = input.files?.[0]; if (!file) return;
-      if (!confirm("既存の全データが上書きされます。よろしいですか？")) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          for (let i = localStorage.length - 1; i >= 0; i--) {
-            const key = localStorage.key(i); if (key && key.startsWith('life_report_')) localStorage.removeItem(key);
-          }
-          for (const key in data) { if (key.startsWith('life_report_')) localStorage.setItem(key, data[key]); }
-          alert("インポート成功！再起動します。");
-          window.location.reload();
-        } catch (err) { alert("失敗: " + err.message); }
-      };
-      reader.readAsText(file);
-    }
-
-    function applyLoadedSettings(settings) {
-      if (!settings) return;
-      if (settings.chatAi) { const radio = document.querySelector(`input[name="chatAi"][value="${settings.chatAi}"]`); if (radio) radio.checked = true; }
-      if (settings.apiKeyGemini && document.getElementById('apiKeyGemini')) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
-      if (settings.apiKeyClaude && document.getElementById('apiKeyClaude')) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
-      if (settings.apiKeyDeepSeek && document.getElementById('apiKeyDeepSeek')) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
-      if (settings.apiKeyOpenAI && document.getElementById('apiKeyOpenAI')) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
-      
-      if (settings.appTheme) {
-        const themeRadio = document.querySelector(`input[name="appTheme"][value="${settings.appTheme}"]`);
-        if (themeRadio) themeRadio.checked = true;
-        document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
-        document.body.classList.add(`theme-${settings.appTheme}`);
-      }
-      if (settings.syncUrl && document.getElementById('syncUrl')) document.getElementById('syncUrl').value = settings.syncUrl;
-      if (settings.personalMemory && document.getElementById('personalMemory')) document.getElementById('personalMemory').value = settings.personalMemory;
-      
-      if (settings.reportHeight) {
-        if (document.getElementById('reportHeightInput')) document.getElementById('reportHeightInput').value = settings.reportHeight;
-        document.documentElement.style.setProperty('--report-height', `${settings.reportHeight}dvh`);
-        document.getElementById('reportSection').style.height = `${settings.reportHeight}dvh`;
-      }
-
-      if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
     }
 
     function applyReportData(data) {
@@ -1329,86 +970,423 @@
       if (data.history && document.getElementById('pane-history')) document.getElementById('pane-history').innerHTML = data.history;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('reportTabSelect')?.addEventListener('change', (e) => switchTab(e.target.value));
-      document.getElementById('aiModelSelect')?.addEventListener('change', (e) => {
-        const targetRadio = document.querySelector(`input[name="chatAi"][value="${e.target.value}"]`);
-        if (targetRadio) { targetRadio.checked = true; saveSettings(); }
-      });
+    function appendMessageToUI(sender, text, imageSrc = null) {
+      if (!chatHistory) return;
+      const msg = document.createElement('div');
+      msg.className = `msg ${sender}`;
 
-      window.updateAiQuickUI = function() {
-        const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
-        const selectEl = document.getElementById('aiModelSelect');
-        if (selectEl && activeAiRadio) selectEl.value = activeAiRadio.value;
-      };
-
-      const inputEl = document.getElementById('chatInput');
-      if (inputEl) {
-        inputEl.addEventListener('input', () => {
-          inputEl.style.height = '36px';
-          inputEl.style.height = Math.min(inputEl.scrollHeight, 140) + 'px';
-          
-          const menuBtn = document.getElementById('menuBtn');
-          if (menuBtn) {
-            if (inputEl.value.trim().length > 0) {
-              menuBtn.classList.add('hidden');
-            } else {
-              menuBtn.classList.remove('hidden');
-            }
-          }
-        });
-        inputEl.addEventListener('keydown', (e) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); sendMessage(); }
-        });
+      if (imageSrc) {
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.style.maxWidth = '100%';
+        img.style.borderRadius = '8px';
+        img.style.marginBottom = '6px';
+        img.style.display = 'block';
+        msg.appendChild(img);
       }
 
-      let touchStartX = 0;
-      let touchStartY = 0;
-      const phoneFrame = document.querySelector('.phone-frame');
+      const textNode = document.createElement('div');
+      if (sender === 'ai' && typeof marked !== 'undefined') {
+        textNode.innerHTML = marked.parse(text || '');
+      } else {
+        textNode.textContent = text || '';
+      }
+      msg.appendChild(textNode);
 
-      phoneFrame.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
+      chatHistory.appendChild(msg);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
 
-      phoneFrame.addEventListener('touchend', (e) => {
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-        const diffX = touchEndX - touchStartX;
-        const diffY = Math.abs(touchEndY - touchStartY);
+    function setDefaultInitialAIMessage() {
+      if (chatLogs.length === 0 && chatHistory) {
+        chatHistory.innerHTML = '';
+        const greetText = "### AI Copilot Ready\nどのような要件や思考プロセスを処理しますか？会話の内容に応じて、上の情報領域（Current/Knowledge/Memory/History）が自動的に構造化されていきます。画像添付にも対応しています。";
+        appendMessageToUI('ai', greetText);
+        chatLogs.push({ sender: 'ai', text: greetText, image: null });
+        saveChatLogs();
+      }
+    }
 
-        if (touchStartX < 60 && diffX > 60 && diffY < 40) {
-          const sheet = document.getElementById('bottomSheet');
-          if (sheet && !sheet.classList.contains('open')) {
-            toggleBottomSheet();
-          }
+    function handleFileSelect(input) {
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      attachedFileName = file.name;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        attachedFileData = e.target?.result;
+        const container = document.getElementById('previewContainer');
+        const pText = document.getElementById('previewText');
+        if (container && pText) {
+          pText.textContent = `📸 添付画像: ${attachedFileName}`;
+          container.classList.add('active');
         }
-      }, { passive: true });
+      };
+      reader.readAsDataURL(file);
+    }
 
-      const savedUI = localStorage.getItem(STORAGE_KEY);
-      if (savedUI) { try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){} }
+    function clearAttachment() {
+      attachedFileData = null;
+      attachedFileName = "";
+      const container = document.getElementById('previewContainer');
+      if (container) container.classList.remove('active');
+      const fileInput = document.getElementById('fileInput');
+      if (fileInput) fileInput.value = "";
+    }
 
-      const projects = getLocalProjectsList();
+    function handleResizeInput() {
+      chatInput.style.height = '36px';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 140) + 'px';
+    }
+
+    if (chatInput) {
+      chatInput.addEventListener('input', handleResizeInput);
+      chatInput.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+    }
+
+    function loadInitialApplicationState() {
+      let savedUI = localStorage.getItem(STORAGE_KEY);
+      let theme = 'tech';
+      let rHeight = '25';
+      let chatAi = 'gemini';
+
+      if (savedUI) {
+        try {
+          const settings = JSON.parse(savedUI);
+          theme = settings.appTheme || 'tech';
+          rHeight = settings.reportHeight || '25';
+          chatAi = settings.chatAi || 'gemini';
+          
+          if (settings.syncUrl) document.getElementById('syncUrl').value = settings.syncUrl;
+          if (settings.apiKeyGemini) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
+          if (settings.apiKeyClaude) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
+          if (settings.apiKeyDeepSeek) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
+          if (settings.apiKeyOpenAI) document.getElementById('apiKeyOpenAI').value = settings.apiKeyOpenAI;
+          if (settings.personalMemory) document.getElementById('personalMemory').value = settings.personalMemory;
+        } catch(e){}
+      }
+
+      const rb = document.getElementById(`theme${theme.charAt(0).toUpperCase() + theme.slice(1)}`);
+      if (rb) rb.checked = true;
+      document.body.className = `theme-${theme}`;
+
+      const aiSelect = document.getElementById('aiModelSelect');
+      if (aiSelect) aiSelect.value = chatAi;
+
+      const inputRH = document.getElementById('reportHeightInput');
+      if (inputRH) inputRH.value = rHeight;
+
+      const reportSection = document.getElementById('reportSection');
+      if (reportSection) reportSection.style.height = rHeight + 'dvh';
+
+      let projects = getLocalProjectsList();
       if (projects.length > 0) {
-        const latest = projects[0];
-        currentProjectId = latest.id;
-        setActiveProjectUI(latest.id, latest.name);
-        const savedReports = localStorage.getItem(getReportDataKey());
-        if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e){} }
-        const savedLogs = localStorage.getItem(getChatLogsKey());
-        if (savedLogs) {
-          try { chatLogs = JSON.parse(savedLogs); } catch(e) { chatLogs = []; }
-          if (chatHistory) {
-            chatHistory.innerHTML = '';
-            chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-          }
-        } else { setDefaultInitialAIMessage(); }
-        renderProjectsList();
-      } else { createNewProject(); }
+        const topProj = projects[0];
+        selectProject(topProj.id, topProj.name);
+      } else {
+        createNewProject();
+      }
+      renderProjectsList();
+    }
 
-      if (typeof window.updateAiQuickUI === 'function') window.updateAiQuickUI();
+    function applyAndCloseSettings() {
+      const appTheme = document.querySelector('input[name="appTheme"]:checked')?.value || 'tech';
+      const aiModelSelect = document.getElementById('aiModelSelect');
+      const chatAi = aiModelSelect ? aiModelSelect.value : 'gemini';
+      const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
+      const apiKeyGemini = document.getElementById('apiKeyGemini')?.value.trim() || '';
+      const apiKeyClaude = document.getElementById('apiKeyClaude')?.value.trim() || '';
+      const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
+      const apiKeyOpenAI = document.getElementById('apiKeyOpenAI')?.value.trim() || '';
+      const personalMemory = document.getElementById('personalMemory')?.value || '';
+      
+      let reportHeight = document.getElementById('reportHeightInput')?.value.trim() || '25';
+      if (isNaN(reportHeight) || reportHeight === '') reportHeight = '25';
+
+      document.body.className = `theme-${appTheme}`;
+      const reportSection = document.getElementById('reportSection');
+      if (reportSection && !reportSection.classList.contains('expanded')) {
+        reportSection.style.height = reportHeight + 'dvh';
+      }
+
+      const settings = { chatAi, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl, reportHeight };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+
+      closeSettings();
+    }
+
+    function saveChatLogs() { localStorage.setItem(getChatLogsKey(), JSON.stringify(chatLogs)); }
+    function saveReportData() {
+      const rData = {
+        current: document.getElementById('pane-current')?.innerHTML || '',
+        knowledge: document.getElementById('pane-knowledge')?.innerHTML || '',
+        memory: document.getElementById('pane-memory')?.innerHTML || '',
+        history: document.getElementById('pane-history')?.innerHTML || ''
+      };
+      localStorage.setItem(getReportDataKey(), JSON.stringify(rData));
+    }
+
+    document.getElementById('reportTabSelect')?.addEventListener('change', (e) => {
+      switchTab(e.target.value);
     });
+    document.getElementById('aiModelSelect')?.addEventListener('change', (e) => {
+      const savedUI = localStorage.getItem(STORAGE_KEY) || '{}';
+      try {
+        const parsed = JSON.parse(savedUI);
+        parsed.chatAi = e.target.value;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      } catch(err){}
+    });
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text && !attachedFileData) return;
+
+      appendMessageToUI('user', text, attachedFileData);
+      chatLogs.push({ sender: 'user', text: text, image: attachedFileData });
+      saveChatLogs();
+
+      chatInput.value = '';
+      handleResizeInput();
+      
+      const fileImg = attachedFileData; 
+      clearAttachment();
+
+      const progressMsg = document.createElement('div');
+      progressMsg.className = 'msg ai analyzing';
+      progressMsg.innerHTML = '<div class="spinner"></div><span>AI考案プロセマネージャー思考中...</span>';
+      chatHistory.appendChild(progressMsg);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      try {
+        const aiResponseText = await callRealAiApi(text, fileImg);
+        progressMsg.remove();
+        
+        const cleanResponseText = processStructuredTags(aiResponseText);
+        appendMessageToUI('ai', cleanResponseText);
+        chatLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
+        
+        saveChatLogs();
+        saveReportData();
+        syncToCloudRealtime();
+      } catch (error) {
+        console.error(error);
+        progressMsg.remove();
+        const errMsg = `⚠️ 通信エラー: ${error.message}\nAPIキーの設定、または接続環境を確認してください。(ブラウザからの直接アクセスによるCORS制限の可能性があります)`;
+        appendMessageToUI('ai', errMsg);
+        chatLogs.push({ sender: 'ai', text: errMsg, image: null });
+        saveChatLogs();
+      }
+    }
+
+    async function callRealAiApi(userText, base64Image) {
+      const settingsStr = localStorage.getItem(STORAGE_KEY);
+      if (!settingsStr) throw new Error("環境設定が未初期化です。ギアアイコンからAPIキーをセットしてください。");
+      const settings = JSON.parse(settingsStr);
+
+      const aiSelectEl = document.getElementById('aiModelSelect');
+      const selectedAi = aiSelectEl ? aiSelectEl.value : (settings.chatAi || 'gemini');
+
+      const currentContent = document.getElementById('pane-current')?.innerHTML || '';
+      const knowledgeContent = document.getElementById('pane-knowledge')?.innerHTML || '';
+      const memoryContent = document.getElementById('pane-memory')?.innerHTML || '';
+      const historyContent = document.getElementById('pane-history')?.innerHTML || '';
+      const globalProfile = settings.personalMemory || '';
+
+      const systemInstructionText = `
+あなたはユーザーの自律走行・考案プロセスを爆速化する多層ドキュメント集約型AIアシスタント「AI Copilot」です。
+対話を行いながら、必要に応じて上部の情報パネル（4つのカテゴリ）を更新するための特殊タグを出力してください。
+
+【重要：プロファイル記憶情報】
+${globalProfile}
+
+【現在の各情報パネルの状態】
+<current_pane_state>${currentContent}</current_pane_state>
+<knowledge_pane_state>${knowledgeContent}</knowledge_pane_state>
+<memory_pane_state>${memoryContent}</memory_pane_state>
+<history_pane_state>${historyContent}</history_pane_state>
+
+【パネル更新機能用特殊仕様タグ】
+もしユーザーとの対話によって確定事項、仕様、コンテキストのアップデートが発生した場合、回答文の末尾または途中に以下のタグを含めて情報を出力してください。あなたがタグを出力すると、システムが自動的に上部パネルのHTMLを書き換えます。
+・<update_current>HTMLコンテンツ</update_current> -> 決定事項(Current)を完全上書き更新
+・<update_knowledge>HTMLコンテンツ</update_knowledge> -> 構造化ナレッジ(Knowledge)を完全上書き更新
+・<update_memory>HTMLコンテンツ</update_memory> -> 個別メモリ(Memory)を完全上書き更新
+・<update_history>HTMLコンテンツ</update_history> -> 履歴ログ(History)を完全上書き更新
+・<update_title>新しいプロジェクトタイトル</update_title> -> セッションの名前を自動変更
+
+※ パネルに書き込むHTMLには見出しとして「<h4>タイトル</h4>」や「<ul><li>項目</li></ul>」といったタグを用いて美しく表現してください。
+※ ユーザーへの直接の回答文はMarkdownで記述し、これらの特殊タグは必要時のみ出力してください。
+`;
+
+      let aiResponseText = '';
+      const callingProjectId = currentProjectId;
+
+      if (selectedAi === 'gemini') {
+        const apiKey = document.getElementById('apiKeyGemini')?.value.trim() || settings.apiKeyGemini || '';
+        if (!apiKey) throw new Error("Gemini APIキーが未設定です。");
+        
+        const contents = chatLogs.map(log => {
+          const parts = [];
+          if (log.text) parts.push({ text: log.text });
+          if (log.image) {
+            const commaIndex = log.image.indexOf(',');
+            const mimeType = log.image.substring(5, log.image.indexOf(';'));
+            const base64Data = log.image.substring(commaIndex + 1);
+            parts.push({ inlineData: { mimeType: mimeType, data: base64Data } });
+          }
+          return { role: log.sender === 'user' ? 'user' : 'model', parts: parts.length > 0 ? parts : [{text:""}] };
+        });
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            contents: contents,
+            systemInstruction: {
+              parts: [{ text: systemInstructionText }]
+            }
+          })
+        });
+        const resData = await response.json();
+        if (resData.error) throw new Error(resData.error.message);
+        aiResponseText = resData.candidates[0].content.parts[0].text;
+
+      } else if (selectedAi === 'claude') {
+        const apiKey = document.getElementById('apiKeyClaude')?.value.trim() || settings.apiKeyClaude || '';
+        if (!apiKey) throw new Error("Claude APIキーが未設定です。");
+        const messages = chatLogs.map(log => ({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || '' }));
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+          body: JSON.stringify({ model: 'claude-3-5-sonnet-20241022', system: systemInstructionText, messages: messages, max_tokens: 4000 })
+        });
+        const resData = await response.json();
+        if (resData.error) throw new Error(resData.error.message);
+        aiResponseText = resData.content[0].text;
+
+      } else if (selectedAi === 'deepseek') {
+        const apiKey = document.getElementById('apiKeyDeepSeek')?.value.trim() || settings.apiKeyDeepSeek || '';
+        if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
+        const messages = [{ role: 'system', content: systemInstructionText }];
+        chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || '' }); });
+        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: 'deepseek-chat', messages: messages, stream: false })
+        });
+        const resData = await response.json();
+        if (resData.error) throw new Error(resData.error.message);
+        aiResponseText = resData.choices[0].message.content;
+
+      } else {
+        const apiKey = document.getElementById('apiKeyOpenAI')?.value.trim() || settings.apiKeyOpenAI || '';
+        if (!apiKey) throw new Error("OpenAI APIキーが未設定です。");
+        const messages = [{ role: 'system', content: systemInstructionText }];
+        chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || '' }); });
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+          body: JSON.stringify({ model: 'gpt-4o-mini', messages: messages })
+        });
+        const resData = await response.json();
+        if (resData.error) throw new Error(resData.error.message);
+        aiResponseText = resData.choices[0].message.content;
+      }
+
+      if (callingProjectId !== currentProjectId) {
+        throw new Error("応答の待機中にセッションが切り替えられました。");
+      }
+
+      return aiResponseText;
+    }
+
+    function processStructuredTags(rawText) {
+      let text = rawText;
+
+      const currentMatch = text.match(/<update_current>([\s\S]*?)<\/update_current>/);
+      const knowledgeMatch = text.match(/<update_knowledge>([\s\S]*?)<\/update_knowledge>/);
+      const memoryMatch = text.match(/<update_memory>([\s\S]*?)<\/update_memory>/);
+      const historyMatch = text.match(/<update_history>([\s\S]*?)<\/update_history>/);
+      const titleMatch = text.match(/<update_title>([\s\S]*?)<\/update_title>/);
+
+      if (currentMatch && document.getElementById('pane-current')) document.getElementById('pane-current').innerHTML = currentMatch[1].trim();
+      if (knowledgeMatch && document.getElementById('pane-knowledge')) document.getElementById('pane-knowledge').innerHTML = knowledgeMatch[1].trim();
+      if (memoryMatch && document.getElementById('pane-memory')) document.getElementById('pane-memory').innerHTML = memoryMatch[1].trim();
+      if (historyMatch && document.getElementById('pane-history')) document.getElementById('pane-history').innerHTML = historyMatch[1].trim();
+      
+      if (titleMatch) {
+        const newTitle = titleMatch[1].trim();
+        updateProjectName(currentProjectId, newTitle);
+      }
+
+      text = text
+        .replace(/<update_current>[\s\S]*?<\/update_current>/g, '')
+        .replace(/<update_knowledge>[\s\S]*?<\/update_knowledge>/g, '')
+        .replace(/<update_memory>[\s\S]*?<\/update_memory>/g, '')
+        .replace(/<update_history>[\s\S]*?<\/update_history>/g, '')
+        .replace(/<update_title>[\s\S]*?<\/update_title>/g, '');
+
+      return text.trim();
+    }
+
+    function exportAllData() {
+      const backup = {
+        metaList: getLocalProjectsList(),
+        settings: JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'),
+        stores: {}
+      };
+      backup.metaList.forEach(p => {
+        backup.stores[`chat_${p.id}`] = localStorage.getItem(`${CHAT_LOGS_KEY}_${p.id}`) || '[]';
+        backup.stores[`report_${p.id}`] = localStorage.getItem(`${REPORT_DATA_KEY}_${p.id}`) || '{}';
+      });
+
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `life_report_full_backup_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importAllData(fileInput) {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const backup = JSON.parse(e.target?.result);
+          if (!backup.metaList || !backup.stores) { alert("無効なバックアップファイルフォーマットです。"); return; }
+          
+          if (!confirm("既存のすべてのローカルストレージデータが上書きされます。よろしいですか？")) return;
+
+          localStorage.setItem(PROJECTS_LIST_KEY, JSON.stringify(backup.metaList));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(backup.settings || {}));
+
+          Object.keys(backup.stores).forEach(key => {
+            if (key.startsWith('chat_')) {
+              const pid = key.replace('chat_', '');
+              localStorage.setItem(`${CHAT_LOGS_KEY}_${pid}`, backup.stores[key]);
+            } else if (key.startsWith('report_')) {
+              const pid = key.replace('report_', '');
+              localStorage.setItem(`${REPORT_DATA_KEY}_${pid}`, backup.stores[key]);
+            }
+          });
+
+          alert("インポートが完了しました。アプリケーションをリロードします。");
+          window.location.reload();
+        } catch(err) { alert("パースエラー: 有効なJSONファイルではありません。"); }
+      };
+      reader.readAsText(file);
+    }
+
+    window.onload = loadInitialApplicationState;
   </script>
 </body>
 </html>
