@@ -9,7 +9,7 @@
        1. トリプルテーマ定義 (すべて可読性・見やすさを最優先)
        ========================================================================= */
     :root {
-      /* デフォルト：2. Modern Tech (30代男性向け・落ち着いた高級感のあるSlate調ダーク) */
+      /* デフォルト：2. Modern Tech (落ち着いた高級感のあるSlate調ダーク) */
       --bg-body: #0f172a;
       --bg-frame: #1e293b;
       --bg-deck: #334155;
@@ -26,8 +26,7 @@
       --select-bg: #334155;
     }
 
-    /* テーマ1：Developer Cyber (開発者向けクール・エレクトリック)
-       黒基調のサイバー感を演出しつつ、文字がハッキリ読める高コントラスト設計 */
+    /* テーマ1：Developer Cyber (開発者向けクール・エレクトリック) */
     body.theme-cyber {
       --bg-body: #0a0b10;
       --bg-frame: #12141d;
@@ -63,8 +62,7 @@
       --select-bg: #334155;
     }
 
-    /* テーマ3：Soft Clean (女性でも親しみやすい、優しくクリーンな淡色ナチュラル)
-       目に刺さる純白を避け、トレンドの柔らかなグレージュと上品なくすみローズで構成 */
+    /* テーマ3：Soft Clean (女性でも親しみやすい、優しくクリーンな淡色ナチュラル) */
     body.theme-soft {
       --bg-body: #f5f3f0;
       --bg-frame: #ffffff;
@@ -127,10 +125,16 @@
     }
     .header-left {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      gap: 12px;
       cursor: pointer;
       flex: 1;
+      min-width: 0;
+    }
+    .header-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
       min-width: 0;
     }
     .header-title {
@@ -140,7 +144,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 240px;
+      max-width: 200px;
     }
     .header-status {
       font-size: 11px;
@@ -331,12 +335,12 @@
     .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; }
     .cyber-input:focus { border-color: var(--accent-purple); }
     
-    /* テーマ・設定用ラジオボタンの縦配列 */
+    /* テーマ・設定用ラジオボタンの配列ベース */
     .radio-pack { display: flex; flex-direction: column; gap: 8px; }
     .radio-row { display: flex; align-items: center; position: relative; }
     .radio-row input[type="radio"] { display: none; }
     .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 13px; cursor: pointer; color: var(--text-main); opacity: 0.8; transition: all 0.2s; }
-    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(129, 140, 248, 0.12); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 3px 0 0 var(--accent-cyan); }
+    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(129, 140, 248, 0.12); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
     
     .modal-foot { padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
     .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
@@ -349,11 +353,14 @@
     <!-- ヘッダーエリア -->
     <header class="header">
       <div class="header-left" onclick="toggleBottomSheet()">
-        <h1 class="header-title" id="headerTitle">ロード中...</h1>
-        <div class="header-status">✨ クライアント保護モード稼働中</div>
+        <!-- メニューボタンをここに復活 -->
+        <button class="top-action-btn" type="button" title="セッション履歴" style="pointer-events: none;">☰</button>
+        <div class="header-text-group">
+          <h1 class="header-title" id="headerTitle">ロード中...</h1>
+          <div class="header-status">✨ クライアント保護モード稼働中</div>
+        </div>
       </div>
       <div class="header-right-actions">
-        <!-- 特等席：ワンタップエクスポート -->
         <button class="top-action-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📤</button>
         <button class="top-action-btn settings-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
       </div>
@@ -422,7 +429,7 @@
     </div>
   </div>
 
-  <!-- 環境設定モーダル (3種の選べるテーマ配置) -->
+  <!-- 環境設定モーダル -->
   <div class="modal-mask" id="settingsModal">
     <div class="modal-window">
       <div class="modal-head">🔧 システム環境設定</div>
@@ -436,21 +443,21 @@
           <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
         </div>
 
-        <!-- ご要望の3大テーマ切り替えコンソール -->
+        <!-- 横並び化＆文字をスッキリ最適化したテーマコンソール -->
         <div class="setting-group">
-          <span class="setting-label">カラーテーマ (全種類見やすさ最優先)</span>
-          <div class="radio-pack">
-            <div class="radio-row">
+          <span class="setting-label">カラーテーマ (見やすさ重視)</span>
+          <div class="radio-pack" style="flex-direction: row; gap: 6px;">
+            <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeCyber" value="cyber">
-              <label for="themeCyber" class="radio-label">1. Developer Cyber ⚡ (クール・開発者向けネオン)</label>
+              <label for="themeCyber" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Cyber ⚡</label>
             </div>
-            <div class="radio-row">
+            <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeTech" value="tech" checked>
-              <label for="themeTech" class="radio-label">2. Modern Tech 💻 (30代男性向け・洗練テック)</label>
+              <label for="themeTech" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Modern 💻</label>
             </div>
-            <div class="radio-row">
+            <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeSoft" value="soft">
-              <label for="themeSoft" class="radio-label">3. Soft Clean 🌸 (女性向け・クリーンナチュラル)</label>
+              <label for="themeSoft" class="radio-label" style="text-align: center; padding: 10px 4px; font-size: 12px;">Soft 🌸</label>
             </div>
           </div>
         </div>
@@ -458,16 +465,16 @@
         <!-- 初期ビューの高さ -->
         <div class="setting-group">
           <span class="setting-label">レポート領域の初期高度</span>
-          <div class="radio-pack" style="flex-direction:row;">
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMin" value="15"><label for="sizeMin" class="radio-label" style="text-align:center;">Low (15%)</label></div>
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMid" value="25" checked><label for="sizeMid" class="radio-label" style="text-align:center;">Mid (25%)</label></div>
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMax" value="40"><label for="sizeMax" class="radio-label" style="text-align:center;">High (40%)</label></div>
+          <div class="radio-pack" style="flex-direction:row; gap: 6px;">
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMin" value="15"><label for="sizeMin" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">Low (15%)</label></div>
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMid" value="25" checked><label for="sizeMid" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">Mid (25%)</label></div>
+            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMax" value="40"><label for="sizeMax" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">High (40%)</label></div>
           </div>
         </div>
 
-        <!-- クラウドリアルタイム同期URL -->
+        <!-- リアルタイム同期URL -->
         <div class="setting-group">
-          <span class="setting-label">リアルタイム同期用 URL (GAS / Webhookなど)</span>
+          <span class="setting-label">リアルタイム同期用 URL (GAS / Webhook)</span>
           <input type="url" id="syncUrl" class="cyber-input" placeholder="https://script.google.com/... などを入力">
         </div>
 
@@ -489,10 +496,10 @@
           <input type="password" id="apiKeyOpenAI" class="cyber-input" placeholder="sk-proj-を入力...">
         </div>
 
-        <!-- 全プロジェクト共通1層目メモリ -->
+        <!-- 個人の共有長期記憶 -->
         <div class="setting-group">
           <span class="setting-label">個人メモリ 🧠 (全セッション共有プロファイル)</span>
-          <textarea id="personalMemory" class="cyber-input" style="height: 80px; resize: vertical; line-height: 1.4;"></textarea>
+          <textarea id="personalMemory" class="cyber-input" style="height: 60px; resize: vertical; line-height: 1.4;"></textarea>
         </div>
 
         <!-- データエクスポート・インポート -->
@@ -514,7 +521,7 @@
   </div>
 
   <!-- =========================================================================
-     3. コアロジック (3種類のテーマ動的クラススイッチ完全実装)
+     3. コアロジック (3大テーマ制御)
      ========================================================================= -->
   <script>
     const STORAGE_KEY = 'life_report_production_settings_v2';
@@ -558,13 +565,9 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         }).then(res => {
-          if (!res.ok) console.warn("同期失敗。ステータス:", res.status);
-        }).catch(e => {
-          console.error("ネットワーク同期エラー:", e);
-        });
-      } catch (err) {
-        // サイレント処理
-      }
+          if (!res.ok) console.warn("同期失敗");
+        }).catch(e => {});
+      } catch (err) {}
     }
 
     function getLocalProjectsList() {
@@ -588,20 +591,14 @@
         if (!hasUserMessage) {
           currentProjectId = latestProj.id;
           setActiveProjectUI(latestProj.id, latestProj.name);
-
           const savedReports = localStorage.getItem(getReportDataKey());
-          if (savedReports) {
-            try { applyReportData(JSON.parse(savedReports)); } catch(e) {}
-          }
-
+          if (savedReports) { try { applyReportData(JSON.parse(savedReports)); } catch(e) {} }
           chatLogs = logs;
           if (chatHistory) {
             chatHistory.innerHTML = '';
             if (chatLogs.length > 0) {
               chatLogs.forEach(log => appendMessageToUI(log.sender, log.text, log.image));
-            } else {
-              setDefaultInitialAIMessage();
-            }
+            } else { setDefaultInitialAIMessage(); }
           }
           renderProjectsList();
           return;
@@ -623,7 +620,7 @@
       const initialReport = {
         current: '<h4>概要</h4><p>新しいプロジェクトが開始されました。開発要件や覚え書き、タスクについて自由に対話を開始してください。</p><h4>決定事項</h4><ul><li>（対話の内容に応じてここに自動集約されます）</li></ul>',
         knowledge: '<h4>ナレッジ</h4><ul><li>（重要なルールや仕様がここに蓄積されます）</li></ul>',
-        memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や、覚えておいてほしい背景情報をAIが記憶します。</p>',
+        memory: '<h4>個別メモリ 🧠</h4><p>このプロジェクト固有の状況や背景情報をAIが記憶します。</p>',
         history: '<h4>履歴</h4><ul><li>プロジェクト作成</li></ul>'
       };
       localStorage.setItem(getReportDataKey(), JSON.stringify(initialReport));
@@ -852,7 +849,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'LifeReport トリプルテーマセッションへようこそ！🚀\n\n「⚙️システム環境設定」から、エンジニア向けサイバー、30代男性向け洗練テック、女性向けソフトクリーンをいつでも切り替えられます。いずれも視認性最優先です！');
+      appendMessageToUI('ai', 'LifeReport セッションへようこそ！🚀\n\n「⚙️環境設定」から、Cyber、Modern、Softの3つのテーマをワンタップで横切り替えできるようになりました。いずれも視認性バツグンです！');
     }
 
     async function callRealAiApi() {
@@ -862,7 +859,7 @@
       
       const progressMsg = document.createElement('div');
       progressMsg.className = 'msg ai analyzing';
-      progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 コンテキストと2層メモリを同期中...</span>';
+      progressMsg.innerHTML = '<div class="spinner"></div><span class="progress-text">📡 2層メモリ同期中...</span>';
       if (chatHistory) { chatHistory.appendChild(progressMsg); chatHistory.scrollTop = chatHistory.scrollHeight; }
 
       const currentHTML = document.getElementById('pane-current')?.innerHTML.trim() || '';
@@ -871,18 +868,17 @@
       const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
 
       const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴走するLifeReportのコアシステムです。
-現在の画面上部のレポートと、このプロジェクト固有の個別メモリ（長期記憶）の状態（HTML）は以下の通りです：
+現在のレポートと個別メモリ（長期記憶）の状態：
 【Current】:\n${currentHTML}\n【Knowledge】:\n${knowledgeHTML}\n【Memory】:\n${memoryHTML}\n【History】:\n${historyHTML}
 
-【出力・表現に関する指示】
-- チャットの返答は、極限まで視認性を重視し、適度に「太字(**で囲む)」や「箇条書き(- や *)」を用いて構造的に回答してください。
-- レポートやMemoryを「更新」「追記」「修正」すべき情報が生まれた場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
+【出力指示】
+- チャットの返答は、視認性を重視し、適度に「太字(**)」や「箇条書き(-)」を用いて構造的に回答してください。
+- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
 
-特殊出力フォーマット：
-<update_current>Currentの最新全HTML</update_current>
-<update_knowledge>Knowledgeの最新全HTML</update_knowledge>
-<update_memory>Memoryの最新全HTML</update_memory>
-<update_history>Historyの最新全HTML</update_history>
+<update_current>Current最新HTML</update_current>
+<update_knowledge>Knowledge最新HTML</update_knowledge>
+<update_memory>Memory最新HTML</update_memory>
+<update_history>History最新HTML</update_history>
 <update_title>適切なプロジェクト名</update_title>`;
 
       try {
@@ -916,7 +912,7 @@
           const apiKey = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
           if (!apiKey) throw new Error("DeepSeek APIキーが未設定です。");
           const messages = [{ role: "system", content: systemInstructionText }];
-          chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || (log.image ? "画像送信" : "") }); });
+          chatLogs.forEach(log => { messages.push({ role: log.sender === 'user' ? 'user' : 'assistant', content: log.text || "" }); });
           const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
@@ -943,7 +939,7 @@
           if (contents.length > 0 && contents[contents.length - 1].role === 'user') {
             let textPart = contents[contents.length - 1].parts.find(p => p.text !== undefined);
             if (!textPart) { textPart = { text: "" }; contents[contents.length - 1].parts.unshift(textPart); }
-            textPart.text = `${systemInstructionText}\n\n----------------------------------------\nユーザー指示: ${textPart.text || "（画像）"}`;
+            textPart.text = `${systemInstructionText}\n\n----------------------------------------\n指示: ${textPart.text || ""}`;
           }
           const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
@@ -1056,7 +1052,6 @@
       
       if (repSize) { document.getElementById('reportSection')?.style.setProperty('--default-height', `${repSize}%`); }
 
-      // トリプルテーマクラスの動的スイッチング
       document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
       document.body.classList.add(`theme-${appTheme}`);
 
@@ -1104,7 +1099,7 @@
             const key = localStorage.key(i); if (key && key.startsWith('life_report_')) localStorage.removeItem(key);
           }
           for (const key in data) { if (key.startsWith('life_report_')) localStorage.setItem(key, data[key]); }
-          alert("データインポートに成功しました！最新設定で再起動します。");
+          alert("インポート成功！再起動します。");
           window.location.reload();
         } catch (err) { alert("失敗: " + err.message); }
       };
