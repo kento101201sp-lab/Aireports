@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- 全画面アプリ化（PWA対応）用のメタタグ群 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>LifeReport - AI Copilot</title>
   <style>
     /* =========================================================================
        1. トリプルテーマ定義 & フォントファミリーの最適化
        ========================================================================= */
     :root {
-      /* デフォルト：2. Modern Tech */
       --bg-body: #0f172a;
       --bg-frame: #1e293b;
       --bg-deck: #334155;
@@ -24,11 +27,9 @@
       --msg-ai-bg: #1e293b;
       --msg-ai-border: #475569;
       --select-bg: #334155;
-      /* チャットとして洗練された王道のプレーンサンセリフ */
       --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     }
 
-    /* テーマ1：Developer Cyber (開発者向けクール・エレクトリック) */
     body.theme-cyber {
       --bg-body: #0a0b10;
       --bg-frame: #12141d;
@@ -44,11 +45,9 @@
       --msg-ai-bg: #151822;
       --msg-ai-border: #00f5ff;
       --select-bg: #1a1d29;
-      /* 近未来感・コード感を演出する美しい等幅（モノスペース）フォント */
       --font-app: "SF Mono", SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
     }
 
-    /* テーマ2：Modern Tech */
     body.theme-tech {
       --bg-body: #0f172a;
       --bg-frame: #1e293b;
@@ -67,7 +66,6 @@
       --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
     }
 
-    /* テーマ3：Soft Clean (淡色ナチュラル) */
     body.theme-soft {
       --bg-body: #f5f3f0;
       --bg-frame: #ffffff;
@@ -83,7 +81,6 @@
       --msg-ai-bg: #faf9f7;
       --msg-ai-border: #d6cfc7;
       --select-bg: #f0ede9;
-      /* 丸みがあり、目に優しくリラックスして読めるフォント */
       --font-app: "Hiragino Maru Gothic ProN", "Kosugi Maru", "Yu Gothic", sans-serif;
     }
 
@@ -124,7 +121,7 @@
     /* ヘッダー */
     .header {
       background: var(--bg-deck);
-      padding: 14px 16px;
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -145,7 +142,7 @@
       min-width: 0;
     }
     .header-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: var(--text-main);
       white-space: nowrap;
@@ -170,7 +167,7 @@
       background: none;
       border: none;
       color: var(--text-main);
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
       opacity: 0.75;
       transition: opacity 0.2s, transform 0.2s;
@@ -178,63 +175,20 @@
       align-items: center;
       justify-content: center;
     }
-    .top-action-btn:hover {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-    .settings-btn:hover {
-      transform: rotate(30deg);
-    }
+    .top-action-btn:hover { opacity: 1; transform: scale(1.1); }
+    .settings-btn:hover { transform: rotate(30deg); }
 
-    /* コントロールコンテナ */
-    .control-container {
-      display: flex;
-      gap: 8px;
-      padding: 8px 12px;
-      background: var(--bg-pane);
-      border-bottom: 1px solid var(--border-color);
-    }
-    .cyber-select-wrapper {
-      flex: 1;
-      position: relative;
-    }
-    .cyber-select {
-      width: 100%;
-      appearance: none;
-      -webkit-appearance: none;
-      background: var(--select-bg);
-      color: var(--text-main);
-      font-size: 13px;
-      font-weight: 500;
-      padding: 8px 32px 8px 12px;
-      border-radius: 8px;
-      outline: none;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      transition: all 0.2s;
-    }
-    .cyber-select-wrapper::after {
-      content: '▼';
-      font-size: 8px;
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
-      opacity: 0.6;
-    }
-
-    /* レポート領域 */
+    /* 多層レポートパネル（高さを可変・縮小時は完全0に改良） */
     .report-section {
-      --default-height: 25%;
-      height: var(--default-height);
+      height: 0px;
       background: var(--bg-pane);
       display: flex;
       flex-direction: column;
       transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      overflow: hidden;
     }
-    .report-section.expanded { height: 70% !important; }
+    .report-section.expanded { height: 55dvh !important; }
     .report-content { flex: 1; overflow-y: auto; padding: 14px 16px; user-select: text; }
     .report-pane { display: none; font-size: 13px; line-height: 1.6; }
     .report-pane.active { display: block; }
@@ -247,15 +201,67 @@
     .report-pane ul { margin-left: 16px; margin-bottom: 10px; }
     .report-pane li { margin-bottom: 4px; opacity: 0.9; }
 
-    .expand-bar {
-      background: var(--bg-deck); color: var(--text-main); opacity: 0.7;
-      font-size: 11px; font-weight: 500; text-align: center; padding: 8px 0;
-      cursor: pointer; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
-      user-select: none; letter-spacing: 1px; transition: opacity 0.2s, color 0.2s;
+    /* コントロール・展開統合バー (1行潰してここに集約) */
+    .control-expand-bar {
+      background: var(--bg-deck);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px;
+      gap: 6px;
+      z-index: 20;
+      user-select: none;
     }
-    .expand-bar:hover { opacity: 1; color: var(--accent-cyan); }
+    .expand-trigger-btn {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-main);
+      opacity: 0.75;
+      cursor: pointer;
+      padding: 6px 0;
+      letter-spacing: 0.5px;
+      transition: color 0.2s, opacity 0.2s;
+    }
+    .expand-trigger-btn:hover { opacity: 1; color: var(--accent-cyan); }
 
-    /* チャットタイムライン */
+    /* 統合バー用の超コンパクトセレクトボックス */
+    .mini-select-wrapper {
+      position: relative;
+      width: 105px;
+    }
+    .mini-select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 5px 18px 5px 8px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .mini-select-wrapper::after {
+      content: '▼';
+      font-size: 7px;
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    /* チャットタイムライン（ここが広くなります） */
     .chat-timeline {
       flex: 1;
       min-height: 0;
@@ -281,7 +287,7 @@
     .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* 入力デッキ (カプセル化・内包型に再ビルド) */
+    /* 入力デッキ */
     .input-deck {
       background: var(--bg-deck); padding: 12px; border-top: 1px solid var(--border-color); z-index: 10;
     }
@@ -292,7 +298,6 @@
     .preview-container.active { display: flex; }
     .clear-preview { cursor: pointer; color: #ff4a4a; font-weight: bold; }
 
-    /* ボタン類をすべて内包する統合コンテナ */
     .form-row {
       display: flex;
       align-items: flex-end;
@@ -338,7 +343,6 @@
       line-height: 1.4;
     }
 
-    /* 丸型のスタイリッシュな上向き矢印送信ボタン */
     .send-btn {
       background: var(--accent-purple) !important;
       color: #ffffff !important;
@@ -414,24 +418,36 @@
         </div>
       </div>
       <div class="header-right-actions">
-        <!-- エクスポートのアイコンを矢印逆に修正 (📤から📥へ) -->
         <button class="top-action-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
         <button class="top-action-btn settings-btn" type="button" onclick="openSettings()" title="システム環境設定">⚙️</button>
       </div>
     </header>
 
-    <!-- コントロールセレクト -->
-    <div class="control-container">
-      <div class="cyber-select-wrapper">
-        <select id="reportTabSelect" class="cyber-select">
+    <!-- 多層レポートパネル（初期状態は0pxで完全に閉じた状態） -->
+    <section class="report-section" id="reportSection">
+      <div class="report-content">
+        <div class="report-pane active" id="pane-current"></div>
+        <div class="report-pane" id="pane-knowledge"></div>
+        <div class="report-pane" id="pane-memory"></div>
+        <div class="report-pane" id="pane-history"></div>
+      </div>
+    </section>
+
+    <!-- 【改良点】セレクターと展開トリガーを融合したミニマルバー（1行削減） -->
+    <div class="control-expand-bar">
+      <div class="mini-select-wrapper">
+        <select id="reportTabSelect" class="mini-select">
           <option value="current">Current</option>
           <option value="knowledge">Knowledge</option>
           <option value="memory">Memory 🧠</option>
           <option value="history">History</option>
         </select>
       </div>
-      <div class="cyber-select-wrapper">
-        <select id="aiModelSelect" class="cyber-select">
+      
+      <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
+      
+      <div class="mini-select-wrapper">
+        <select id="aiModelSelect" class="mini-select">
           <option value="gemini">🤖 Gemini</option>
           <option value="claude">🤖 Claude</option>
           <option value="deepseek">🤖 DeepSeek</option>
@@ -440,35 +456,21 @@
       </div>
     </div>
 
-    <!-- 多層レポートパネル -->
-    <section class="report-section" id="reportSection">
-      <div class="report-content">
-        <div class="report-pane active" id="pane-current"></div>
-        <div class="report-pane" id="pane-knowledge"></div>
-        <div class="report-pane" id="pane-memory"></div>
-        <div class="report-pane" id="pane-history"></div>
-      </div>
-      <div class="expand-bar" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
-    </section>
-
     <!-- タイムライン -->
     <main class="chat-timeline" id="chatHistory"></main>
 
-    <!-- 入力デッキ (添付・送信ボタンを内包化) -->
+    <!-- 入力デッキ -->
     <footer class="input-deck">
       <div class="preview-container" id="previewContainer">
         <span id="previewText">📸 添付画像情報</span>
         <span class="clear-preview" onclick="clearAttachment()">✕</span>
       </div>
       <div class="form-row">
-        <!-- 内包された添付ボタン -->
         <label class="deck-btn" title="画像を添付">
           📎
           <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect(this)">
         </label>
-        <!-- メッセージ入力欄 -->
         <textarea class="chat-textarea" id="chatInput" placeholder="メッセージを入力... (Ctrl+Enterで送信)"></textarea>
-        <!-- 内包された上向き矢印送信ボタン -->
         <button class="send-btn" type="button" onclick="sendMessage()" title="送信">⬆</button>
       </div>
     </footer>
@@ -492,7 +494,6 @@
       <div class="modal-head">🔧 システム環境設定</div>
       <div class="modal-body">
         
-        <!-- 裏同期用ダミー -->
         <div class="setting-group" style="display: none;">
           <input type="radio" name="chatAi" id="aiGemini" value="gemini" checked>
           <input type="radio" name="chatAi" id="aiClaude" value="claude">
@@ -500,9 +501,8 @@
           <input type="radio" name="chatAi" id="aiOpenAI" value="openai">
         </div>
 
-        <!-- テーマコンソール -->
         <div class="setting-group">
-          <span class="setting-label">カラーテーマ (フォントも連動して切り替わります)</span>
+          <span class="setting-label">カラーテーマ</span>
           <div class="radio-pack" style="flex-direction: row; gap: 6px;">
             <div class="radio-row" style="flex: 1;">
               <input type="radio" name="appTheme" id="themeCyber" value="cyber">
@@ -519,23 +519,18 @@
           </div>
         </div>
 
-        <!-- 初期ビューの高さ -->
-        <div class="setting-group">
-          <span class="setting-label">レポート領域の初期高度</span>
-          <div class="radio-pack" style="flex-direction:row; gap: 6px;">
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMin" value="15"><label for="sizeMin" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">Low (15%)</label></div>
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMid" value="25" checked><label for="sizeMid" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">Mid (25%)</label></div>
-            <div class="radio-row" style="flex:1;"><input type="radio" name="repSize" id="sizeMax" value="40"><label for="sizeMax" class="radio-label" style="text-align:center; padding: 10px 4px; font-size: 12px;">High (40%)</label></div>
-          </div>
+        <!-- 互換性維持用の非表示要素 -->
+        <div class="setting-group" style="display:none;">
+          <input type="radio" name="repSize" id="sizeMin" value="15">
+          <input type="radio" name="repSize" id="sizeMid" value="25" checked>
+          <input type="radio" name="repSize" id="sizeMax" value="40">
         </div>
 
-        <!-- リアルタイム同期URL -->
         <div class="setting-group">
           <span class="setting-label">リアルタイム同期用 URL (GAS / Webhook)</span>
           <input type="url" id="syncUrl" class="cyber-input" placeholder="https://script.google.com/... などを入力">
         </div>
 
-        <!-- クラウドAPIキースロット -->
         <div class="setting-group">
           <span class="setting-label">Gemini API Key</span>
           <input type="password" id="apiKeyGemini" class="cyber-input" placeholder="AI-Keyを入力...">
@@ -553,13 +548,11 @@
           <input type="password" id="apiKeyOpenAI" class="cyber-input" placeholder="sk-proj-を入力...">
         </div>
 
-        <!-- 個人の共有長期記憶 -->
         <div class="setting-group">
           <span class="setting-label">個人メモリ 🧠 (全セッション共有プロファイル)</span>
           <textarea id="personalMemory" class="cyber-input" style="height: 60px; resize: vertical; line-height: 1.4;"></textarea>
         </div>
 
-        <!-- データエクスポート・インポート (矢印を逆に修正) -->
         <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
           <span class="setting-label">データバックアップマネジメント</span>
           <button type="button" class="btn-secondary" style="color:var(--accent-cyan); font-weight:600;" onclick="exportAllData()">📥 ローカルへJSONエクスポート</button>
@@ -577,9 +570,6 @@
     </div>
   </div>
 
-  <!-- =========================================================================
-     3. コアロジック (スワイプ制御追加)
-     ========================================================================= -->
   <script>
     const STORAGE_KEY = 'life_report_production_settings_v2';
     const PROJECTS_LIST_KEY = 'life_report_projects_meta_list';
@@ -810,12 +800,13 @@
       });
     });
 
+    /* 【改良点】デフォルト閉じた状態(0px)からアニメーション展開させるトグルの変更 */
     function toggleReportHeight() {
       const reportSection = document.getElementById('reportSection');
       const expandBar = document.getElementById('expandBar');
       if (!reportSection || !expandBar) return;
       reportSection.classList.toggle('expanded');
-      expandBar.textContent = reportSection.classList.contains('expanded') ? '▲ レポート領域を縮小 ▲' : '▼ レポート領域を展開 ▼';
+      expandBar.textContent = reportSection.classList.contains('expanded') ? '▲ レポート領域を収納 ▲' : '▼ レポート領域を展開 ▼';
     }
 
     function switchTab(tabName) {
@@ -846,6 +837,11 @@
       const reportTabSelect = document.getElementById('reportTabSelect');
       if (reportTabSelect) reportTabSelect.value = 'current';
       switchTab('current');
+      
+      // 切り替え時はレポートを閉じた状態にしてタイムラインを最優先に
+      document.getElementById('reportSection')?.classList.remove('expanded');
+      document.getElementById('expandBar').textContent = '▼ レポート領域を展開 ▼';
+
       toggleBottomSheet();
     }
 
@@ -930,7 +926,7 @@
 
 【出力指示】
 - チャットの返答は、視認性を重視し、適度に「太字(**)」や「箇条書き(-)」を用いて構造的に回答してください。
-- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新の全HTML構造を含めて出力してください。
+- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新 of 全HTML構造を含めて出力してください。
 
 <update_current>Current最新HTML</update_current>
 <update_knowledge>Knowledge最新HTML</update_knowledge>
@@ -1091,9 +1087,6 @@
       const activeAiRadio = document.querySelector('input[name="chatAi"]:checked');
       const chatAi = activeAiRadio ? activeAiRadio.value : 'gemini';
       
-      const activeRepSize = document.querySelector('input[name="repSize"]:checked');
-      const repSize = activeRepSize ? activeRepSize.value : '25';
-      
       const apiKeyGemini = document.getElementById('apiKeyGemini')?.value.trim() || '';
       const apiKeyClaude = document.getElementById('apiKeyClaude')?.value.trim() || '';
       const apiKeyDeepSeek = document.getElementById('apiKeyDeepSeek')?.value.trim() || '';
@@ -1104,10 +1097,8 @@
       const appTheme = activeTheme ? activeTheme.value : 'tech';
       const syncUrl = document.getElementById('syncUrl')?.value.trim() || '';
       
-      const settings = { chatAi, repSize, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
+      const settings = { chatAi, apiKeyGemini, apiKeyClaude, apiKeyDeepSeek, apiKeyOpenAI, personalMemory, appTheme, syncUrl };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-      
-      if (repSize) { document.getElementById('reportSection')?.style.setProperty('--default-height', `${repSize}%`); }
 
       document.body.classList.remove('theme-cyber', 'theme-tech', 'theme-soft');
       document.body.classList.add(`theme-${appTheme}`);
@@ -1166,10 +1157,6 @@
     function applyLoadedSettings(settings) {
       if (!settings) return;
       if (settings.chatAi) { const radio = document.querySelector(`input[name="chatAi"][value="${settings.chatAi}"]`); if (radio) radio.checked = true; }
-      if (settings.repSize) { 
-        const radio = document.querySelector(`input[name="repSize"][value="${settings.repSize}"]`); if (radio) radio.checked = true; 
-        document.getElementById('reportSection')?.style.setProperty('--default-height', `${settings.repSize}%`); 
-      }
       if (settings.apiKeyGemini && document.getElementById('apiKeyGemini')) document.getElementById('apiKeyGemini').value = settings.apiKeyGemini;
       if (settings.apiKeyClaude && document.getElementById('apiKeyClaude')) document.getElementById('apiKeyClaude').value = settings.apiKeyClaude;
       if (settings.apiKeyDeepSeek && document.getElementById('apiKeyDeepSeek')) document.getElementById('apiKeyDeepSeek').value = settings.apiKeyDeepSeek;
@@ -1218,9 +1205,7 @@
         });
       }
 
-      /* =========================================================================
-         【新規追加】左から右へのエッジスワイプでボトムシート(メニュー)を開く
-         ========================================================================= */
+      /* 左スワイプメニュー */
       let touchStartX = 0;
       let touchStartY = 0;
       const phoneFrame = document.querySelector('.phone-frame');
@@ -1236,7 +1221,6 @@
         const diffX = touchEndX - touchStartX;
         const diffY = Math.abs(touchEndY - touchStartY);
 
-        // 画面左端付近(60px以内)からのスタート、かつ右方向へのしっかりしたスワイプ、かつ縦ブレが少ない場合
         if (touchStartX < 60 && diffX > 60 && diffY < 40) {
           const sheet = document.getElementById('bottomSheet');
           if (sheet && !sheet.classList.contains('open')) {
@@ -1244,7 +1228,6 @@
           }
         }
       }, { passive: true });
-      /* ========================================================================= */
 
       const savedUI = localStorage.getItem(STORAGE_KEY);
       if (savedUI) { try { applyLoadedSettings(JSON.parse(savedUI)); } catch(e){} }
