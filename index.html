@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- 【Step 1】Markdownパース用ライブラリ marked.js の追加 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
     /* =========================================================================
@@ -175,7 +178,7 @@
     .report-pane ul { margin-left: 16px; margin-bottom: 10px; }
     .report-pane li { margin-bottom: 4px; opacity: 0.9; }
 
-    /* コントロールバー構造（セレクト並列化モディファイ） */
+    /* コントロールバー構造 */
     .control-expand-bar {
       background: var(--bg-deck);
       border-bottom: 1px solid var(--border-color);
@@ -286,6 +289,7 @@
     }
     .msg.ai {
       align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      white-space: normal; /* Markdownパース後のレイアウト崩れ防止 */
     }
     .msg.ai strong { color: var(--accent-cyan); font-weight: 600; }
     
@@ -293,6 +297,18 @@
       font-family: var(--font-mono); background: rgba(255,255,255,0.1); color: var(--accent-purple); padding: 2px 5px; border-radius: 4px; font-size: 12.5px; margin: 0 2px;
     }
     body.theme-soft .msg.ai code { background: rgba(0,0,0,0.05); }
+
+    /* Markdownレンダリング時の見出し・箇条書き・テーブル微調整 */
+    .msg.ai h1, .msg.ai h2, .msg.ai h3, .msg.ai h4 { color: var(--accent-cyan); margin: 10px 0 6px 0; font-size: 14px; font-weight: 600; }
+    .msg.ai p { margin-bottom: 8px; }
+    .msg.ai ul, .msg.ai ol { margin-left: 18px; margin-bottom: 8px; }
+    .msg.ai li { margin-bottom: 2px; }
+    
+    /* Markdownテーブル用ラグジュアリーデザイン */
+    .msg.ai table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    .msg.ai th, .msg.ai td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; }
+    .msg.ai th { background: rgba(255, 255, 255, 0.06); color: var(--accent-purple); font-weight: 600; }
+    body.theme-soft .msg.ai th { background: rgba(0, 0, 0, 0.03); }
 
     .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(229, 179, 180, 0.05); border: 1px dashed var(--accent-cyan); }
     .spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -481,7 +497,7 @@
       </div>
     </section>
 
-    <!-- コントロール・展開バー（セレクト並列化） -->
+    <!-- コントロール・展開バー -->
     <div class="control-expand-bar">
       <div class="control-left-flex">
         <div class="mini-select-wrapper">
@@ -557,7 +573,7 @@
           </div>
         </div>
 
-        <!-- レポート幅（高さ％）調整項目 -->
+        <!-- レポート幅調整項目 -->
         <div class="setting-group">
           <span class="setting-label">レポート領域の高さ（通常時画面比）</span>
           <div class="preset-btn-group">
@@ -939,6 +955,7 @@
       toggleBottomSheet();
     }
 
+    // 【Step 2】AIの返信（および過去ログ読込時）に marked.js でMarkdown表示を適用
     function appendMessageToUI(sender, text, base64Image = null) {
       if (!chatHistory) return;
       const msg = document.createElement('div');
@@ -947,10 +964,12 @@
       if (base64Image) {
         msg.innerHTML = `<img src="${base64Image}" style="max-width: 100%; max-height: 180px; border-radius: 8px; display: block; margin-bottom: 4px;">${text ? text : '📸 画像を送信しました'}`;
       } else {
-        let formattedText = (text || '')
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-          .replace(/`(.*?)`/g, '<code>$1</code>');
-        msg.innerHTML = formattedText;
+        if (sender === 'ai' && typeof marked !== 'undefined') {
+          msg.innerHTML = marked.parse(text || '');
+        } else {
+          // ユーザーメッセージはエスケープして改行を保持
+          msg.textContent = text || '';
+        }
       }
       chatHistory.appendChild(msg);
       if (sender === 'user') {
@@ -1005,7 +1024,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'UIアップデートが完了しました！🔮\n\n・`Current`（タブ選択）のすぐ右隣に`AIモデルセレクト`が横並びで配置されるよう、コントロールバーを最適化しました。\n・Modernテーマを、大人の品格とラグジュアリー感が漂う**「ディープモーヴ・グレージュ ＆ ローズシャンパンゴールド」**のジェンダーレスで美麗な配色に刷新しました。快適な執筆・対話体験をお楽しみください。');
+      appendMessageToUI('ai', 'Markdownパースエンジンの導入が完了しました！🔮\n\nここからの対話では、AIの回答に**見出し**や**箇条書き**はもちろん、以下のような**綺麗なテーブル（表）**も標準でレンダリング可能になっています。\n\n| 機能 | 状態 | 恩恵 |\n| :--- | :---: | :--- |\n| marked.js | 有効 | 複雑なドキュメントの視認性向上 |\n| テーブルCSS | 最適化済 | モーヴ＆ゴールドの極上デザイン |\n\n何か試してみたいドキュメント構造化やご相談があれば、いつでもメッセージを入力してください。');
     }
 
     async function callRealAiApi() {
@@ -1023,13 +1042,15 @@
       const memoryHTML = document.getElementById('pane-memory')?.innerHTML.trim() || '';
       const historyHTML = document.getElementById('pane-history')?.innerHTML.trim() || '';
 
+      // 【Step 3】AIへの指示プロンプトをMarkdownファーストに完全最適化
       const systemInstructionText = `あなたは対話を通じてプロジェクトを構造化し、ユーザーに伴伴走するReportコアシステムです。
 現在のレポートと個別メモリ（長期記憶）の状態：
 【Current】:\n${currentHTML}\n【Knowledge】:\n${knowledgeHTML}\n【Memory】:\n${memoryHTML}\n【History】:\n${historyHTML}
 
 【出力指示】
-- チャットの返答は、視認性を重視し、適度に「太字(**)」や「箇条書き(-)」を用いて構造的に回答してください。
-- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新 of 全HTML構造を含めて出力してください。
+- チャットの回答は、必ずMarkdown形式を使用してください。HTML形式での出力は禁止します。
+- 視認性を高めるため、適切な見出し（##、###）、表（テーブル）、箇条書き（- や 1.）を積極的に組み合わせて構造的に回答してください。
+- レポートやMemoryを「更新」「追記」する場合は、通常回答の【一番末尾】に以下の特殊タグを使って最新 of 全HTML構造を含めて出力してください（この特殊タグ自体は処理用のためMarkdown化せずそのまま出力してください）。
 
 <update_current>Current最新HTML</update_current>
 <update_knowledge>Knowledge最新HTML</update_knowledge>
@@ -1153,10 +1174,12 @@
           if (reportUpdated) saveReportData();
           progressMsg.classList.remove('analyzing');
           
-          let renderedText = cleanResponseText
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/`(.*?)`/g, '<code>$1</code>');
-          progressMsg.innerHTML = renderedText;
+          // 【Step 2】リアルタイム出力時も marked.js でパース
+          if (typeof marked !== 'undefined') {
+            progressMsg.innerHTML = marked.parse(cleanResponseText);
+          } else {
+            progressMsg.textContent = cleanResponseText;
+          }
 
           chatLogs.push({ sender: 'ai', text: cleanResponseText, image: null });
           saveChatLogs();
@@ -1242,7 +1265,6 @@
       syncToCloudRealtime();
     }
 
-    // ★修正箇所: functionキーワードを追加
     function exportAllData() {
       const backup = {};
       for (let i = 0; i < localStorage.length; i++) {
