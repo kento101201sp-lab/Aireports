@@ -9,46 +9,44 @@
   <title>Report - AI Copilot</title>
   <style>
     /* =========================================================================
-       1. トリプルテーマ定義 (Modernを最高級グラデーション仕様へ刷新)
+       1. トリプルテーマ定義
        ========================================================================= */
     :root {
-      /* デフォルト: Modern（プレミアム・ネオ・クラシック） */
-      --bg-body: #040712;       
-      --bg-frame: linear-gradient(160deg, #0f162b 0%, #050814 100%); /* 深邃なサファイアグラデーション */
-      --bg-deck: linear-gradient(180deg, rgba(22, 32, 60, 0.9) 0%, rgba(14, 20, 38, 0.95) 100%); 
-      --bg-pane: rgba(11, 17, 33, 0.82);
-      --bg-input: rgba(30, 44, 78, 0.6);
-      --text-main: #f8fafc;     
-      --accent-cyan: #00f0ff;   /* 未来感：高輝度サイバーシアン */
-      --accent-purple: #d4af37; /* クラシカル：高貴なシャンパンゴールド */
-      --border-color: rgba(212, 175, 55, 0.25); /* プレミアムゴールドを帯びた極細境界線 */
-      --msg-user-bg: linear-gradient(135deg, #1e2942 0%, #111728 100%); /* ユーザーメッセージの階調 */
+      /* デフォルト: Modern（オーロラ・トワイライトグラデーション × プレミアムガラス） */
+      --bg-body: linear-gradient(135deg, #0b0f19 0%, #151329 50%, #1f1224 100%);
+      --bg-frame: rgba(15, 20, 35, 0.82);      /* 背景のグラデーションを透かす高級ガラス質感 */
+      --bg-deck: rgba(24, 30, 51, 0.9);       /* 深みと透明感を両立 */
+      --bg-pane: rgba(17, 22, 38, 0.85);
+      --bg-input: rgba(30, 38, 64, 0.7);
+      --text-main: #f3f4f6;     /* 柔らかな輝きのシルクホワイト */
+      --accent-cyan: #22d3ee;   /* 透明感と知性を感じさせるシアン（ユニセックス） */
+      --accent-purple: #c084fc; /* 気品あふれるアメジストモーヴ */
+      --border-color: rgba(255, 255, 255, 0.09);  /* 極細の硬質なガラスライン */
+      --msg-user-bg: linear-gradient(135deg, #6366f1, #a855f7); /* 洗練されたインディゴパープルグラデーション */
       --msg-user-text: #ffffff;
-      --msg-ai-bg: rgba(20, 29, 54, 0.55);
-      --msg-ai-border: rgba(0, 240, 255, 0.25);
-      --select-bg: #0d1324;
-      --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --report-height: 25dvh;   
-      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      --backdrop-blur: blur(12px);
+      --msg-ai-bg: rgba(24, 30, 51, 0.6);
+      --msg-ai-border: rgba(192, 132, 252, 0.25);
+      --select-bg: #14192b;
+      --font-app: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      --report-height: 25dvh;   /* 動的コントロール用カスタムプロパティ */
     }
 
     body.theme-tech {
       /* Modernテーマ（上記と同一） */
-      --bg-body: #040712;
-      --bg-frame: linear-gradient(160deg, #0f162b 0%, #050814 100%);
-      --bg-deck: linear-gradient(180deg, rgba(22, 32, 60, 0.9) 0%, rgba(14, 20, 38, 0.95) 100%);
-      --bg-pane: rgba(11, 17, 33, 0.82);
-      --bg-input: rgba(30, 44, 78, 0.6);
-      --text-main: #f8fafc;
-      --accent-cyan: #00f0ff;
-      --accent-purple: #d4af37;
-      --border-color: rgba(212, 175, 55, 0.25);
-      --msg-user-bg: linear-gradient(135deg, #1e2942 0%, #111728 100%);
+      --bg-body: linear-gradient(135deg, #0b0f19 0%, #151329 50%, #1f1224 100%);
+      --bg-frame: rgba(15, 20, 35, 0.82);
+      --bg-deck: rgba(24, 30, 51, 0.9);
+      --bg-pane: rgba(17, 22, 38, 0.85);
+      --bg-input: rgba(30, 38, 64, 0.7);
+      --text-main: #f3f4f6;
+      --accent-cyan: #22d3ee;
+      --accent-purple: #c084fc;
+      --border-color: rgba(255, 255, 255, 0.09);
+      --msg-user-bg: linear-gradient(135deg, #6366f1, #a855f7);
       --msg-user-text: #ffffff;
-      --msg-ai-bg: rgba(20, 29, 54, 0.55);
-      --msg-ai-border: rgba(0, 240, 255, 0.25);
-      --select-bg: #0d1324;
+      --msg-ai-bg: rgba(24, 30, 51, 0.6);
+      --msg-ai-border: rgba(192, 132, 252, 0.25);
+      --select-bg: #14192b;
     }
 
     body.theme-cyber {
@@ -67,8 +65,6 @@
       --msg-ai-bg: #151822;
       --msg-ai-border: #00f5ff;
       --select-bg: #1a1d29;
-      --glass-shadow: none;
-      --backdrop-blur: none;
     }
 
     body.theme-soft {
@@ -86,8 +82,6 @@
       --msg-ai-bg: #faf9f7;
       --msg-ai-border: #d6cfc7;
       --select-bg: #f0ede9;
-      --glass-shadow: none;
-      --backdrop-blur: none;
     }
 
     /* =========================================================================
@@ -100,14 +94,14 @@
       font-family: var(--font-app);
     }
     body {
-      background-color: var(--bg-body);
+      background: var(--bg-body);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100dvh;
       overflow: hidden;
-      transition: background-color 0.2s, color 0.2s;
+      transition: background 0.2s, color 0.2s;
     }
 
     .phone-frame {
@@ -115,88 +109,118 @@
       max-width: 480px;
       height: 100dvh;
       background: var(--bg-frame);
+      backdrop-filter: blur(20px); /* 高級感を演出するガラスエフェクト */
+      -webkit-backdrop-filter: blur(20px);
       border-left: 1px solid var(--border-color);
       border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       position: relative;
       overflow: hidden;
-      box-shadow: var(--glass-shadow);
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    /* 【変更】新・コントロールバー構造（ヘッダー機能を包含、横並びを最適化） */
-    .control-expand-bar {
+    .header {
       background: var(--bg-deck);
-      backdrop-filter: var(--backdrop-blur);
-      -webkit-backdrop-filter: var(--backdrop-blur);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       border-bottom: 1px solid var(--border-color);
+      min-height: 56px;
+    }
+    .header-text-group {
       display: flex;
-      align-items: center;
+      flex-direction: row;
       justify-content: space-between;
-      padding: 10px 12px;
-      gap: 10px;
-      z-index: 20;
-      user-select: none;
-      min-height: 54px;
-    }
-    
-    /* 左側：CurrentとAIモデルを横並びにするグリッド */
-    .control-left-grid {
-      display: flex;
-      flex-direction: row; /* 縦から横並びへ変更 */
-      gap: 6px;
-      flex-shrink: 0;
-    }
-    
-    /* 右側：展開、プロジェクト名、エクスポートボタンを内包 */
-    .control-right-area {
-      display: flex;
       align-items: center;
-      gap: 8px;
-      flex: 1;
-      border-left: 1px solid var(--border-color);
-      padding-left: 8px;
-      justify-content: flex-end;
-      min-width: 0; /* 文字溢れ省略を有効化 */
+      gap: 12px;
+      width: 100%;
     }
-    
-    /* プロジェクト名表示用のラッパー */
-    .project-title-wrapper {
-      min-width: 0;
-      flex: 1;
-      text-align: right;
-    }
-    
     .header-title {
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--text-main);
       letter-spacing: 0.3px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: inline-block;
-      max-width: 110px; /* 横並びが崩れないように最大幅を制限 */
-      vertical-align: middle;
+      flex: 1;
+      min-width: 0;
     }
 
+    /* 多層レポートパネル（設定連動の可変ハイト） */
+    .report-section {
+      height: var(--report-height);
+      background: var(--bg-pane);
+      display: flex;
+      flex-direction: column;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .report-content { flex: 1; overflow-y: auto; padding: 12px 16px; user-select: text; }
+    .report-pane { display: none; font-size: 13px; line-height: 1.6; }
+    .report-pane.active { display: block; }
+    .report-pane h4 {
+      color: var(--accent-purple); font-size: 13px; margin-top: 12px; margin-bottom: 4px;
+      border-left: 3px solid var(--accent-purple); padding-left: 6px; font-weight: 600;
+    }
+    .report-pane h4:first-child { margin-top: 0; }
+    .report-pane p { margin-bottom: 6px; color: var(--text-main); opacity: 0.9; }
+    .report-pane ul { margin-left: 14px; margin-bottom: 8px; }
+    .report-pane li { margin-bottom: 3px; opacity: 0.9; }
+
+    /* コントロールバー構造 */
+    .control-expand-bar {
+      background: var(--bg-deck);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 12px;
+      gap: 12px;
+      z-index: 20;
+      user-select: none;
+    }
+    .control-left-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .control-row-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .control-right-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      border-left: 1px solid var(--border-color);
+      padding-left: 12px;
+    }
     .expand-trigger-btn {
+      flex: 1;
+      text-align: center;
       font-size: 11px;
       font-weight: 600;
       color: var(--text-main);
-      opacity: 0.7;
+      opacity: 0.75;
       cursor: pointer;
-      padding: 6px 2px;
-      letter-spacing: 0.3px;
+      padding: 12px 0;
+      letter-spacing: 0.5px;
       transition: color 0.2s, opacity 0.2s;
-      white-space: nowrap;
-      flex-shrink: 0;
     }
     .expand-trigger-btn:hover { opacity: 1; color: var(--accent-cyan); }
 
     .mini-select-wrapper {
       position: relative;
-      width: 90px; /* 横並び用に最適化された幅 */
+      width: 104px;
     }
     .mini-select {
       width: 100%;
@@ -205,8 +229,8 @@
       background: var(--bg-input);
       color: var(--text-main);
       font-size: 11px;
-      font-weight: 600;
-      padding: 6px 16px 6px 6px;
+      font-weight: 500;
+      padding: 5px 16px 5px 6px;
       border-radius: 6px;
       outline: none;
       cursor: pointer;
@@ -214,10 +238,6 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      transition: border-color 0.2s;
-    }
-    .mini-select:hover {
-      border-color: var(--accent-cyan);
     }
     .mini-select-wrapper::after {
       content: '▼';
@@ -228,49 +248,22 @@
       transform: translateY(-50%);
       pointer-events: none;
       opacity: 0.5;
-      color: var(--text-main);
     }
 
     .inline-export-btn {
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+      background: none;
+      border: none;
       color: var(--text-main);
-      font-size: 14px;
+      font-size: 18px;
       cursor: pointer;
-      opacity: 0.8;
-      transition: all 0.2s;
+      opacity: 0.75;
+      transition: opacity 0.2s, transform 0.1s;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 5px 6px;
-      flex-shrink: 0;
+      padding: 4px;
     }
-    .inline-export-btn:hover { opacity: 1; border-color: var(--accent-cyan); transform: scale(1.05); }
-
-    /* 多層レポートパネル（設定連動の可変ハイト） */
-    .report-section {
-      height: var(--report-height);
-      background: var(--bg-pane);
-      backdrop-filter: var(--backdrop-blur);
-      -webkit-backdrop-filter: var(--backdrop-blur);
-      display: flex;
-      flex-direction: column;
-      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-    .report-content { flex: 1; overflow-y: auto; padding: 14px 16px; user-select: text; }
-    .report-pane { display: none; font-size: 13px; line-height: 1.6; }
-    .report-pane.active { display: block; }
-    .report-pane h4 {
-      color: var(--accent-purple); font-size: 13px; margin-top: 14px; margin-bottom: 6px;
-      border-left: 3px solid var(--accent-purple); padding-left: 6px; font-weight: 600;
-    }
-    .report-pane h4:first-child { margin-top: 0; }
-    .report-pane p { margin-bottom: 6px; color: var(--text-main); opacity: 0.9; }
-    .report-pane ul { margin-left: 14px; margin-bottom: 8px; }
-    .report-pane li { margin-bottom: 4px; opacity: 0.9; }
+    .inline-export-btn:hover { opacity: 1; transform: scale(1.1); color: var(--accent-cyan); }
 
     /* タイムライン */
     .chat-timeline {
@@ -284,26 +277,23 @@
       background: transparent;
     }
     .msg {
-      max-width: 85%; padding: 11px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; user-select: text;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: break-word; white-space: pre-wrap; user-select: text;
     }
     .msg.user {
-      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; border: 1px solid rgba(255,255,255,0.05);
+      align-self: flex-end; background: var(--msg-user-bg); color: var(--msg-user-text); border-bottom-right-radius: 2px; box-shadow: 0 3px 10px rgba(99, 102, 241, 0.2);
     }
     .msg.ai {
-      align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border);
-      backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur);
+      align-self: flex-start; background: var(--msg-ai-bg); color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--msg-ai-border); box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .msg.ai strong { color: var(--accent-cyan); font-weight: 600; }
     
-    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(0, 229, 255, 0.04); border: 1px dashed var(--accent-cyan); }
+    .msg.analyzing { display: flex; align-items: center; gap: 10px; color: var(--accent-cyan); background: rgba(34, 211, 238, 0.06); border: 1px dashed var(--accent-cyan); }
     .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent-cyan); border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* 入力デッキ */
     .input-deck {
       background: var(--bg-deck); padding: 12px; border-top: 1px solid var(--border-color); z-index: 10;
-      backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur);
     }
     .preview-container {
       display: none; background: var(--bg-pane); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px;
@@ -323,8 +313,8 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .form-row:focus-within {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.2);
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 0 1px var(--accent-purple);
     }
     
     .deck-btn {
@@ -367,8 +357,8 @@
     }
 
     .send-btn {
-      background: linear-gradient(135deg, var(--accent-cyan) 0%, #00aaff 100%) !important;
-      color: #040712 !important;
+      background: var(--accent-purple) !important;
+      color: #ffffff !important;
       border: none !important;
       width: 32px;
       height: 32px;
@@ -383,15 +373,15 @@
       margin-bottom: 2px;
       padding: 0 !important;
     }
-    .send-btn:hover { opacity: 0.9; transform: scale(1.05); }
+    .send-btn:hover { opacity: 0.9; }
+    .send-btn:active { transform: scale(0.95); }
 
     /* ボトムシート */
-    .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(4px); }
+    .sheet-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 90; backdrop-filter: blur(2px); }
     .sheet-overlay.open { opacity: 1; pointer-events: auto; }
     .bottom-sheet {
       position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-pane); border-top: 2px solid var(--accent-purple); border-top-left-radius: 18px; border-top-right-radius: 18px;
       max-height: 75%; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 100; display: flex; flex-direction: column;
-      box-shadow: var(--glass-shadow); backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur);
     }
     .bottom-sheet.open { transform: translateY(0); }
     
@@ -400,72 +390,93 @@
     .sheet-header-actions { display: flex; align-items: center; gap: 10px; }
     
     .sheet-gear-btn {
-      background: var(--bg-input);
-      border: 1px solid var(--border-color);
+      background: none;
+      border: none;
       color: var(--text-main);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      opacity: 0.9;
-      transition: all 0.2s;
+      opacity: 0.8;
+      transition: color 0.2s, opacity 0.2s;
       display: flex;
       align-items: center;
       gap: 4px;
       padding: 6px 10px;
       border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-input);
     }
     .sheet-gear-btn:hover { opacity: 1; color: var(--accent-cyan); border-color: var(--accent-cyan); }
-    .new-proj-btn { background: linear-gradient(135deg, var(--accent-purple) 0%, #b8922f 100%); color: #040712; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 8px rgba(212,175,55,0.3); }
+    .new-proj-btn { background: var(--accent-cyan); color: #090d16; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
     
     .sheet-body { flex: 1; overflow-y: auto; padding: 8px 0 24px; }
     .sheet-item { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid var(--border-color); }
-    .sheet-item:hover { background: rgba(255,255,255,0.03); }
-    .sheet-item.active { background: rgba(212, 175, 55, 0.08); }
+    .sheet-item:hover { background: var(--bg-deck); }
+    .sheet-item.active { background: rgba(129, 140, 248, 0.08); }
     .sheet-item.active .sheet-item-name { color: var(--accent-cyan); font-weight: 600; }
     .sheet-item-name { font-size: 14px; color: var(--text-main); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .project-del-btn { color: var(--text-main); opacity: 0.4; padding: 4px; font-size: 14px; transition: opacity 0.2s, color 0.2s; }
     .project-del-btn:hover { color: #ff4a4a; opacity: 1; }
 
     /* モーダル */
-    .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
+    .modal-mask { position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(3px); display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 1000; }
     .modal-mask.open { opacity: 1; pointer-events: auto; }
-    .modal-window { background: var(--bg-pane); width: 90%; max-width: 420px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: var(--glass-shadow); backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur); }
-    .modal-head { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; font-size: 16px; letter-spacing: 0.5px; }
+    .modal-window { background: var(--bg-pane); width: 90%; max-width: 420px; border: 1px solid var(--border-color); border-radius: 16px; display: flex; flex-direction: column; max-height: 85vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .modal-head { padding: 16px; border-bottom: 1px solid var(--border-color); color: var(--text-main); font-weight: 600; font-size: 16px; }
     .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
     .setting-group { display: flex; flex-direction: column; gap: 6px; }
     .setting-label { font-size: 12px; color: var(--text-main); opacity: 0.7; font-weight: 600; letter-spacing: 0.5px; }
-    .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; transition: border-color 0.2s; }
-    .cyber-input:focus { border-color: var(--accent-cyan); }
+    .cyber-input { background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-main); padding: 8px 12px; font-size: 13px; outline: none; width: 100%; }
+    .cyber-input:focus { border-color: var(--accent-purple); }
     
     .radio-pack { display: flex; flex-direction: column; gap: 8px; }
     .radio-row { display: flex; align-items: center; position: relative; }
     .radio-row input[type="radio"] { display: none; }
     .radio-label { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; text-align: left; font-size: 13px; cursor: pointer; color: var(--text-main); opacity: 0.8; transition: all 0.2s; }
-    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(212, 175, 55, 0.1); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
+    .radio-row input[type="radio"]:checked + .radio-label { background: rgba(129, 140, 248, 0.1); border-color: var(--accent-cyan); color: var(--text-main); opacity: 1; font-weight: 600; box-shadow: inset 0 -3px 0 var(--accent-cyan); }
     
+    /* プリセットボタングループ用 */
     .preset-btn-group { display: flex; gap: 6px; }
     .preset-btn { flex: 1; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); padding: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
     .preset-btn:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
     .modal-foot { padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
-    .btn-secondary { background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
-    .btn-primary { background: linear-gradient(135deg, var(--accent-purple) 0%, #b8922f 100%); border: none; color: #040712; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 700; box-shadow: 0 2px 8px rgba(212,175,55,0.2); }
+    .btn-secondary { background: var(--bg-deck); border: none; color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .btn-primary { background: var(--accent-purple); border: none; color: #ffffff; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
   </style>
 </head>
 <body>
 
   <div class="phone-frame">
-    <!-- 【変更】新・コントロール＆ヘッダー統合型ナビゲーションバー -->
+    <header class="header">
+      <div class="header-text-group">
+        <h1 class="header-title" id="headerProjectName">ロード中...</h1>
+        <button class="inline-export-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
+      </div>
+    </header>
+
+    <!-- 多層レポートパネル -->
+    <section class="report-section" id="reportSection">
+      <div class="report-content">
+        <div class="report-pane active" id="pane-current"></div>
+        <div class="report-pane" id="pane-knowledge"></div>
+        <div class="report-pane" id="pane-memory"></div>
+        <div class="report-pane" id="pane-history"></div>
+      </div>
+    </section>
+
+    <!-- コントロール・展開バー -->
     <div class="control-expand-bar">
-      <!-- 左側：Currentとモデル選択を美しく横並びに統合 -->
       <div class="control-left-grid">
-        <div class="mini-select-wrapper">
-          <select id="reportTabSelect" class="mini-select">
-            <option value="current">Current</option>
-            <option value="knowledge">Knowledge</option>
-            <option value="memory">Memory 🧠</option>
-            <option value="history">History</option>
-          </select>
+        <div class="control-row-top">
+          <div class="mini-select-wrapper">
+            <select id="reportTabSelect" class="mini-select">
+              <option value="current">Current</option>
+              <option value="knowledge">Knowledge</option>
+              <option value="memory">Memory 🧠</option>
+              <option value="history">History</option>
+            </select>
+          </div>
         </div>
         <div class="mini-select-wrapper">
           <select id="aiModelSelect" class="mini-select">
@@ -477,25 +488,10 @@
         </div>
       </div>
       
-      <!-- 右側：展開、プロジェクトタイトル、そして最右端に配置されたエクスポートボタン -->
       <div class="control-right-area">
-        <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ 展開</div>
-        <div class="project-title-wrapper">
-          <h1 class="header-title" id="headerProjectName">ロード中...</h1>
-        </div>
-        <button class="inline-export-btn" type="button" onclick="exportAllData()" title="即座にJSONエクスポート">📥</button>
+        <div class="expand-trigger-btn" id="expandBar" onclick="toggleReportHeight()">▼ レポート領域を展開 ▼</div>
       </div>
     </div>
-
-    <!-- 多層レポートパネル -->
-    <section class="report-section" id="reportSection">
-      <div class="report-content">
-        <div class="report-pane active" id="pane-current"></div>
-        <div class="report-pane" id="pane-knowledge"></div>
-        <div class="report-pane" id="pane-memory"></div>
-        <div class="report-pane" id="pane-history"></div>
-      </div>
-    </section>
 
     <!-- タイムライン -->
     <main class="chat-timeline" id="chatHistory"></main>
@@ -616,7 +612,7 @@
         <div class="setting-group" style="margin-top: 4px; border-top: 1px solid var(--border-color); padding-top: 10px; gap: 6px;">
           <span class="setting-label">データバックアップマネジメント</span>
           <button type="button" class="btn-secondary" style="color:var(--accent-cyan); font-weight:600;" onclick="exportAllData()">📥 ローカルへJSONエクスポート</button>
-          <label class="btn-secondary" style="color:#d4af37; text-align:center; display:block; cursor:pointer; font-weight:600;">
+          <label class="btn-secondary" style="color:var(--accent-purple); text-align:center; display:block; cursor:pointer; font-weight:600;">
             📤 バックアップJSONをインポート
             <input type="file" accept=".json" style="display:none;" onchange="importAllData(this)">
           </label>
@@ -867,7 +863,7 @@
       reportSection.classList.toggle('expanded');
       if (reportSection.classList.contains('expanded')) {
         reportSection.style.height = '75dvh';
-        expandBar.textContent = '▲ 収納';
+        expandBar.textContent = '▲ レポート領域を収納 ▲';
       } else {
         const savedUI = localStorage.getItem(STORAGE_KEY);
         let baseHeight = '25';
@@ -878,7 +874,7 @@
           } catch(e){}
         }
         reportSection.style.height = baseHeight + 'dvh';
-        expandBar.textContent = '▼ 展開';
+        expandBar.textContent = '▼ レポート領域を展開 ▼';
       }
     }
 
@@ -924,7 +920,7 @@
         try { const s = JSON.parse(savedUI); if (s.reportHeight) baseHeight = s.reportHeight; } catch(e){}
       }
       document.getElementById('reportSection').style.height = baseHeight + 'dvh';
-      document.getElementById('expandBar').textContent = '▼ 展開';
+      document.getElementById('expandBar').textContent = '▼ レポート領域を展開 ▼';
 
       toggleBottomSheet();
     }
@@ -989,7 +985,7 @@
     function setDefaultInitialAIMessage() {
       if (!chatHistory) return;
       chatHistory.innerHTML = '';
-      appendMessageToUI('ai', 'UI構造の最適化およびプレミアムテーマの構築が完了しました！🌌\n\n・左側に**Current**と**AIモデル**のセレクトを統合して美しく横並びに配置しました。\n・右側にはプロジェクト名と、**そのすぐ右隣にエクスポートボタン（📥）**を集約しました。\n・モダンテーマをディープサファイアの美麗な階調グラデーションですりガラスを透過するような**最高級仕様**に仕上げました。');
+      appendMessageToUI('ai', 'アップデート完了しました！🌌\n\n・履歴画面のボタンを**「⚙️ 設定」**テキスト表記に変更しました。\n・環境設定内から、レポート表示幅（高さ）を**25%/35%/45% または 0-100%の自由入力**でいつでも可変調整できるようになりました。\n・新規プロジェクト生成時の日付時間を排除し、ミニマルな作成体験にしました。\n・Modernテーマを、都市の洗練された重厚感と、シャープな未来感を併せ持つ**「ネオ・クラシック・モダン」**にリフレッシュしました。');
     }
 
     async function callRealAiApi() {
